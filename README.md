@@ -85,7 +85,9 @@ verbless.AddOption("-p", "--parameters")
 
 ### Validators
 
-You can also add some validation. CommandLineFluent comes with some basic validators. For example, Validators.FileExists is a method that takes a string and makes sure that it is a file which exists. 
+You can also add some validation. CommandLineFluent comes with some basic validators. For example, Validators.FileExists is a method that takes a string and makes sure that it is a file which exists.
+
+Validators return a string, which is the error message. Return null to indicate validation was successful.
 
 ```csharp
 verbless.AddValue()
