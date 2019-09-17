@@ -1,0 +1,30 @@
+﻿namespace CommandLineFluent
+{
+	public enum ErrorCode
+	{
+		Ok,
+		MissingRequiredValue,
+		MissingRequiredValues,
+		MissingRequiredOption,
+		TooManyValues,
+		OptionNotFound,
+		SwitchNotFound,
+		UnexpectedEndOfArguments,
+		UnexpectedArgument,
+		DuplicateOption,
+		DuplicateSwitch,
+		OptionException,
+		SwitchException,
+		ValueException,
+		OptionFailedValidation,
+		ValueFailedValidation,
+		ValuesFailedValidation,
+		OptionFailedConversion,
+		ValuesFailedConversion,
+		SwitchFailedConversion,
+		InvalidVerb,
+		NoVerbFound,
+		HelpRequested,
+		ProgrammerError
+	}
+}
