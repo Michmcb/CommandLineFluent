@@ -30,6 +30,7 @@ namespace CommandLineFluent
 		/// Lists all verbs and their description.
 		/// </summary>
 		/// <param name="verbs">The verbs whose descriptions will be used</param>
+		/// <param name="helpSwitches">A human-readable string showing the short and long help switches</param>
 		/// <param name="maxLineLength">The maximum line length. If exceeded, an extra line break will be added</param>
 		public static string FormatOverallHelp(IEnumerable<IFluentVerb> verbs, string helpSwitches, int maxLineLength)
 		{

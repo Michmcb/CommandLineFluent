@@ -11,7 +11,7 @@ namespace CommandLineFluentTest.Parser
 		[Fact]
 		public void AddingOptionsValuesSwitches()
 		{
-			FluentParser fp = new FluentParser().Configure(config =>
+			FluentParserBuilder fpb = new FluentParserBuilder().Configure(config =>
 				{
 					config.UseDefaultPrefixes("-", "--");
 				})
@@ -61,13 +61,14 @@ namespace CommandLineFluentTest.Parser
 		[Fact]
 		public void AddingManyValues()
 		{
-			FluentParser fp = new FluentParser().Configure(config =>
+			FluentParser fp = new FluentParserBuilder().Configure(config =>
 				{
 					config.UseDefaultPrefixes("-", "--");
 				})
-				.WithoutVerbs<Verb1>(verb =>
+				.WithoutVerbs<ManyValuesVerb>(verb =>
 				{
-					FluentManyValues<Verb1, string[]> val = verb.AddManyValues()
+					FluentManyValues<ManyValuesVerb, string[]> val = verb.AddManyValues()
+						.ForProperty(o => o.ManyValues)
 						.WithName("name")
 						.WithHelpText("help")
 						.IsRequired();
@@ -79,23 +80,26 @@ namespace CommandLineFluentTest.Parser
 					val.IsOptional(new string[] { "test" });
 					Assert.Equal("test", val.DefaultValue[0]);
 					Assert.False(val.Required);
-				});
+				}).Build();
 		}
 		[Fact]
 		public void AddingDuplicateShortLongNames()
 		{
-			FluentParser fp = new FluentParser()
-				.WithoutVerbs<Verb1>(verb =>
-				{
-					verb.AddOption("-o", "--o");
-					Assert.Throws<ArgumentException>(() => verb.AddOption("-o", "--o"));
-					Assert.Throws<ArgumentException>(() => verb.AddOption("--o", "-o"));
-				});
+			Assert.Throws<FluentParserValidationException>(() =>
+			{
+				FluentParser fp = new FluentParserBuilder()
+					.WithoutVerbs<Verb1>(verb =>
+					{
+						verb.AddOption("-o", "--o");
+						Assert.Throws<ArgumentException>(() => verb.AddOption("-o", "--o"));
+						Assert.Throws<ArgumentException>(() => verb.AddOption("--o", "-o"));
+					}).Build();
+			});
 		}
 		[Fact]
 		public void AddingNullOrWhitespaceShortLongNames()
 		{
-			FluentParser fp = new FluentParser()
+			FluentParser fp = new FluentParserBuilder()
 				.WithoutVerbs<Verb1>(verb =>
 				{
 					Assert.Throws<ArgumentException>(() => verb.AddOption(null, null));
@@ -103,7 +107,7 @@ namespace CommandLineFluentTest.Parser
 					Assert.Throws<ArgumentException>(() => verb.AddOption(null, ""));
 					Assert.Throws<ArgumentException>(() => verb.AddOption(" ", null));
 					Assert.Throws<ArgumentException>(() => verb.AddOption(null, " "));
-				});
+				}).Build();
 		}
 	}
 }

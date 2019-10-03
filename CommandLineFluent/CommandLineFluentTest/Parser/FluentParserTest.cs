@@ -25,7 +25,7 @@ namespace CommandLineFluentTest.Parser
 		public void SimpleParsing(string id, bool outcome, Components components, HashSet<ErrorCode> errorCodes, params string[] args)
 		{
 			System.Console.WriteLine(id);
-			FluentParser fp = new FluentParser()
+			FluentParser fp = new FluentParserBuilder()
 				.WithoutVerbs<Verb1>(verblessConfig =>
 				{
 					if ((components & Components.Value) == Components.Value)
@@ -43,7 +43,7 @@ namespace CommandLineFluentTest.Parser
 						verblessConfig.AddOption("-o", "--option")
 							.ForProperty(o => o.Option);
 					}
-				});
+				}).Build();
 
 
 			FluentParserResult parsed = fp.Parse(args);
@@ -104,7 +104,7 @@ namespace CommandLineFluentTest.Parser
 		[MemberData(nameof(ComplexParsingData))]
 		public void ComplexParsing(string id, string[] args, bool shouldBeSuccessful, ComplexVerb1 expectedResult)
 		{
-			FluentParser fp = new FluentParser()
+			FluentParser fp = new FluentParserBuilder()
 				.Configure(config =>
 				{
 					config.ConfigureWithDefaults();
@@ -152,7 +152,7 @@ namespace CommandLineFluentTest.Parser
 					verb.AddOption<int>("o3", "oo3")
 						.ForProperty(x => x.ConvertedOption)
 						.WithConverter(v => new Converted<int>(int.Parse(v)));
-				});
+				}).Build();
 			if (shouldBeSuccessful)
 			{
 				fp.Parse(args).OnFailure(x => Assert.True(false, id))
@@ -202,7 +202,7 @@ namespace CommandLineFluentTest.Parser
 		[MemberData(nameof(ManyValueParsingData))]
 		public void ManyValueParsing(string id, string[] args, bool shouldBeSuccessful, ManyValuesVerb expectedResult)
 		{
-			FluentParser fp = new FluentParser()
+			FluentParser fp = new FluentParserBuilder()
 				.Configure(config =>
 				{
 					config.ConfigureWithDefaults();
@@ -217,7 +217,7 @@ namespace CommandLineFluentTest.Parser
 						.IsOptional("default");
 					verb.AddSwitch("s", "ss")
 						.ForProperty(x => x.Switch);
-				});
+				}).Build();
 			if (shouldBeSuccessful)
 			{
 				FluentParserResult result = fp.Parse(args).OnFailure(x => Assert.True(false, id))
@@ -248,7 +248,7 @@ namespace CommandLineFluentTest.Parser
 		[Fact]
 		public void VerbParsing()
 		{
-			FluentParser fp = new FluentParser()
+			FluentParser fp = new FluentParserBuilder()
 				.AddVerb<Verb1>("verb1", v => { v.AddValue().ForProperty(x => x.Value); })
 				.AddVerb<Verb2>("verb2", v => { v.AddValue().ForProperty(x => x.Value); })
 				.AddVerb<Verb3>("verb3", v => { v.AddValue().ForProperty(x => x.Value); })
@@ -264,7 +264,8 @@ namespace CommandLineFluentTest.Parser
 				.AddVerb<Verb13>("verb13", v => { v.AddValue().ForProperty(x => x.Value); })
 				.AddVerb<Verb14>("verb14", v => { v.AddValue().ForProperty(x => x.Value); })
 				.AddVerb<Verb15>("verb15", v => { v.AddValue().ForProperty(x => x.Value); })
-				.AddVerb<Verb16>("verb16", v => { v.AddValue().ForProperty(x => x.Value); });
+				.AddVerb<Verb16>("verb16", v => { v.AddValue().ForProperty(x => x.Value); })
+				.Build();
 
 			string[] args = new string[] { null, null };
 			int i = 1;
@@ -300,43 +301,46 @@ namespace CommandLineFluentTest.Parser
 		public void MixingUpVerbConfiguration()
 		{
 			Assert.Throws<FluentParserException>(() =>
-				new FluentParser()
+				new FluentParserBuilder()
 				.AddVerb<Verb1>("verb1", null)
-				.WithoutVerbs<Verb2>(null));
+				.WithoutVerbs<Verb2>(null)
+				.Build());
 			Assert.Throws<FluentParserException>(() =>
-				new FluentParser()
+				new FluentParserBuilder()
 				.WithoutVerbs<Verb1>(null)
-				.AddVerb<Verb2>("verb2", null));
+				.AddVerb<Verb2>("verb2", null)
+				.Build());
 		}
 		[Fact]
 		public void ParsingWithInvalidVerb()
 		{
-			FluentParserResult result = new FluentParser()
+			FluentParserResult result = new FluentParserBuilder()
 				.AddVerb<Verb1>("verb1", null)
+				.Build()
 				.Parse(new string[] { "InvalidVerb" });
 			Assert.Equal(ErrorCode.InvalidVerb, result.Errors.First().ErrorCode);
 		}
 		[Fact]
 		public void AddingDuplicateVerbNames()
 		{
-			Assert.Throws<FluentParserException>(() => new FluentParser().AddVerb<Verb1>("Name", null).AddVerb<Verb2>("Name", null));
+			Assert.Throws<FluentParserException>(() => new FluentParserBuilder().AddVerb<Verb1>("Name", null).AddVerb<Verb2>("Name", null).Build());
 		}
 		[Fact]
-		public void ParsingWithoutProperConfiguration()
+		public void BuildingWithoutProperConfiguration()
 		{
-			Assert.Throws<FluentParserException>(() => new FluentParser().Parse(new string[] { }));
+			Assert.Throws<FluentParserValidationException>(() => new FluentParserBuilder().Build());
 		}
 		[Fact]
 		public void ParsingNullArgs()
 		{
-			Assert.Throws<ArgumentNullException>(() => new FluentParser().Parse(null));
+			Assert.Throws<ArgumentNullException>(() => new FluentParserBuilder().WithoutVerbs<Verb1>(null).Build().Parse(null));
 		}
 		[Fact]
 		public void ParsingHelpSwitch()
 		{
-			FluentParser fp = new FluentParser()
+			FluentParser fp = new FluentParserBuilder()
 				.Configure(config => config.ConfigureWithDefaults())
-				.WithoutVerbs<Verb1>(null);
+				.WithoutVerbs<Verb1>(null).Build();
 			FluentParserResult result1 = fp.Parse(new string[] { "-?" });
 			FluentParserResult result2 = fp.Parse(new string[] { "--help" });
 			Assert.Contains(ErrorCode.HelpRequested, result1.Errors.Select(x => x.ErrorCode));

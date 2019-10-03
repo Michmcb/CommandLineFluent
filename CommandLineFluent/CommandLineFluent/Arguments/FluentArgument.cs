@@ -5,7 +5,6 @@ namespace CommandLineFluent.Arguments
 	/// <summary>
 	/// A single argument on the command line. Can be a Switch, Option, or Value
 	/// </summary>
-	/// <typeparam name="T">The type of object to which this argument maps</typeparam>
 	public abstract class FluentArgument : IFluentArgument
 	{
 		/// <summary>
@@ -20,6 +19,9 @@ namespace CommandLineFluent.Arguments
 		/// The property that this argument maps to
 		/// </summary>
 		public PropertyInfo TargetProperty { get; protected set; }
+		/// <summary>
+		/// Validates this FluentArgument, returning an Error object if something is invalid.
+		/// </summary>
 		public virtual Error Validate()
 		{
 			if (TargetProperty == null)

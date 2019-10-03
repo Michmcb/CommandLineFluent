@@ -1,0 +1,1115 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>CommandLineFluent</name>
+    </assembly>
+    <members>
+        <member name="T:CommandLineFluent.Arguments.Converted`1">
+            <summary>
+            A converted value
+            </summary>
+            <typeparam name="C">The type of the converted value</typeparam>
+        </member>
+        <member name="M:CommandLineFluent.Arguments.Converted`1.#ctor(`0)">
+            <summary>
+            Successfully converted the value
+            </summary>
+        </member>
+        <member name="M:CommandLineFluent.Arguments.Converted`1.#ctor(`0,System.String)">
+            <summary>
+            Failed to convert the value
+            </summary>
+        </member>
+        <member name="T:CommandLineFluent.Arguments.FluentArgument">
+            <summary>
+            A single argument on the command line. Can be a Switch, Option, or Value
+            </summary>
+        </member>
+        <member name="P:CommandLineFluent.Arguments.FluentArgument.Name">
+            <summary>
+            A human-readable name which describes this
+            </summary>
+        </member>
+        <member name="P:CommandLineFluent.Arguments.FluentArgument.HelpText">
+            <summary>
+            The Help Text to be shown to the user associated with this argument
+            </summary>
+        </member>
+        <member name="P:CommandLineFluent.Arguments.FluentArgument.TargetProperty">
+            <summary>
+            The property that this argument maps to
+            </summary>
+        </member>
+        <member name="M:CommandLineFluent.Arguments.FluentArgument.Validate">
+            <summary>
+            Validates this FluentArgument, returning an Error object if something is invalid.
+            </summary>
+        </member>
+        <member name="T:CommandLineFluent.Arguments.FluentManyValues`2">
+            <summary>
+            Captures all lone values, such as: Foo.exe Value1 -t someswitch Value2 Value3. All 3 values there would be captured as an array: [Value1, Value2, Value3].
+            Use this when you want to consume an indeterminate number of values, regardless of their position.
+            </summary>
+            <typeparam name="T">The class of the property to which this argument maps</typeparam>
+            <typeparam name="C">The type of the property this argument will set</typeparam>
+        </member>
+        <member name="P:CommandLineFluent.Arguments.FluentManyValues`2.IgnoredPrefixes">
+            <summary>
+            The prefixes that are ignored when capturing values. This is useful if you use a consistent prefixing scheme,
+            and want to avoid capturing possible user typos; an error will be thrown instead of using it as a value.
+            </summary>
+        </member>
+        <member name="P:CommandLineFluent.Arguments.FluentManyValues`2.Required">
+            <summary>
+            Whether or not at least 1 value is required
+            </summary>
+        </member>
+        <member name="P:CommandLineFluent.Arguments.FluentManyValues`2.DefaultValue">
+            <summary>
+            If not required, this is the default value used when no Values are provided
+            </summary>
+        </member>
+        <member name="M:CommandLineFluent.Arguments.FluentManyValues`2.SetValue(`0,System.String[])">
+            <summary>
+            Attempts to set the value of the target property of the target object to the provided value. Uses any converter/validator provided.
+            Order is: Validate, Convert, Assign.
+            You shouldn't call this, Parse will automatically invoke this with appropriate values.
+            </summary>
+            <param name="target">The instance of <typeparamref name="T"/> on which to set the property</param>
+            <param name="values">The raw values of all arguments found. If necessary, will be converted to the <typeparamref name="C"/> using the Converter set</param>
+        </member>
+        <member name="M:CommandLineFluent.Arguments.FluentManyValues`2.IsRequired">
+            <summary>
+            Configures at least 1 Value to be required. By default, Values are required unless you use IsOptional.
+            </summary>
+        </member>
+        <member name="M:CommandLineFluent.Arguments.FluentManyValues`2.IsOptional(`1)">
+            <summary>
+            Configures these Values as optional, with a default value when not provided.
+            </summary>
+            <param name="defaultValue">The value to use as a default value when no Values are provided. If not provided, this is the default value for <typeparamref name="C"/></param>
+        </member>
+        <member name="M:CommandLineFluent.Arguments.FluentManyValues`2.WithHelpText(System.String)">
+            <summary>
+            Configures these Values to show the provided Help Text.
+            </summary>
+            <param name="helpText">The help text for these Values</param>
+        </member>
+        <member name="M:CommandLineFluent.Arguments.FluentManyValues`2.WithName(System.String)">
+            <summary>
+            Configures these Values to have the provided human-readable name.
+            By default this is used to produce Usage Text
+            </summary>
+            <param name="name">The human-readable name</param>
+        </member>
+        <member name="M:CommandLineFluent.Arguments.FluentManyValues`2.WithConverter(System.Func{System.String[],CommandLineFluent.Arguments.Converted{`1}})">
+            <summary>
+            The converter to invoke on the argument value before assigning it to the property of <typeparamref name="T"/>.
+            If not provided, no converter will be used.
+            The converter is considered to have failed if it throws an exception, or if the error message is not null.
+            In all other cases, it is considered successful.
+            </summary>
+            <param name="converter">A convert that converts a string[] to <typeparamref name="C"/></param>
+        </member>
+        <member name="M:CommandLineFluent.Arguments.FluentManyValues`2.WithValidator(System.Func{System.String[],System.String})">
+            <summary>
+            The validator to invoke on the argument value before it is converted. This is mainly useful if you're
+            not converting the string, and just need to validate it.
+            The validator is considered to have succeeded if the returned string is null. If the returned string is not null,
+            it is considered to have failed and the returned string is used as the error message.
+            </summary>
+            <param name="validator">The validator that validates the raw values</param>
+        </member>
+        <member name="M:CommandLineFluent.Arguments.FluentManyValues`2.IgnorePrefixes(System.String[])">
+            <summary>
+            Prefixes to ignore when parsing values. Useful when your Options and Switches have a consistent prefix, and you
+            don't want mistyped Options and Switches being parsed as Values.
+            </summary>
+            <param name="prefixes">The prefixes to ignore</param>
+        </member>
+        <member name="T:CommandLineFluent.Arguments.FluentOption`2">
+            <summary>
+            An option with one value, supplied like -t Value
+            </summary>
+            <typeparam name="T">The class of the property to which this argument maps</typeparam>
+            <typeparam name="C">The type of the property this argument will set</typeparam>
+        </member>
+        <member name="P:CommandLineFluent.Arguments.FluentOption`2.ShortName">
+            <summary>
+            Short name for this Option
+            </summary>
+        </member>
+        <member name="P:CommandLineFluent.Arguments.FluentOption`2.LongName">
+            <summary>
+            Long name for this Option
+            </summary>
+        </member>
+        <member name="P:CommandLineFluent.Arguments.FluentOption`2.Required">
+            <summary>
+            Whether or not this Option is required to be included. By default, it is required.
+            </summary>
+        </member>
+        <member name="P:CommandLineFluent.Arguments.FluentOption`2.DefaultValue">
+            <summary>
+            If not required, this is the default value used when the Option is not provided
+            </summary>
+        </member>
+        <member name="M:CommandLineFluent.Arguments.FluentOption`2.SetValue(`0,System.String)">
+            <summary>
+            Attempts to set the value of the target property of the target object to the provided value. Uses any converter/validator provided.
+            Order is: Validate, Convert, Assign.
+            You shouldn't call this, Parse will automatically invoke this with appropriate values.
+            </summary>
+            <param name="target">The instance of <typeparamref name="T"/> on which to set the property</param>
+            <param name="value">The raw value of the argument. If necessary, will be converted to the <typeparamref name="C"/> using the Converter set</param>
+        </member>
+        <member name="M:CommandLineFluent.Arguments.FluentOption`2.ForProperty(System.Linq.Expressions.Expression{System.Func{`0,`1}})">
+            <summary>
+            Configures this Option to set the provided property of <typeparamref name="T"/>.
+            </summary>
+            <param name="expression">The property to set</param>
+        </member>
+        <member name="M:CommandLineFluent.Arguments.FluentOption`2.IsRequired">
+            <summary>
+            Configures this Option to be required. By default, Options are required unless you use IsOptional.
+            </summary>
+        </member>
+        <member name="M:CommandLineFluent.Arguments.FluentOption`2.IsOptional(`1)">
+            <summary>
+            Configures this Option as optional, with a default value when not provided.
+            </summary>
+            <param name="defaultValue">The value to use as a default value when this Option is not provided. If not provided, this is the default value for <typeparamref name="C"/></param>
+        </member>
+        <member name="M:CommandLineFluent.Arguments.FluentOption`2.WithHelpText(System.String)">
+            <summary>
+            Configures this Option to show the provided Help Text.
+            </summary>
+            <param name="helpText">The help text for this Option</param>
+        </member>
+        <member name="M:CommandLineFluent.Arguments.FluentOption`2.WithName(System.String)">
+            <summary>
+            Configures this Option to have the provided human-readable name.
+            By default this is used to produce Usage Text
+            </summary>
+            <param name="name">The human-readable name</param>
+        </member>
+        <member name="M:CommandLineFluent.Arguments.FluentOption`2.WithConverter(System.Func{System.String,CommandLineFluent.Arguments.Converted{`1}})">
+            <summary>
+            The converter to invoke on the provided value before assigning it to the property of <typeparamref name="T"/>.
+            If not provided, no converter will be used. If this Option is not provided, the converter will not be invoked.
+            The converter is considered to have failed if it throws an exception, or if the error message is not null.
+            In all other cases, it is considered successful.
+            </summary>
+            <param name="converter">A convert that converts a string to <typeparamref name="C"/></param>
+        </member>
+        <member name="M:CommandLineFluent.Arguments.FluentOption`2.WithValidator(System.Func{System.String,System.String})">
+            <summary>
+            The validator to invoke on the provided value before it is converted. This is mainly useful if you're
+            not converting the string, and just need to validate it. If this Option is not provided, the validator will not be invoked.
+            The validator is considered to have succeeded if the returned string is null. If the returned string is not null,
+            it is considered to have failed and the returned string is used as the error message.
+            </summary>
+            <param name="validator">The validator that validates the raw value</param>
+        </member>
+        <member name="M:CommandLineFluent.Arguments.FluentOption`2.ShortAndLongName">
+            <summary>
+            The short and long name joined with a |
+            </summary>
+        </member>
+        <member name="T:CommandLineFluent.Arguments.FluentSwitch`2">
+            <summary>
+            A switch toggled on or off, supplied like -s
+            </summary>
+            <typeparam name="T">The class of the property to which this argument maps</typeparam>
+            <typeparam name="C">The type of the property this argument will set</typeparam>
+        </member>
+        <member name="P:CommandLineFluent.Arguments.FluentSwitch`2.ShortName">
+            <summary>
+            Short name for this switch
+            </summary>
+        </member>
+        <member name="P:CommandLineFluent.Arguments.FluentSwitch`2.LongName">
+            <summary>
+            Long name for this switch
+            </summary>
+        </member>
+        <member name="P:CommandLineFluent.Arguments.FluentSwitch`2.DefaultValue">
+            <summary>
+            If the switch is not present, this is the default value to use
+            </summary>
+        </member>
+        <member name="M:CommandLineFluent.Arguments.FluentSwitch`2.SetValue(`0,System.Boolean)">
+            <summary>
+            Attempts to set the value of the target property of the target object to the provided value. Uses any converter/validator provided.
+            Order is: Validate, Convert, Assign.
+            You shouldn't call this, Parse will automatically invoke this with appropriate values.
+            </summary>
+            <param name="target">The instance of <typeparamref name="T"/> on which to set the property</param>
+            <param name="value">If the switch is provided, this is true. Otherwise, false. If necessary, will be converted to type <typeparamref name="C"/> using the Converter</param>
+        </member>
+        <member name="M:CommandLineFluent.Arguments.FluentSwitch`2.ForProperty(System.Linq.Expressions.Expression{System.Func{`0,`1}})">
+            <summary>
+            Configures this Switch to set the provided property of <typeparamref name="T"/>. Property has the type of <typeparamref name="C"/>.
+            </summary>
+            <param name="expression">The property to set</param>
+        </member>
+        <member name="M:CommandLineFluent.Arguments.FluentSwitch`2.WithHelpText(System.String)">
+            <summary>
+            Configures this Switch to show the provided Help Text.
+            </summary>
+            <param name="helpText">The help text for this Switch</param>
+        </member>
+        <member name="M:CommandLineFluent.Arguments.FluentSwitch`2.WithDefaultValue(`1)">
+            <summary>
+            Configures this Switch to use a specific value when it is not provided
+            </summary>
+            <param name="defaultValue">The value to use as a default value when this Switch is not provided.</param>
+            <returns></returns>
+        </member>
+        <member name="M:CommandLineFluent.Arguments.FluentSwitch`2.WithConverter(System.Func{System.Boolean,CommandLineFluent.Arguments.Converted{`1}})">
+            <summary>
+            The converter to invoke on the provided value before assigning it to the property of <typeparamref name="T"/>.
+            If not provided, no converter will be used. If this Option is not provided, the converter will not be invoked.
+            The converter is considered to have failed if it throws an exception, or if the error message is not null.
+            In all other cases, it is considered successful.
+            </summary>
+            <param name="converter">A convert that converts a bool to <typeparamref name="C"/></param>
+        </member>
+        <member name="M:CommandLineFluent.Arguments.FluentSwitch`2.ShortAndLongName">
+            <summary>
+            The short and long name joined with a |
+            </summary>
+        </member>
+        <member name="T:CommandLineFluent.Arguments.FluentValue`2">
+            <summary>
+            A lone value, such as: Foo.exe MyFile.
+            </summary>
+            <typeparam name="T">The class of the property to which this argument maps</typeparam>
+            <typeparam name="C">The type of the property this argument will set</typeparam>
+        </member>
+        <member name="P:CommandLineFluent.Arguments.FluentValue`2.Required">
+            <summary>
+            Whether or not this Value is required to be included. By default, it is required.
+            </summary>
+        </member>
+        <member name="P:CommandLineFluent.Arguments.FluentValue`2.DefaultValue">
+            <summary>
+            If not required, this is the default value used when the Value is not provided
+            </summary>
+        </member>
+        <member name="M:CommandLineFluent.Arguments.FluentValue`2.SetValue(`0,System.String)">
+            <summary>
+            Attempts to set the value of the target property of the target object to the provided value. Uses any converter/validator provided.
+            Order is: Validate, Convert, Assign.
+            You shouldn't call this, Parse will automatically invoke this with appropriate values.
+            </summary>
+            <param name="target">The instance of <typeparamref name="T"/> on which to set the property</param>
+            <param name="value">The raw value of the argument. If necessary, will be converted to the <typeparamref name="C"/> using the Converter set</param>
+        </member>
+        <member name="M:CommandLineFluent.Arguments.FluentValue`2.ForProperty(System.Linq.Expressions.Expression{System.Func{`0,`1}})">
+            <summary>
+            Configures this Value to set the provided property of <typeparamref name="T"/>.
+            </summary>
+            <param name="expression">The property to set</param>
+        </member>
+        <member name="M:CommandLineFluent.Arguments.FluentValue`2.IsRequired">
+            <summary>
+            Configures this Value to be required. By default, Values are required unless you use IsOptional.
+            </summary>
+        </member>
+        <member name="M:CommandLineFluent.Arguments.FluentValue`2.IsOptional(`1)">
+            <summary>
+            Configures this Value as optional, with a default value when not provided. Note that if the 0th Value is optional and the 1st Value is required,
+            and you provide a single value, that single value will map to the 0th Value and throw an error because the 1st Value was missing. It's recommended you use this judiciously.
+            </summary>
+            <param name="defaultValue">The value to use as a default value when this Value is not provided. If not provided, this is the default value for <typeparamref name="C"/></param>
+        </member>
+        <member name="M:CommandLineFluent.Arguments.FluentValue`2.WithHelpText(System.String)">
+            <summary>
+            Configures this Value to show the provided Help Text.
+            </summary>
+            <param name="helpText">The help text for this Value</param>
+        </member>
+        <member name="M:CommandLineFluent.Arguments.FluentValue`2.WithName(System.String)">
+            <summary>
+            Configures this Value to have the provided human-readable name.
+            By default this is used to produce Usage Text
+            </summary>
+            <param name="name">The human-readable name</param>
+        </member>
+        <member name="M:CommandLineFluent.Arguments.FluentValue`2.WithConverter(System.Func{System.String,CommandLineFluent.Arguments.Converted{`1}})">
+            <summary>
+            The converter to invoke on the argument value before assigning it to the property of <typeparamref name="T"/>.
+            If not provided, no converter will be used.
+            The converter is considered to have failed if it throws an exception, or if the error message is not null.
+            In all other cases, it is considered successful.
+            </summary>
+            <param name="converter">A convert that converts a string to <typeparamref name="C"/></param>
+        </member>
+        <member name="M:CommandLineFluent.Arguments.FluentValue`2.WithValidator(System.Func{System.String,System.String})">
+            <summary>
+            The validator to invoke on the argument value before it is converted. This is mainly useful if you're
+            not converting the string, and just need to validate it.
+            The validator is considered to have succeeded if the returned string is null. If the returned string is not null,
+            it is considered to have failed and the returned string is used as the error message.
+            </summary>
+            <param name="validator">The validator that validates the raw value</param>
+        </member>
+        <member name="P:CommandLineFluent.Arguments.IFluentArgument.Name">
+            <summary>
+            A human-readable name which describes this
+            </summary>
+        </member>
+        <member name="P:CommandLineFluent.Arguments.IFluentArgument.HelpText">
+            <summary>
+            The Help Text to be shown to the user associated with this argument
+            </summary>
+        </member>
+        <member name="P:CommandLineFluent.Arguments.IFluentArgument.TargetProperty">
+            <summary>
+            The property that this argument maps to
+            </summary>
+        </member>
+        <member name="T:CommandLineFluent.Arguments.IFluentOption">
+            <summary>
+            An option with one value, supplied like -t Value
+            </summary>
+        </member>
+        <member name="P:CommandLineFluent.Arguments.IFluentOption.ShortName">
+            <summary>
+            The Short Name for this FluentOption
+            </summary>
+        </member>
+        <member name="P:CommandLineFluent.Arguments.IFluentOption.LongName">
+            <summary>
+            The Long Name for this FluentOption
+            </summary>
+        </member>
+        <member name="P:CommandLineFluent.Arguments.IFluentOption.Required">
+            <summary>
+            If true, this FluentOption is required to be specified
+            </summary>
+        </member>
+        <member name="M:CommandLineFluent.Arguments.IFluentOption.ShortAndLongName">
+            <summary>
+            The short and long name joined with a |
+            </summary>
+        </member>
+        <member name="T:CommandLineFluent.Arguments.IFluentSettable`2">
+            <summary>
+            A Fluent Argument that is able to have its value set to something
+            </summary>
+            <typeparam name="T">The type of the target class whose property will be set</typeparam>
+            <typeparam name="V">The type of the value provided. May be converted to something else</typeparam>
+        </member>
+        <member name="M:CommandLineFluent.Arguments.IFluentSettable`2.SetValue(`0,`1)">
+            <summary>
+            Sets a property of object <typeparamref name="T"/> to the value of <typeparamref name="V"/>.
+            There may or may not be a converter set up to translate <paramref name="value"/> into something else
+            </summary>
+            <param name="target">The object on which to set a property</param>
+            <param name="value">The value to set the property to (before any conversion)</param>
+        </member>
+        <member name="M:CommandLineFluent.Arguments.IFluentSettable`2.Validate">
+            <summary>
+            Returns an error if improperly configured, or null if all is well
+            </summary>
+        </member>
+        <member name="T:CommandLineFluent.Arguments.IFluentSwitch">
+            <summary>
+            A switch toggled on or off, supplied like -s
+            </summary>
+        </member>
+        <member name="P:CommandLineFluent.Arguments.IFluentSwitch.ShortName">
+            <summary>
+            The Short Name for this FluentSwitch
+            </summary>
+        </member>
+        <member name="P:CommandLineFluent.Arguments.IFluentSwitch.LongName">
+            <summary>
+            The Long Name for this FluentSwitch
+            </summary>
+        </member>
+        <member name="M:CommandLineFluent.Arguments.IFluentSwitch.ShortAndLongName">
+            <summary>
+            The short and long name joined with a |
+            </summary>
+        </member>
+        <member name="T:CommandLineFluent.Arguments.IFluentValue">
+            <summary>
+            A value that is supplied like foo.exe MyValue
+            </summary>
+        </member>
+        <member name="P:CommandLineFluent.Arguments.IFluentValue.Required">
+            <summary>
+            Whether or not this is required
+            </summary>
+        </member>
+        <member name="T:CommandLineFluent.Error">
+            <summary>
+            Represents an error which was encountered when parsing the command line arguments provided
+            </summary>
+        </member>
+        <member name="P:CommandLineFluent.Error.Message">
+            <summary>
+            A human-readable error message
+            </summary>
+        </member>
+        <member name="P:CommandLineFluent.Error.ShouldBeShownToUser">
+            <summary>
+            Whether or not this Error is relevant to the user and should be shown to them
+            </summary>
+        </member>
+        <member name="P:CommandLineFluent.Error.ErrorCode">
+            <summary>
+            What exactly went wrong
+            </summary>
+        </member>
+        <member name="P:CommandLineFluent.Error.Exception">
+            <summary>
+            Any exceptions thrown when parsing the value
+            </summary>
+        </member>
+        <member name="T:CommandLineFluent.FluentParser">
+            <summary>
+            Able to parse command line arguments (or other stuff, if suitable).
+            To create one, you need to use FluentParserBuilder.
+            I'd recommend keeping an instance of this if it's needed multiple times.
+            </summary>
+        </member>
+        <member name="P:CommandLineFluent.FluentParser.Verbs">
+            <summary>
+            Verb names to the Verbs themselves.
+            </summary>
+        </member>
+        <member name="P:CommandLineFluent.FluentParser.IsUsingVerbs">
+            <summary>
+            If null, the FluentParser hasn't been configured either way.
+            If true, the FluentParser has been set up to parse at least one verb.
+            If false, the FluentParser has been set up to not parse any verbs, so it just parses arguments as-is.
+            </summary>
+        </member>
+        <member name="P:CommandLineFluent.FluentParser.Config">
+            <summary>
+            The current configuration. Use Configure to set this in a fluent way.
+            </summary>
+        </member>
+        <member name="M:CommandLineFluent.FluentParser.#ctor(CommandLineFluent.FluentParserBuilder)">
+            <summary>
+            Creates a new instance of FluentParser
+            </summary>
+        </member>
+        <member name="M:CommandLineFluent.FluentParser.Parse(System.Collections.Generic.IEnumerable{System.String})">
+            <summary>
+            Parses the provided arguments. If AddVerb was used, the first argument is interpreted as the verb name, and the rest of them are parsed normally.
+            If WithoutVerbs was used, all arguments are parsed normally.
+            If an error is encountered, help/usage will be written automatically, if that has been configured. Usage and Description is written for all verbs if no
+            verb was parsed, or if a specific verb was parsed, detailed help/usage is written for that verb.
+            </summary>
+            <param name="args">The arguments to parse</param>
+        </member>
+        <member name="M:CommandLineFluent.FluentParser.WriteOverallUsageAndHelp">
+            <summary>
+            Writes a summary of how you invoke the program and how you can obtain further help, by specifying a verb.
+            Order of priority is: this.Config.UsageText, then this.Config.UsageTextCreator, then the default HelpFormatter.FormatOverallUsage.
+            Same thing for Help Text.
+            Does nothing if Config.WriteUsageAndHelp is null.
+            </summary>
+        </member>
+        <member name="M:CommandLineFluent.FluentParser.WriteUsageAndHelp(CommandLineFluent.IFluentVerb)">
+            <summary>
+            Writes the Usage Text, and then the Help Text for the specified verb. Order of priority is:
+            verb.UsageText, then verb.UsageTextCreator, then the default HelpFormatter.FormatVerbUsage.
+            Same thing for Help Text.
+            Does nothing if Config.WriteUsageAndHelp is null.
+            </summary>
+            <param name="verb">The verb to write detailed usage/help for</param>
+        </member>
+        <member name="T:CommandLineFluent.FluentParserBuilder">
+            <summary>
+            The starting point for setting up a FluentParser to parse command line arguments.
+            Use the methods Configure, and either WithourVerbs or AddVerb to set this up.
+            Once finished, use the method Build to validate and create a FluentParser.
+            </summary>
+        </member>
+        <member name="M:CommandLineFluent.FluentParserBuilder.Configure(System.Action{CommandLineFluent.FluentParserConfig})">
+            <summary>
+            Configures the parser's options
+            </summary>
+        </member>
+        <member name="M:CommandLineFluent.FluentParserBuilder.WithoutVerbs``1(System.Action{CommandLineFluent.FluentVerb{``0}})">
+            <summary>
+            Sets up how to parse without using verbs. Technically, this configures a default verb named "default", which
+            is always used when parsing arguments. Arguments should not start with "default".
+            </summary>
+            <typeparam name="T">The type of the class which will be created when arguments are parsed successfully</typeparam>
+        </member>
+        <member name="M:CommandLineFluent.FluentParserBuilder.AddVerb``1(System.String,System.Action{CommandLineFluent.FluentVerb{``0}})">
+            <summary>
+            Adds a verb for this parser. The verb name dictates the text that has to be entered on the command line.
+            e.g. "foo.exe add" invokes the verb with the name "add".
+            </summary>
+            <typeparam name="T">The type of the class which will be created when arguments for that verb are parsed successfully</typeparam>
+            <param name="verbName">The name of the verb</param>
+            <param name="verbConfig">The action to configure the verb</param>
+        </member>
+        <member name="M:CommandLineFluent.FluentParserBuilder.Build">
+            <summary>
+            Creates a FluentParser using the configuration of this FluentParserBuilder.
+            Throws a FluentParserValidationException if improperly configured.
+            </summary>
+        </member>
+        <member name="T:CommandLineFluent.FluentParserConfig">
+            <summary>
+            Configuration options affecting the behaviour of the FluentParser
+            </summary>
+        </member>
+        <member name="P:CommandLineFluent.FluentParserConfig.ShortHelpSwitch">
+            <summary>
+            A special switch which will cause parsing to immediately stop and return a single Error: HelpRequested
+            </summary>
+        </member>
+        <member name="P:CommandLineFluent.FluentParserConfig.LongHelpSwitch">
+            <summary>
+            A special switch which will cause parsing to immediately stop and return a single Error: HelpRequested
+            </summary>
+        </member>
+        <member name="P:CommandLineFluent.FluentParserConfig.DefaultShortPrefix">
+            <summary>
+            Default prefix for all short names
+            </summary>
+        </member>
+        <member name="P:CommandLineFluent.FluentParserConfig.DefaultLongPrefix">
+            <summary>
+            Default prefix for all long names
+            </summary>
+        </member>
+        <member name="P:CommandLineFluent.FluentParserConfig.WriteUsageAndHelp">
+            <summary>
+            The Action to invoke to write Help and Usage messages
+            </summary>
+        </member>
+        <member name="P:CommandLineFluent.FluentParserConfig.MaxLineLength">
+            <summary>
+            Defines the maximum number of characters that can fit on one line when writing help/usage text
+            </summary>
+        </member>
+        <member name="P:CommandLineFluent.FluentParserConfig.ExeceuteCommand">
+            <summary>
+            The command used to execute the program. Used when writing help text.
+            </summary>
+        </member>
+        <member name="P:CommandLineFluent.FluentParserConfig.HelpText">
+            <summary>
+            Custom help text to be used when dispalying help information. This takes precedence over HelpTextCreator
+            </summary>
+        </member>
+        <member name="P:CommandLineFluent.FluentParserConfig.UsageText">
+            <summary>
+            Custom help text to be used when dispalying help information. This takes precedence over UsageTextCreator
+            </summary>
+        </member>
+        <member name="P:CommandLineFluent.FluentParserConfig.HelpTextCreator">
+            <summary>
+            The custom function to use when displaying help information, if HelpText is null.
+            </summary>
+        </member>
+        <member name="P:CommandLineFluent.FluentParserConfig.UsageTextCreator">
+            <summary>
+            The custom function to use when displaying usage information, if UsageText is null.
+            </summary>s
+        </member>
+        <member name="M:CommandLineFluent.FluentParserConfig.ConfigureWithDefaults">
+            <summary>
+            Configures to use a DefaultShortPrefix of -, a DefaultLongPrefix of --, Help switches of -? and --help,
+            and Help/Usage is automatically written to Console.WriteLine on any error, with a MaxLineLength of Console.WindowWidth.
+            If the Console cannot be used, then WriteHelp and WriteUsage will be set to null and MaxLineLength will be set to 10,000
+            </summary>
+        </member>
+        <member name="M:CommandLineFluent.FluentParserConfig.UseHelpSwitch(System.String,System.String)">
+            <summary>
+            Configures a special switch which, if encountered, will cause parsing to immediately stop and return a single Error, with the ErrorCode HelpRequested.
+            Use this in conjunction with ShowUsageOnFailure/ShowHelpOnFailure to automatically show help.
+            </summary>
+            <param name="shortName">The short name. By default, -?</param>
+            <param name="longName">The long name. By default, --help</param>
+        </member>
+        <member name="M:CommandLineFluent.FluentParserConfig.UseDefaultPrefixes(System.String,System.String)">
+            <summary>
+            Defines a short and long name prefix that will automatically be prepended to any non-null short and long names for any Options/Switches.
+            By default, this is nothing.
+            </summary>
+            <param name="defaultShortPrefix">The prefix to apply to short names</param>
+            <param name="defaultLongPrefix">The prefix to apply to long names</param>
+            <returns></returns>
+        </member>
+        <member name="M:CommandLineFluent.FluentParserConfig.WithExecuteCommand(System.String)">
+            <summary>
+            The command used to execute the program. Used when writing help text.
+            If null, then the file name returned by System.Reflection.Assembly.GetEntryAssembly().Location will be used
+            </summary>
+        </member>
+        <member name="M:CommandLineFluent.FluentParserConfig.ShowHelpAndUsageOnFailure(System.Action{System.String})">
+            <summary>
+            Defines the Action to invoke with the usage message on failure. By default, it will be Console.WriteLine.
+            This Action will automatically be invoked upon an Error of any kind (including encountering the help switch).
+            Usage is shown before Help.
+            </summary>
+            <param name="writeHelpAndUsage">What is invoked to write usage. If null, Console.WriteLine is used.</param>
+        </member>
+        <member name="M:CommandLineFluent.FluentParserConfig.WithHelpText(System.String)">
+            <summary>
+            Configures custom help text
+            </summary>
+            <param name="helpText">The help text</param>
+        </member>
+        <member name="M:CommandLineFluent.FluentParserConfig.WithUsageText(System.String)">
+            <summary>
+            Configures custom usage text
+            </summary>
+            <param name="usageText">The usage text</param>
+        </member>
+        <member name="M:CommandLineFluent.FluentParserConfig.WithHelpFormatter(System.Func{CommandLineFluent.FluentParser,System.String})">
+            <summary>
+            Configures a custom help text creator
+            </summary>
+            <param name="helpTextCreator">This takes an instance of this verb, and should return a string which is the help text</param>
+        </member>
+        <member name="M:CommandLineFluent.FluentParserConfig.WithUsageFormatter(System.Func{CommandLineFluent.FluentParser,System.String,System.String})">
+            <summary>
+            Configures a custom usage text creator. The string parameter is the ExecuteCommand property
+            </summary>
+            <param name="usageTextCreator">This takes an instance of this verb, and should return a string which is the help text</param>
+        </member>
+        <member name="T:CommandLineFluent.FluentParserResult">
+            <summary>
+            The result of parsing some command line arguments
+            </summary>
+        </member>
+        <member name="P:CommandLineFluent.FluentParserResult.Errors">
+            <summary>
+            Any errors encountered when parsing
+            </summary>
+        </member>
+        <member name="P:CommandLineFluent.FluentParserResult.ParsedVerb">
+            <summary>
+            The verb that was parsed
+            </summary>
+        </member>
+        <member name="P:CommandLineFluent.FluentParserResult.Success">
+            <summary>
+            Whether or not parsing was successful
+            </summary>
+        </member>
+        <member name="M:CommandLineFluent.FluentParserResult.OnSuccess``1(System.Action{``0})">
+            <summary>
+            If parsing was successful and the type that was parsed matches the type specified, invokes the provided action.
+            </summary>
+            <typeparam name="T">The type of the parsed class</typeparam>
+        </member>
+        <member name="M:CommandLineFluent.FluentParserResult.GetParsedObject``1">
+            <summary>
+            If parsing was successful and the type that was parsed matches the type specified, returns the object that was parsed.
+            Otherwise, returns the default value for type <typeparamref name="T"/>
+            </summary>
+            <typeparam name="T">The type of the parsed class</typeparam>
+        </member>
+        <member name="M:CommandLineFluent.FluentParserResult.OnFailure(System.Action{System.Collections.Generic.IReadOnlyCollection{CommandLineFluent.Error}})">
+            <summary>
+            If the arguments failed to be parsed, invokes the callback specified.
+            Generally you don't need to use this often, the help/usage text can tell the user what they did wrong.
+            </summary>
+            <param name="action">The action to take. If null, no action is taken</param>
+        </member>
+        <member name="M:CommandLineFluent.FluentParserResult.OnFailureAndStop(System.Action{System.Collections.Generic.IReadOnlyCollection{CommandLineFluent.Error}})">
+            <summary>
+            If the arguments failed to be parsed, invokes the callback and returns null. Allows you to do Parse().StopOnFailure()?.OnSuccess()... to stop the
+            fluent callchain immediately when there are errors, saving some unnecessary checks.
+            Generally you don't need to use this often, the help/usage text can tell the user what they did wrong.
+            </summary>
+            <param name="action">The action to take. If null, no action is taken</param>
+        </member>
+        <member name="M:CommandLineFluent.FluentParserResult.StopOnFailure">
+            <summary>
+            If the arguments failed to be parsed, returns null. Allows you to do Parse().StopOnFailure()?.OnSuccess() to stop the
+            fluent callchain immediately when there are errors, saving unnecessary checks.
+            </summary>
+        </member>
+        <member name="T:CommandLineFluent.FluentVerb`1">
+            <summary>
+            A single verb, for example, foo.exe add.
+            Verbs have their own Options, Values, and Switches which they can parse and create an instance of <typeparamref name="T"/>
+            </summary>
+        </member>
+        <member name="P:CommandLineFluent.FluentVerb`1.FluentManyValues">
+            <summary>
+            An indeterminate number of values
+            </summary>
+        </member>
+        <member name="P:CommandLineFluent.FluentVerb`1.FluentValues">
+            <summary>
+            All Values which have been added to this verb
+            </summary>
+        </member>
+        <member name="P:CommandLineFluent.FluentVerb`1.FluentSwitches">
+            <summary>
+            All Switches which have been added to this verb
+            </summary>
+        </member>
+        <member name="P:CommandLineFluent.FluentVerb`1.FluentOptions">
+            <summary>
+            All Options which have been added to this verb
+            </summary>
+        </member>
+        <member name="P:CommandLineFluent.FluentVerb`1.HelpTextCreator">
+            <summary>
+            The custom function to use when displaying help information, if HelpText is null.
+            </summary>
+        </member>
+        <member name="P:CommandLineFluent.FluentVerb`1.UsageTextCreator">
+            <summary>
+            The custom function to use when displaying usage information, if UsageText is null.
+            </summary>s
+        </member>
+        <member name="P:CommandLineFluent.FluentVerb`1.ParsedObject">
+            <summary>
+            The object that the verb has successfully parsed. If no object has been parsed yet, this is the default
+            value for an object of type <typeparamref name="T"/>. This is also reset to default when Reset is invoked.
+            </summary>
+        </member>
+        <member name="P:CommandLineFluent.FluentVerb`1.TargetType">
+            <summary>
+            The type of the object that this verb will provide the parsed the arguments to
+            </summary>
+        </member>
+        <member name="P:CommandLineFluent.FluentVerb`1.Name">
+            <summary>
+            The name used to invoke the verb. This must be unique.
+            </summary>
+        </member>
+        <member name="P:CommandLineFluent.FluentVerb`1.HelpText">
+            <summary>
+            Custom help text to be used when dispalying help information. This takes precedence over HelpTextCreator
+            </summary>
+        </member>
+        <member name="P:CommandLineFluent.FluentVerb`1.UsageText">
+            <summary>
+            Custom help text to be used when dispalying help information. This takes precedence over UsageTextCreator
+            </summary>
+        </member>
+        <member name="P:CommandLineFluent.FluentVerb`1.Description">
+            <summary>
+            Human-readable text that provides a description as to what this verb is used for. This is used when displaying Help.
+            </summary>
+        </member>
+        <member name="P:CommandLineFluent.FluentVerb`1.Successful">
+            <summary>
+            True if the last parsing attempt was successful, false if it was unsuccessful. Null if the verb was not parsed.
+            This is automatically reset each time you invoke Parse on a FluentParser that owns this verb
+            </summary>
+        </member>
+        <member name="M:CommandLineFluent.FluentVerb`1.Validate">
+            <summary>
+            Returns errors if improperly configured, or an empty collection if all is well
+            </summary>
+        </member>
+        <member name="M:CommandLineFluent.FluentVerb`1.Reset">
+            <summary>
+            Clears the Verb's parsed instance and sets Successful to null.
+            </summary>
+        </member>
+        <member name="M:CommandLineFluent.FluentVerb`1.WithHelpText(System.String)">
+            <summary>
+            Custom help text to be used when dispalying help information. This takes precedence over anything else.
+            You might want WithDescription() to set a simple description to display when using default usage/help formatting.
+            </summary>
+            <param name="helpText">The help text</param>
+        </member>
+        <member name="M:CommandLineFluent.FluentVerb`1.WithUsageText(System.String)">
+            <summary>
+            Custom help text to be used when dispalying help information. This takes precedence over anything else.
+            </summary>
+            <param name="usageText">The usage text</param>
+        </member>
+        <member name="M:CommandLineFluent.FluentVerb`1.WithDescription(System.String)">
+            <summary>
+            Configures a description for this verb. This is used, by default, when writing help/usage information
+            when the user did not specify a verb.
+            </summary>
+            <param name="description">The description</param>
+        </member>
+        <member name="M:CommandLineFluent.FluentVerb`1.WithHelpFormatter(System.Func{CommandLineFluent.IFluentVerb,System.String})">
+            <summary>
+            Configures a custom help text creator
+            </summary>
+            <param name="helpTextCreator">This takes an instance of this verb, and should return a string which is the help text</param>
+        </member>
+        <member name="M:CommandLineFluent.FluentVerb`1.WithUsageFormatter(System.Func{CommandLineFluent.IFluentVerb,System.String,System.String})">
+            <summary>
+            Configures a custom usage text creator. The string parameter is the ExecuteCommand property set on FluentParserConfig.
+            </summary>
+            <param name="usageTextCreator">This takes an instance of this verb, and should return a string which is the help text</param>
+        </member>
+        <member name="M:CommandLineFluent.FluentVerb`1.AddOption(System.String,System.String)">
+            <summary>
+            Creates a new Option and adds it to this verb. Its plain text value will be assigned to the target property
+            </summary>
+            <param name="shortName">The short name for the Option</param>
+            <param name="longName">The long name for the Option</param>
+        </member>
+        <member name="M:CommandLineFluent.FluentVerb`1.AddOption``1(System.String,System.String)">
+            <summary>
+            Creates a new Option and adds it to this verb. A converted value will be assigned to the target property,
+            based on the converter with which the Option is configured.
+            </summary>
+            <param name="shortName">The short name for the Option</param>
+            <param name="longName">The long name for the Option</param>
+        </member>
+        <member name="M:CommandLineFluent.FluentVerb`1.AddValue">
+            <summary>
+            Creates a new Value and adds it to this verb. Its plain text value will be assigned to the target property.
+            The order in which you add Values determines which properties get what values. The first Value added will use the first
+            value found in the arguments, the second Value will get the next, etc.
+            </summary>
+        </member>
+        <member name="M:CommandLineFluent.FluentVerb`1.AddValue``1">
+            <summary>
+            Creates a new Value and adds it to this verb. A converted value will be assigned to the target property,
+            based on the converter with which the Value is configured.
+            The order in which you add Values determines which properties get what values. The first Value added will use the first
+            value found in the arguments, the second Value will get the next, etc.
+            </summary>
+        </member>
+        <member name="M:CommandLineFluent.FluentVerb`1.AddManyValues">
+            <summary>
+            Creates a new Values and adds it to this verb. This Values will accept all arguments as plain text not recognizd as an Option or Switch as a Value.
+            Be careful using this, anything not otherwise recognized as an Option or Switch will be parsed as a Value!
+            You may want to call IgnorePrefixes as well, so it isn't too greedy.
+            </summary>
+        </member>
+        <member name="M:CommandLineFluent.FluentVerb`1.AddManyValues``1">
+            <summary>
+            Creates a new Values and adds it to this verb. This Values will accept all converted arguments not recognizd as an Option or Switch as a Value.
+            Be careful using this, anything not otherwise recognized as an Option or Switch will be parsed as a Value!
+            You may want to call IgnorePrefixes as well, so it isn't too greedy.
+            </summary>
+        </member>
+        <member name="M:CommandLineFluent.FluentVerb`1.AddSwitch(System.String,System.String)">
+            <summary>
+            Creates a new Switch and adds it to this verb. True or False will be assigned to the target property,
+            depending on whether or not the Switch is present
+            </summary>
+            <param name="shortName">The short name for the Switch</param>
+            <param name="longName">The long name for the Switch</param>
+        </member>
+        <member name="M:CommandLineFluent.FluentVerb`1.AddSwitch``1(System.String,System.String)">
+            <summary>
+            Creates a new Switch and adds it to this verb. A converted value will be assigned to the target property,
+            based on the converter with which the Switch is configured.
+            </summary>
+            <param name="shortName">The short name for the Switch</param>
+            <param name="longName">The long name for the Switch</param>
+        </member>
+        <member name="M:CommandLineFluent.FluentVerb`1.Parse(System.Collections.Generic.IEnumerable{System.String})">
+            <summary>
+            Parses the provided arguments using this Verb's rules. The verb's name should not be the first element of <paramref name="args"/>.
+            Please check this and if necessary, skip the first one before invoking this.
+            </summary>
+            <param name="args">The arguments to parse</param>
+        </member>
+        <member name="M:CommandLineFluent.FluentVerb`1.Option(System.String,`0,System.String)">
+            <summary>
+            Sets the property of <paramref name="target"/> to the value of <paramref name="value"/> (which may be converted first).
+            </summary>
+            <param name="name">The name of the Option which will set the property of <paramref name="target"/></param>
+            <param name="target">The object whose property will be set</param>
+            <param name="value">The value to provide to the property, which the Option may convert</param>
+        </member>
+        <member name="M:CommandLineFluent.FluentVerb`1.Switch(System.String,`0,System.Boolean)">
+            <summary>
+            Sets the property of <paramref name="target"/> to the value of <paramref name="value"/> (which may be converted first).
+            </summary>
+            <param name="name">The name of the Switch which will set the property of <paramref name="target"/></param>
+            <param name="target">The object whose property will be set</param>
+            <param name="value">The value to provide to the property, which the Switch may convert</param>
+        </member>
+        <member name="M:CommandLineFluent.FluentVerb`1.Values(`0,System.String[])">
+            <summary>
+            Sets the properties of <paramref name="target"/> to the values of <paramref name="values"/> (which may be converted first).
+            If ManyValues were configured, all of <paramref name="values"/> will be accepted. If not, and the length of <paramref name="values"/> is more than
+            the number of configured Values, an Error is returned. If the length of <paramref name="values"/> is less than the number of configured Values,
+            the remaining configured Values are assigned null, which may result in an Error if they are required.
+            </summary>
+            <param name="target">The object whose properties will be set</param>
+            <param name="values">The values to provide to the property, which the Value or Values may convert</param>
+        </member>
+        <member name="M:CommandLineFluent.FluentVerb`1.PrefixAndCheckAndMap(System.String@,System.String@,CommandLineFluent.Arguments.FluentArgumentType)">
+            <summary>
+            Makes sure that at least one of shortName and longName is not null, that they are not empty or whitespace, 
+            applies any prefixes required, and adds them to our map to ensure they're unique.
+            </summary>
+            <param name="shortName">The short name</param>
+            <param name="longName">The long name</param>
+            <param name="type">The type of the FluentArgument</param>
+        </member>
+        <member name="T:CommandLineFluent.HelpFormatter">
+            <summary>
+            Provides default usage and help formatting
+            </summary>
+        </member>
+        <member name="M:CommandLineFluent.HelpFormatter.FormatOverallUsage(System.Collections.Generic.IEnumerable{CommandLineFluent.IFluentVerb},System.String)">
+            <summary>
+            Formats the overall usage, given the command which defines how you execute this program.
+            </summary>
+            <param name="verbs">The verbs whose names will be used</param>
+            <param name="execeuteCommand">The command to execute this program, or null to omit it</param>
+        </member>
+        <member name="M:CommandLineFluent.HelpFormatter.FormatOverallHelp(System.Collections.Generic.IEnumerable{CommandLineFluent.IFluentVerb},System.String,System.Int32)">
+            <summary>
+            Formats the overall help.
+            Lists all verbs and their description.
+            </summary>
+            <param name="verbs">The verbs whose descriptions will be used</param>
+            <param name="helpSwitches">A human-readable string showing the short and long help switches</param>
+            <param name="maxLineLength">The maximum line length. If exceeded, an extra line break will be added</param>
+        </member>
+        <member name="M:CommandLineFluent.HelpFormatter.FormatVerbHelp(CommandLineFluent.IFluentVerb,System.Int32)">
+            <summary>
+            Formats the help text of the Options, Switches, and Values of the verb. If custom HelpText has been provided, that will be used.
+            If not, then if custom HelpFormatter is set on the verb, that is used to produce the help text. Otherwise, default formatting is used.
+            </summary>
+        </member>
+        <member name="M:CommandLineFluent.HelpFormatter.FormatVerbUsage(CommandLineFluent.IFluentVerb,System.String)">
+            <summary>
+            Formats the usage text of the Options, Switches, and Values of the verb.
+            Usage is formatted by writing the executeCommand, followed by the verb's Name,
+            </summary>
+            <param name="verb">The verb to write Usage information for</param>
+            <param name="executeCommand">The command used to invoke the program</param>
+        </member>
+        <member name="T:CommandLineFluent.IFluentVerb">
+            <summary>
+            A single verb, for example, foo.exe add.
+            Verbs have their own Options, Values, and Switches which they can parse and create an instance of a particular class.
+            </summary>
+        </member>
+        <member name="P:CommandLineFluent.IFluentVerb.FluentManyValues">
+            <summary>
+            An indeterminate number of values
+            </summary>
+        </member>
+        <member name="P:CommandLineFluent.IFluentVerb.FluentValues">
+            <summary>
+            All Values which have been added to this verb
+            </summary>
+        </member>
+        <member name="P:CommandLineFluent.IFluentVerb.FluentSwitches">
+            <summary>
+            All Switches which have been added to this verb
+            </summary>
+        </member>
+        <member name="P:CommandLineFluent.IFluentVerb.FluentOptions">
+            <summary>
+            All Options which have been added to this verb
+            </summary>
+        </member>
+        <member name="P:CommandLineFluent.IFluentVerb.HelpTextCreator">
+            <summary>
+            The custom function to use when displaying help information, if HelpText is null.
+            </summary>
+        </member>
+        <member name="P:CommandLineFluent.IFluentVerb.UsageTextCreator">
+            <summary>
+            The custom function to use when displaying usage information, if UsageText is null.
+            </summary>s
+        </member>
+        <member name="P:CommandLineFluent.IFluentVerb.Name">
+            <summary>
+            The name used to invoke the verb. This must be unique.
+            </summary>
+        </member>
+        <member name="P:CommandLineFluent.IFluentVerb.HelpText">
+            <summary>
+            Custom help text to be used when dispalying help information. This takes precedence over HelpTextCreator
+            </summary>
+        </member>
+        <member name="P:CommandLineFluent.IFluentVerb.UsageText">
+            <summary>
+            Custom help text to be used when dispalying help information. This takes precedence over UsageTextCreator
+            </summary>
+        </member>
+        <member name="P:CommandLineFluent.IFluentVerb.Description">
+            <summary>
+            Human-readable text that provides a description as to what this verb is used for. This is used when displaying Help.
+            </summary>
+        </member>
+        <member name="P:CommandLineFluent.IFluentVerb.Successful">
+            <summary>
+            True if the last parsing attempt was successful, false if it was unsuccessful. Null if the verb was not parsed.
+            This is automatically reset each time you invoke Parse on a FluentParser that owns this verb
+            </summary>
+        </member>
+        <member name="M:CommandLineFluent.IFluentVerb.Reset">
+            <summary>
+            Clears the Verb's parsed instance and sets Successful to null.
+            </summary>
+        </member>
+        <member name="P:CommandLineFluent.IFluentVerb.TargetType">
+            <summary>
+            The type of the object that this verb will provide the parsed the arguments to
+            </summary>
+        </member>
+        <member name="M:CommandLineFluent.IFluentVerb.Validate">
+            <summary>
+            Returns errors if improperly configured, or null if all is well
+            </summary>
+        </member>
+        <member name="M:CommandLineFluent.IFluentVerb.Parse(System.Collections.Generic.IEnumerable{System.String})">
+            <summary>
+            Parses the provided arguments using this verb's rules. You shouldn't need to use this directly. But if you do,
+            the first argument should not be this verb's name; if it is, make sure to use .Skip(1) first.
+            </summary>
+            <param name="args">The arguments to parse</param>
+        </member>
+        <member name="T:CommandLineFluent.Util">
+            <summary>
+            Utility methods
+            </summary>
+        </member>
+        <member name="M:CommandLineFluent.Util.ShortAndLongName(CommandLineFluent.Arguments.IFluentOption)">
+            <summary>
+            Makes a string like: -s|--long, to show the user both ways of writing the switch
+            </summary>
+        </member>
+        <member name="M:CommandLineFluent.Util.ShortAndLongName(CommandLineFluent.Arguments.IFluentSwitch)">
+            <summary>
+            Makes a string like: -s|--long, to show the user both ways of writing the switch
+            </summary>
+        </member>
+        <member name="M:CommandLineFluent.Util.ShortAndLongName(System.String,System.String)">
+            <summary>
+            Makes a string like: -s|--long, to show the user both ways of writing the switch
+            </summary>
+        </member>
+        <member name="T:CommandLineFluent.Validation.Validators">
+            <summary>
+            Has some commonly-used validators. So for example, you can do this:
+            verb.WithValidator(Validators.FileExists)
+            </summary>
+        </member>
+        <member name="M:CommandLineFluent.Validation.Validators.FileExists(System.String)">
+            <summary>
+            Makes sure the provided path is a file that exists.
+            Equivalent to returning null on File.Exists(path) == true
+            </summary>
+            <param name="path">The path to check</param>
+        </member>
+        <member name="M:CommandLineFluent.Validation.Validators.DirectoryExists(System.String)">
+            <summary>
+            Makes sure the provided path is a directory that exists.
+            Equivalent to returning null on Directory.Exists(path) == true
+            </summary>
+            <param name="path">The path to check</param>
+        </member>
+    </members>
+</doc>

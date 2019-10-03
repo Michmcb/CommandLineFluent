@@ -110,7 +110,7 @@ namespace CommandLineFluent
 					errors.Add(error);
 				}
 			}
-			if (_manyValues != null)
+			if (_values != null)
 			{
 				foreach (IFluentSettable<T, string> value in _values)
 				{
@@ -121,7 +121,7 @@ namespace CommandLineFluent
 					}
 				}
 			}
-			else
+			else if (_manyValues != null)
 			{
 				Error error = _manyValues.Validate();
 				if (error != null)
@@ -184,7 +184,6 @@ namespace CommandLineFluent
 		/// <summary>
 		/// Creates a new Option and adds it to this verb. Its plain text value will be assigned to the target property
 		/// </summary>
-		/// <param name="humanReadableName">A human-readable name for this Option</param>
 		/// <param name="shortName">The short name for the Option</param>
 		/// <param name="longName">The long name for the Option</param>
 		public FluentOption<T, string> AddOption(string shortName, string longName = null)
@@ -195,7 +194,6 @@ namespace CommandLineFluent
 		/// Creates a new Option and adds it to this verb. A converted value will be assigned to the target property,
 		/// based on the converter with which the Option is configured.
 		/// </summary>
-		/// <param name="humanReadableName">A human-readable name for this Option</param>
 		/// <param name="shortName">The short name for the Option</param>
 		/// <param name="longName">The long name for the Option</param>
 		public FluentOption<T, C> AddOption<C>(string shortName, string longName = null)
@@ -211,7 +209,6 @@ namespace CommandLineFluent
 		/// The order in which you add Values determines which properties get what values. The first Value added will use the first
 		/// value found in the arguments, the second Value will get the next, etc.
 		/// </summary>
-		/// <param name="humanReadableName">A human-readable name to describe this Value</param>
 		public FluentValue<T, string> AddValue()
 		{
 			return AddValue<string>();
@@ -222,7 +219,6 @@ namespace CommandLineFluent
 		/// The order in which you add Values determines which properties get what values. The first Value added will use the first
 		/// value found in the arguments, the second Value will get the next, etc.
 		/// </summary>
-		/// <param name="humanReadableName">A human-readable name to describe this Value</param>
 		public FluentValue<T, C> AddValue<C>()
 		{
 			if (_manyValues != null)
@@ -243,7 +239,6 @@ namespace CommandLineFluent
 		/// Be careful using this, anything not otherwise recognized as an Option or Switch will be parsed as a Value!
 		/// You may want to call IgnorePrefixes as well, so it isn't too greedy.
 		/// </summary>
-		/// <param name="humanReadableName">A human-readable name to describe these Values</param>
 		public FluentManyValues<T, string[]> AddManyValues()
 		{
 			return AddManyValues<string[]>();
@@ -253,7 +248,6 @@ namespace CommandLineFluent
 		/// Be careful using this, anything not otherwise recognized as an Option or Switch will be parsed as a Value!
 		/// You may want to call IgnorePrefixes as well, so it isn't too greedy.
 		/// </summary>
-		/// <param name="humanReadableName">A human-readable name to describe these Values</param>
 		public FluentManyValues<T, C> AddManyValues<C>()
 		{
 			if (_values != null)

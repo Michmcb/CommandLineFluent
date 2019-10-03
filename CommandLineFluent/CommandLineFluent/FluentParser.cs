@@ -5,111 +5,35 @@ using System.Linq;
 namespace CommandLineFluent
 {
 	/// <summary>
-	/// The starting point for parsing command line arguments (or other stuff, if suitable).
-	/// Use the methods Configure, and either WithourVerbs or AddVerb to set up the FluentParser so it
-	/// can parse stuff. I'd recommend keeping an instance of this if it's needed multiple times.
+	/// Able to parse command line arguments (or other stuff, if suitable).
+	/// To create one, you need to use FluentParserBuilder.
+	/// I'd recommend keeping an instance of this if it's needed multiple times.
 	/// </summary>
 	public class FluentParser
 	{
 		private readonly Dictionary<string, IFluentVerb> _verbs;
+		/// <summary>
+		/// Verb names to the Verbs themselves.
+		/// </summary>
 		public IReadOnlyDictionary<string, IFluentVerb> Verbs => _verbs;
 		/// <summary>
 		/// If null, the FluentParser hasn't been configured either way.
 		/// If true, the FluentParser has been set up to parse at least one verb.
 		/// If false, the FluentParser has been set up to not parse any verbs, so it just parses arguments as-is.
 		/// </summary>
-		public bool? IsUsingVerbs { get; private set; }
+		public bool? IsUsingVerbs { get; }
 		/// <summary>
 		/// The current configuration. Use Configure to set this in a fluent way.
 		/// </summary>
-		public FluentParserConfig Config { get; private set; }
+		public FluentParserConfig Config { get; }
 		/// <summary>
 		/// Creates a new instance of FluentParser
 		/// </summary>
-		public FluentParser()
+		internal FluentParser(FluentParserBuilder builder)
 		{
-			IsUsingVerbs = null;
-			_verbs = new Dictionary<string, IFluentVerb>();
-			Config = new FluentParserConfig();
-		}
-		/// <summary>
-		/// Configures the parser's options
-		/// </summary>
-		public FluentParser Configure(Action<FluentParserConfig> config)
-		{
-			config?.Invoke(Config);
-			return this;
-		}
-		/// <summary>
-		/// Sets up how to parse without using verbs. Technically, this configures a default verb named "default", which
-		/// is always used when parsing arguments. Arguments should not start with "default".
-		/// </summary>
-		/// <typeparam name="T">The type of the class which will be created when arguments are parsed successfully</typeparam>
-		public FluentParser WithoutVerbs<T>(Action<FluentVerb<T>> verblessConfig) where T : class, new()
-		{
-			if (IsUsingVerbs != null)
-			{
-				throw new FluentParserException($@"The FluentParser has already been configured to use verbs, or has already had WithoutVerbs invoked on it.", ErrorCode.ProgrammerError);
-			}
-			IsUsingVerbs = false;
-			// ssshhh don't tell anybody it's actually a verb in disguise
-			FluentVerb<T> v = new FluentVerb<T>(Config, "default");
-			verblessConfig?.Invoke(v);
-			_verbs.Add("default", v);
-			return this;
-		}
-		/// <summary>
-		/// Adds a verb for this parser. The verb name dictates the text that has to be entered on the command line.
-		/// e.g. "foo.exe add" invokes the verb with the name "add".
-		/// </summary>
-		/// <typeparam name="T">The type of the class which will be created when arguments for that verb are parsed successfully</typeparam>
-		/// <param name="verbName">The name of the verb</param>
-		public FluentParser AddVerb<T>(string verbName, Action<FluentVerb<T>> verbConfig) where T : class, new()
-		{
-			if (IsUsingVerbs == false)
-			{
-				throw new FluentParserException($@"The FluentParser has already been configured to not use verbs.", ErrorCode.ProgrammerError);
-			}
-			if (_verbs.ContainsKey(verbName))
-			{
-				throw new FluentParserException($@"That verb name has already been used, you may only use unique verb names.", ErrorCode.ProgrammerError);
-			}
-			IsUsingVerbs = true;
-			FluentVerb<T> v = new FluentVerb<T>(Config, verbName);
-			verbConfig?.Invoke(v);
-			_verbs.Add(verbName, v);
-			return this;
-		}
-		/// <summary>
-		/// Returns errors if improperly configured, or an empty collection if all is well
-		/// </summary>
-		public ICollection<Error> Validate()
-		{
-			List<Error> errors = new List<Error>();
-			if (_verbs.Values.Any())
-			{
-				foreach (IFluentVerb verb in _verbs.Values)
-				{
-					errors.AddRange(verb.Validate());
-				}
-			}
-			else
-			{
-				errors.Add(new Error(ErrorCode.ProgrammerError, false, @"This parser hasn't been configured with wither AddVerb<T> or WithoutVerbs<T>"));
-			}
-			return errors;
-		}
-		/// <summary>
-		/// Throws a FluentParserValidationException the Parser is improperly configured.
-		/// Equivalent to throwing an Exception if Validate() does not return null or an empty collection.
-		/// </summary>
-		public void ThrowIfImproperlyConfigured()
-		{
-			ICollection<Error> errors = Validate();
-			if ((errors?.Count ?? 0) > 0)
-			{
-				throw new FluentParserValidationException(@"FluentParser has not been configured correctly", errors);
-			}
+			IsUsingVerbs = builder.IsUsingVerbs;
+			_verbs = builder.Verbs;
+			Config = builder.Config	;
 		}
 		/// <summary>
 		/// Parses the provided arguments. If AddVerb was used, the first argument is interpreted as the verb name, and the rest of them are parsed normally.

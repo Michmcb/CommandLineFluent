@@ -14,7 +14,7 @@ namespace CommandLineFluentTest
 			FluentParser fp = null;
 			for (int i = 0; i < 10000; i++)
 			{
-				fp = new FluentParser()
+				fp = new FluentParserBuilder()
 					.Configure(config =>
 					{
 						config.ConfigureWithDefaults();
@@ -181,7 +181,7 @@ namespace CommandLineFluentTest
 						verb.AddSwitch("s", "switch")
 							.ForProperty(x => x.Switch)
 							.WithHelpText("Some help text");
-					});
+					}).Build();
 			}
 			sw.Stop();
 			double ticks = sw.ElapsedTicks / 10000d;

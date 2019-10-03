@@ -8,7 +8,7 @@ namespace CommandLineFluentTest.Parser
 		[Fact]
 		public void Configuration()
 		{
-			new FluentParser()
+			new FluentParserBuilder()
 				.Configure(config =>
 				{
 					// These are our defaults
