@@ -14,7 +14,7 @@ A Switch is a piece of unique text, whose presence dictates on/off. For example:
 
 Create a class with public getters/setters and a public parameterless constructor. This class will hold the parsed arguments.
 
-Then, FluentParser has to be configured to map to that class' properties. Below is a simple example, which parses arguments into a ProcessFile instance.
+Then, FluentParser has to be configured using the FluentParserBuilder to map to that class' properties. Below is a simple example, which parses arguments into a ProcessFile instance.
 
 ```csharp
 public class ProcessFile
@@ -23,7 +23,7 @@ public class ProcessFile
 	public bool Frobulate { get; set; }
 	public string InputFile { get; set; }
 }
-FluentParser fp = new FluentParser()
+FluentParser fp = new FluentParserBuilder()
 	.Configure(config =>
 	{
 		config.ShowHelpAndUsageOnFailure(); // Goes to the console by default
@@ -49,7 +49,7 @@ FluentParser fp = new FluentParser()
 			.WithName("Output file")
 			.WithHelpText("The output file")
 			.IsRequired();
-	});
+	}).Build();
 	
 	fp.Parse(args)
 		.OnFailure(errors => MyFailureMethod(errors))
@@ -63,7 +63,7 @@ Most of the time, you can use defaults. They are: A default short and long prefi
 Because the defaults involve setting a default short and long name prefix, you don't need to include these prefixes when adding Options and Switches.
 
 ```csharp
-new FluentParser().Configure(config => config.ConfigureWithDefaults())
+new FluentParserBuilder().Configure(config => config.ConfigureWithDefaults())
 	.WithoutVerbs<ProcessFile>(verbless =>
 	{
 		verbless.AddSwitch("f", "frobulate"); // Defaults automatically prefix these, so they become -f and --frobulate
@@ -141,7 +141,7 @@ public class BojangleFile
 	public const string verbName = "bojangle";
 	public string InputFile { get; set; }
 }
-FluentParser fp = new FluentParser()
+FluentParser fp = new FluentParserBuilder()
 	.Configure(config =>
 	{
 		config.ShowHelpAndUsageOnFailure(); // Goes to the console by default
@@ -156,7 +156,7 @@ FluentParser fp = new FluentParser()
 	{
 		verb.AddOption("-i", "--inputFile")
 			.ForProperty(o => o.InputFile);
-	});
+	}).Build();
 	
 	fp.Parse(args)
 		.OnSuccess<FrobulateFile>(frob => MyFrobulationMethod(frob))
