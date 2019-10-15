@@ -3,7 +3,7 @@
 namespace CommandLineFluent.Validation
 {
 	/// <summary>
-	/// Has some commonly-used validators. So for example, you can do this:
+	/// Has some commonly-used validators. For those that just take one string, you can do this:
 	/// verb.WithValidator(Validators.FileExists)
 	/// </summary>
 	public static class Validators

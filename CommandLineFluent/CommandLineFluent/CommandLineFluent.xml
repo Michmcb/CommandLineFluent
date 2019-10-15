@@ -445,6 +445,209 @@
             Whether or not this is required
             </summary>
         </member>
+        <member name="T:CommandLineFluent.Conversion.Converters">
+            <summary>
+            Has some commonly-used converters. For those that just take one string, you can do this:
+            verb.WithConverter(Converters.ToInt32)
+            </summary>
+        </member>
+        <member name="M:CommandLineFluent.Conversion.Converters.ToBool(System.String)">
+            <summary>
+            Converts the provided string to a bool.
+            Uses bool.TryParse()
+            </summary>
+            <param name="s">The string to convert</param>
+        </member>
+        <member name="M:CommandLineFluent.Conversion.Converters.ToNullableBool(System.String)">
+            <summary>
+            Converts the provided string to a nullable bool. Identical to ToBool, but can be used with Optional parameters.
+            </summary>
+            <param name="s">The string to convert</param>
+        </member>
+        <member name="M:CommandLineFluent.Conversion.Converters.ToBoolYesNo(System.String)">
+            <summary>
+            Converts the provided string to a bool. y, yes, or true will convert to true. n, no, or false will convert to false.
+            Case insensitive.
+            </summary>
+            <param name="s">The string to convert</param>
+        </member>
+        <member name="M:CommandLineFluent.Conversion.Converters.ToNullableBoolYesNo(System.String)">
+            <summary>
+            Converts the provided string to a nullable bool. Identical to ToBoolYesNo, but can be used with Optional parameters.
+            </summary>
+            <param name="s">The string to convert</param>
+        </member>
+        <member name="M:CommandLineFluent.Conversion.Converters.ToInt(System.String)">
+            <summary>
+            Converts the provided string to an int
+            Uses int.TryParse()
+            </summary>
+            <param name="s">The string to convert</param>
+        </member>
+        <member name="M:CommandLineFluent.Conversion.Converters.ToNullableInt(System.String)">
+            <summary>
+            Converts the provided string to a nullable int. Identical to ToInt, but can be used with Optional parameters.
+            </summary>
+            <param name="s">The string to convert</param>
+        </member>
+        <member name="M:CommandLineFluent.Conversion.Converters.ToUInt(System.String)">
+            <summary>
+            Converts the provided string to an uint
+            Uses uint.TryParse()
+            </summary>
+            <param name="s">The string to convert</param>
+        </member>
+        <member name="M:CommandLineFluent.Conversion.Converters.ToNullableUInt(System.String)">
+            <summary>
+            Converts the provided string to a nullable uint. Identical to ToUInt, but can be used with Optional parameters.
+            </summary>
+            <param name="s">The string to convert</param>
+        </member>
+        <member name="M:CommandLineFluent.Conversion.Converters.ToLong(System.String)">
+            <summary>
+            Converts the provided string to a long
+            Uses long.TryParse()
+            </summary>
+            <param name="s">The string to convert</param>
+        </member>
+        <member name="M:CommandLineFluent.Conversion.Converters.ToNullableLong(System.String)">
+            <summary>
+            Converts the provided string to a nullable long. Identical to ToLong, but can be used with Optional parameters.
+            </summary>
+            <param name="s">The string to convert</param>
+        </member>
+        <member name="M:CommandLineFluent.Conversion.Converters.ToULong(System.String)">
+            <summary>
+            Converts the provided string to an ulong
+            Uses ulong.TryParse()
+            </summary>
+            <param name="s">The string to convert</param>
+        </member>
+        <member name="M:CommandLineFluent.Conversion.Converters.ToNullableULong(System.String)">
+            <summary>
+            Converts the provided string to a nullable ulong. Identical to ToULong, but can be used with Optional parameters.
+            </summary>
+            <param name="s">The string to convert</param>
+        </member>
+        <member name="M:CommandLineFluent.Conversion.Converters.ToDouble(System.String)">
+            <summary>
+            Converts the provided string to a double.
+            Uses double.TryParse()
+            </summary>
+            <param name="s">The string to convert</param>
+        </member>
+        <member name="M:CommandLineFluent.Conversion.Converters.ToNullableDouble(System.String)">
+            <summary>
+            Converts the provided string to a nullable double. Identical to ToDouble, but can be used with Optional parameters.
+            </summary>
+            <param name="s">The string to convert</param>
+        </member>
+        <member name="M:CommandLineFluent.Conversion.Converters.ToDecimal(System.String)">
+            <summary>
+            Converts the provided string to a decimal.
+            Uses decimal.TryParse()
+            </summary>
+            <param name="s">The string to convert</param>
+        </member>
+        <member name="M:CommandLineFluent.Conversion.Converters.ToNullableDecimal(System.String)">
+            <summary>
+            Converts the provided string to a nullable decimal. Identical to ToDecimal, but can be used with Optional parameters.
+            </summary>
+            <param name="s">The string to convert</param>
+        </member>
+        <member name="M:CommandLineFluent.Conversion.Converters.ToDate(System.String)">
+            <summary>
+            Converts the provided string to a Date, at midnight. Returns an error if a Time component was specified.
+            Uses DateTime.TryParse()
+            </summary>
+            <param name="s">The string to convert</param>
+        </member>
+        <member name="M:CommandLineFluent.Conversion.Converters.ToNullableDate(System.String)">
+            <summary>
+            Converts the provided string to a nullable DateTime. Identical to ToDate, but can be used with Optional parameters.
+            </summary>
+            <param name="s">The string to convert</param>
+        </member>
+        <member name="M:CommandLineFluent.Conversion.Converters.ToDateTime(System.String)">
+            <summary>
+            Converts the provided string to a DateTime.
+            Uses DateTime.TryParse()
+            </summary>
+            <param name="s">The string to convert</param>
+        </member>
+        <member name="M:CommandLineFluent.Conversion.Converters.ToNullableDateTime(System.String)">
+            <summary>
+            Converts the provided string to a nullable DateTime. Identical to ToDateTime, but can be used with Optional parameters.
+            </summary>
+            <param name="s">The string to convert</param>
+        </member>
+        <member name="M:CommandLineFluent.Conversion.Converters.ToEnum``1(System.String)">
+            <summary>
+            Converts the provided string to an Enum.
+            Uses Enum.TryParse&lt;<typeparamref name="T"/>>()
+            </summary>
+            <typeparam name="T">The type of the enum to parse</typeparam>
+            <param name="s">The string to convert</param>
+        </member>
+        <member name="M:CommandLineFluent.Conversion.Converters.Split(System.String,System.Char[])">
+            <summary>
+            Splits the string into multiple strings based on separators.
+            Uses s.Split()
+            </summary>
+            <param name="s">The string to split</param>
+            <param name="separator">The separators to use</param>
+        </member>
+        <member name="M:CommandLineFluent.Conversion.Converters.Split(System.String,System.Char[],System.Int32)">
+            <summary>
+            Splits the string into multiple strings based on separators.
+            Uses s.Split()
+            </summary>
+            <param name="s">The string to split</param>
+            <param name="separator">The separators to use</param>
+            <param name="count">The maximum number of substrings to return</param>
+        </member>
+        <member name="M:CommandLineFluent.Conversion.Converters.Split(System.String,System.Char[],System.StringSplitOptions)">
+            <summary>
+            Splits the string into multiple strings based on separators.
+            Uses s.Split()
+            </summary>
+            <param name="s">The string to split</param>
+            <param name="separator">The separators to use</param>
+            <param name="options">System.StringSplitOptions.RemoveEmptyEntries to omit empty array elements from the array returned; or System.StringSplitOptions.None to include empty array
+            elements in the array returned.</param>
+        </member>
+        <member name="M:CommandLineFluent.Conversion.Converters.Split(System.String,System.String[],System.StringSplitOptions)">
+            <summary>
+            Splits the string into multiple strings based on separators.
+            Uses s.Split()
+            </summary>
+            <param name="s">The string to split</param>
+            <param name="separator">The separators to use</param>
+            <param name="options">System.StringSplitOptions.RemoveEmptyEntries to omit empty array elements from the array returned; or System.StringSplitOptions.None to include empty array
+            elements in the array returned.</param>
+        </member>
+        <member name="M:CommandLineFluent.Conversion.Converters.Split(System.String,System.Char[],System.Int32,System.StringSplitOptions)">
+            <summary>
+            Splits the string into multiple strings based on separators.
+            Uses s.Split()
+            </summary>
+            <param name="s">The string to split</param>
+            <param name="separator">The separators to use</param>
+            <param name="count">The maximum number of substrings to return</param>
+            <param name="options">System.StringSplitOptions.RemoveEmptyEntries to omit empty array elements from the array returned; or System.StringSplitOptions.None to include empty array
+            elements in the array returned.</param>
+        </member>
+        <member name="M:CommandLineFluent.Conversion.Converters.Split(System.String,System.String[],System.Int32,System.StringSplitOptions)">
+            <summary>
+            Splits the string into multiple strings based on separators.
+            Uses s.Split()
+            </summary>
+            <param name="s">The string to split</param>
+            <param name="separator">The separators to use</param>
+            <param name="count">The maximum number of substrings to return</param>
+            <param name="options">System.StringSplitOptions.RemoveEmptyEntries to omit empty array elements from the array returned; or System.StringSplitOptions.None to include empty array
+            elements in the array returned.</param>
+        </member>
         <member name="T:CommandLineFluent.Error">
             <summary>
             Represents an error which was encountered when parsing the command line arguments provided
@@ -484,14 +687,13 @@
         </member>
         <member name="P:CommandLineFluent.FluentParser.IsUsingVerbs">
             <summary>
-            If null, the FluentParser hasn't been configured either way.
             If true, the FluentParser has been set up to parse at least one verb.
             If false, the FluentParser has been set up to not parse any verbs, so it just parses arguments as-is.
             </summary>
         </member>
         <member name="P:CommandLineFluent.FluentParser.Config">
             <summary>
-            The current configuration. Use Configure to set this in a fluent way.
+            The current configuration.
             </summary>
         </member>
         <member name="M:CommandLineFluent.FluentParser.#ctor(CommandLineFluent.FluentParserBuilder)">
@@ -507,6 +709,13 @@
             verb was parsed, or if a specific verb was parsed, detailed help/usage is written for that verb.
             </summary>
             <param name="args">The arguments to parse</param>
+        </member>
+        <member name="M:CommandLineFluent.FluentParser.WriteErrors(System.Collections.Generic.IEnumerable{CommandLineFluent.Error})">
+            <summary>
+            Writes the provided Errors.
+            Does nothing if Config.WriteErrors is null.
+            </summary>
+            <param name="errors">The errors to write</param>
         </member>
         <member name="M:CommandLineFluent.FluentParser.WriteOverallUsageAndHelp">
             <summary>
@@ -556,7 +765,7 @@
         <member name="M:CommandLineFluent.FluentParserBuilder.Build">
             <summary>
             Creates a FluentParser using the configuration of this FluentParserBuilder.
-            Throws a FluentParserValidationException if improperly configured.
+            Throws a FluentParserValidationException if anything or any verbs are improperly configured.
             </summary>
         </member>
         <member name="T:CommandLineFluent.FluentParserConfig">
@@ -584,9 +793,14 @@
             Default prefix for all long names
             </summary>
         </member>
-        <member name="P:CommandLineFluent.FluentParserConfig.WriteUsageAndHelp">
+        <member name="P:CommandLineFluent.FluentParserConfig.WriteMessages">
             <summary>
-            The Action to invoke to write Help and Usage messages
+            The Action to invoke to write Errors, Help, and Usage messages
+            </summary>
+        </member>
+        <member name="P:CommandLineFluent.FluentParserConfig.WriteErrors">
+            <summary>
+            The Action to invoke to write Errors
             </summary>
         </member>
         <member name="P:CommandLineFluent.FluentParserConfig.MaxLineLength">
@@ -622,7 +836,7 @@
         <member name="M:CommandLineFluent.FluentParserConfig.ConfigureWithDefaults">
             <summary>
             Configures to use a DefaultShortPrefix of -, a DefaultLongPrefix of --, Help switches of -? and --help,
-            and Help/Usage is automatically written to Console.WriteLine on any error, with a MaxLineLength of Console.WindowWidth.
+            and Errors/Help/Usage is automatically written to Console.WriteLine on any error, with a MaxLineLength of Console.WindowWidth.
             If the Console cannot be used, then WriteHelp and WriteUsage will be set to null and MaxLineLength will be set to 10,000
             </summary>
         </member>
@@ -656,6 +870,13 @@
             Usage is shown before Help.
             </summary>
             <param name="writeHelpAndUsage">What is invoked to write usage. If null, Console.WriteLine is used.</param>
+        </member>
+        <member name="M:CommandLineFluent.FluentParserConfig.ShowErrorsOnFailure(System.Action{System.Collections.Generic.IEnumerable{CommandLineFluent.Error},System.Action{System.String}})">
+            <summary>
+            Defines the action to invoke when any errors are encountered. By default, it will write Errors that should be shown to the user to Console.WriteLine (Message property).
+            This Action will automatically be invoked upon an Error of any kind (including encountering the help switch).
+            </summary>
+            <param name="writeErrors">What is invoked to write Errors. If null, Console.WriteLine</param>
         </member>
         <member name="M:CommandLineFluent.FluentParserConfig.WithHelpText(System.String)">
             <summary>
@@ -1091,9 +1312,16 @@
             Makes a string like: -s|--long, to show the user both ways of writing the switch
             </summary>
         </member>
+        <member name="M:CommandLineFluent.Util.WriteErrors(System.Collections.Generic.IEnumerable{CommandLineFluent.Error},System.Action{System.String})">
+            <summary>
+            For each Error, if Error.ShouldBeShownToUser is true, invokes <paramref name="writeError"/> with Error.Message
+            </summary>
+            <param name="errors">The errors</param>
+            <param name="writeError">The action to invoke to write Error.Message</param>
+        </member>
         <member name="T:CommandLineFluent.Validation.Validators">
             <summary>
-            Has some commonly-used validators. So for example, you can do this:
+            Has some commonly-used validators. For those that just take one string, you can do this:
             verb.WithValidator(Validators.FileExists)
             </summary>
         </member>

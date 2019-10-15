@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace CommandLineFluent
 {
@@ -26,9 +27,13 @@ namespace CommandLineFluent
 		/// </summary>
 		public string DefaultLongPrefix { get; private set; }
 		/// <summary>
-		/// The Action to invoke to write Help and Usage messages
+		/// The Action to invoke to write Errors, Help, and Usage messages
 		/// </summary>
-		public Action<string> WriteUsageAndHelp { get; private set; }
+		public Action<string> WriteMessages { get; private set; }
+		/// <summary>
+		/// The Action to invoke to write Errors
+		/// </summary>
+		public Action<IEnumerable<Error>, Action<string>> WriteErrors { get; private set; }
 		/// <summary>
 		/// Defines the maximum number of characters that can fit on one line when writing help/usage text
 		/// </summary>
@@ -56,7 +61,7 @@ namespace CommandLineFluent
 
 		/// <summary>
 		/// Configures to use a DefaultShortPrefix of -, a DefaultLongPrefix of --, Help switches of -? and --help,
-		/// and Help/Usage is automatically written to Console.WriteLine on any error, with a MaxLineLength of Console.WindowWidth.
+		/// and Errors/Help/Usage is automatically written to Console.WriteLine on any error, with a MaxLineLength of Console.WindowWidth.
 		/// If the Console cannot be used, then WriteHelp and WriteUsage will be set to null and MaxLineLength will be set to 10,000
 		/// </summary>
 		public void ConfigureWithDefaults()
@@ -65,12 +70,13 @@ namespace CommandLineFluent
 			DefaultLongPrefix = "--";
 			ShortHelpSwitch = "-?";
 			LongHelpSwitch = "--help";
-			ShowHelpAndUsageOnFailure();
 			// If they're not using a console then we'll get an exception on trying to read WindowWidth, so catch that
 			try
 			{
 				MaxLineLength = Console.WindowWidth;
-				WriteUsageAndHelp = Console.WriteLine;
+				WriteMessages = Console.WriteLine;
+				ShowHelpAndUsageOnFailure();
+				ShowErrorsOnFailure();
 			}
 			catch (System.IO.IOException)
 			{
@@ -126,7 +132,16 @@ namespace CommandLineFluent
 		/// <param name="writeHelpAndUsage">What is invoked to write usage. If null, Console.WriteLine is used.</param>
 		public void ShowHelpAndUsageOnFailure(Action<string> writeHelpAndUsage = null)
 		{
-			WriteUsageAndHelp = writeHelpAndUsage ?? Console.WriteLine;
+			WriteMessages = writeHelpAndUsage ?? Console.WriteLine;
+		}
+		/// <summary>
+		/// Defines the action to invoke when any errors are encountered. By default, it will write Errors that should be shown to the user to Console.WriteLine (Message property).
+		/// This Action will automatically be invoked upon an Error of any kind (including encountering the help switch).
+		/// </summary>
+		/// <param name="writeErrors">What is invoked to write Errors. If null, Console.WriteLine</param>
+		public void ShowErrorsOnFailure(Action<IEnumerable<Error>, Action<string>> writeErrors = null)
+		{
+			WriteErrors = writeErrors ?? Util.WriteErrors;
 		}
 		/// <summary>
 		/// Configures custom help text

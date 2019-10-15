@@ -69,7 +69,7 @@ namespace CommandLineFluent
 		}
 		/// <summary>
 		/// Creates a FluentParser using the configuration of this FluentParserBuilder.
-		/// Throws a FluentParserValidationException if improperly configured.
+		/// Throws a FluentParserValidationException if anything or any verbs are improperly configured.
 		/// </summary>
 		public FluentParser Build()
 		{

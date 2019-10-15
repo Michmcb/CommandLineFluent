@@ -5,12 +5,12 @@
     <Authors>Michael McBride</Authors>
     <Product />
     <Company />
-    <Version>1.2</Version>
+    <Version>1.3</Version>
     <PackageLicenseFile>license.txt</PackageLicenseFile>
     <Description>A .NET Command Line Parsing library which is set up and parsed using fluent syntax. It parses command line arguments into strongly-typed classes which you define. Supports conversion, validation, default values, and automatic help/usage text.</Description>
     <PackageTags>commandline, parsing, parser, option, command, line, argument, library, fluent</PackageTags>
     <PackageProjectUrl>https://github.com/Michmcb/CommandLineFluent</PackageProjectUrl>
-    <PackageIconUrl>https://raw.githubusercontent.com/Michmcb/CommandLineFluent/master/CommandLineFluent.png</PackageIconUrl>
+    <PackageIconUrl></PackageIconUrl>
     <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
     <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
   </PropertyGroup>

@@ -17,13 +17,12 @@ namespace CommandLineFluent
 		/// </summary>
 		public IReadOnlyDictionary<string, IFluentVerb> Verbs => _verbs;
 		/// <summary>
-		/// If null, the FluentParser hasn't been configured either way.
 		/// If true, the FluentParser has been set up to parse at least one verb.
 		/// If false, the FluentParser has been set up to not parse any verbs, so it just parses arguments as-is.
 		/// </summary>
-		public bool? IsUsingVerbs { get; }
+		public bool IsUsingVerbs { get; }
 		/// <summary>
-		/// The current configuration. Use Configure to set this in a fluent way.
+		/// The current configuration.
 		/// </summary>
 		public FluentParserConfig Config { get; }
 		/// <summary>
@@ -31,9 +30,9 @@ namespace CommandLineFluent
 		/// </summary>
 		internal FluentParser(FluentParserBuilder builder)
 		{
-			IsUsingVerbs = builder.IsUsingVerbs;
+			IsUsingVerbs = builder.IsUsingVerbs.Value;
 			_verbs = builder.Verbs;
-			Config = builder.Config	;
+			Config = builder.Config;
 		}
 		/// <summary>
 		/// Parses the provided arguments. If AddVerb was used, the first argument is interpreted as the verb name, and the rest of them are parsed normally.
@@ -68,7 +67,7 @@ namespace CommandLineFluent
 						}
 						else
 						{
-							return new FluentParserResult(new Error[] { new Error(ErrorCode.InvalidVerb, true, $@"The verb {verbText} is not a recognized verb") }, null);
+							result = new FluentParserResult(new Error[] { new Error(ErrorCode.InvalidVerb, true, $@"The verb {verbText} is not a recognized verb") }, null);
 						}
 					}
 					else
@@ -94,6 +93,7 @@ namespace CommandLineFluent
 
 			if (!result.Success)
 			{
+				WriteErrors(result.Errors);
 				if (verb != null)
 				{
 					WriteUsageAndHelp(verb);
@@ -106,6 +106,15 @@ namespace CommandLineFluent
 			return result;
 		}
 		/// <summary>
+		/// Writes the provided Errors.
+		/// Does nothing if Config.WriteErrors is null.
+		/// </summary>
+		/// <param name="errors">The errors to write</param>
+		public void WriteErrors(IEnumerable<Error> errors)
+		{
+			Config.WriteErrors?.Invoke(errors, Config.WriteMessages);
+		}
+		/// <summary>
 		/// Writes a summary of how you invoke the program and how you can obtain further help, by specifying a verb.
 		/// Order of priority is: this.Config.UsageText, then this.Config.UsageTextCreator, then the default HelpFormatter.FormatOverallUsage.
 		/// Same thing for Help Text.
@@ -113,7 +122,7 @@ namespace CommandLineFluent
 		/// </summary>
 		public void WriteOverallUsageAndHelp()
 		{
-			if (Config.WriteUsageAndHelp == null)
+			if (Config.WriteMessages == null)
 			{
 				return;
 			}
@@ -122,31 +131,31 @@ namespace CommandLineFluent
 			{
 				if (Config.UsageTextCreator == null)
 				{
-					Config.WriteUsageAndHelp(HelpFormatter.FormatOverallUsage(Verbs.Values, Config.ExeceuteCommand));
+					Config.WriteMessages(HelpFormatter.FormatOverallUsage(Verbs.Values, Config.ExeceuteCommand));
 				}
 				else
 				{
-					Config.WriteUsageAndHelp(Config.UsageTextCreator.Invoke(this, Config.ExeceuteCommand));
+					Config.WriteMessages(Config.UsageTextCreator.Invoke(this, Config.ExeceuteCommand));
 				}
 			}
 			else
 			{
-				Config.WriteUsageAndHelp(Config.UsageText);
+				Config.WriteMessages(Config.UsageText);
 			}
 			if (Config.HelpText == null)
 			{
 				if (Config.HelpTextCreator == null)
 				{
-					Config.WriteUsageAndHelp(HelpFormatter.FormatOverallHelp(Verbs.Values, Util.ShortAndLongName(Config.ShortHelpSwitch, Config.LongHelpSwitch), Config.MaxLineLength));
+					Config.WriteMessages(HelpFormatter.FormatOverallHelp(Verbs.Values, Util.ShortAndLongName(Config.ShortHelpSwitch, Config.LongHelpSwitch), Config.MaxLineLength));
 				}
 				else
 				{
-					Config.WriteUsageAndHelp(Config.HelpTextCreator.Invoke(this));
+					Config.WriteMessages(Config.HelpTextCreator.Invoke(this));
 				}
 			}
 			else
 			{
-				Config.WriteUsageAndHelp(Config.HelpText);
+				Config.WriteMessages(Config.HelpText);
 			}
 		}
 		/// <summary>
@@ -158,7 +167,7 @@ namespace CommandLineFluent
 		/// <param name="verb">The verb to write detailed usage/help for</param>
 		public void WriteUsageAndHelp(IFluentVerb verb)
 		{
-			if (Config.WriteUsageAndHelp == null)
+			if (Config.WriteMessages == null)
 			{
 				return;
 			}
@@ -167,31 +176,31 @@ namespace CommandLineFluent
 			{
 				if (verb.UsageTextCreator == null)
 				{
-					Config.WriteUsageAndHelp(HelpFormatter.FormatVerbUsage(verb, Config.ExeceuteCommand));
+					Config.WriteMessages(HelpFormatter.FormatVerbUsage(verb, Config.ExeceuteCommand));
 				}
 				else
 				{
-					Config.WriteUsageAndHelp(verb.UsageTextCreator.Invoke(verb, Config.ExeceuteCommand));
+					Config.WriteMessages(verb.UsageTextCreator.Invoke(verb, Config.ExeceuteCommand));
 				}
 			}
 			else
 			{
-				Config.WriteUsageAndHelp(verb.UsageText);
+				Config.WriteMessages(verb.UsageText);
 			}
 			if (verb.HelpText == null)
 			{
 				if (verb.HelpTextCreator == null)
 				{
-					Config.WriteUsageAndHelp(HelpFormatter.FormatVerbHelp(verb, Config.MaxLineLength));
+					Config.WriteMessages(HelpFormatter.FormatVerbHelp(verb, Config.MaxLineLength));
 				}
 				else
 				{
-					Config.WriteUsageAndHelp(verb.HelpTextCreator.Invoke(verb));
+					Config.WriteMessages(verb.HelpTextCreator.Invoke(verb));
 				}
 			}
 			else
 			{
-				Config.WriteUsageAndHelp(verb.HelpText);
+				Config.WriteMessages(verb.HelpText);
 			}
 		}
 	}
