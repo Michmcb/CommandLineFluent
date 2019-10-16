@@ -43,13 +43,29 @@ namespace CommandLineFluent
 		/// <param name="args">The arguments to parse</param>
 		public FluentParserResult Parse(IEnumerable<string> args)
 		{
+			return (FluentParserResult)ParseInternal(args, false);
+		}
+		/// <summary>
+		/// Parses the provided arguments. If AddVerb was used, the first argument is interpreted as the verb name, and the rest of them are parsed normally.
+		/// If WithoutVerbs was used, all arguments are parsed normally.
+		/// If an error is encountered, help/usage will be written automatically, if that has been configured. Usage and Description is written for all verbs if no
+		/// verb was parsed, or if a specific verb was parsed, detailed help/usage is written for that verb.
+		/// This will allow you to specify awaitable methods.
+		/// </summary>
+		/// <param name="args">The arguments to parse</param>
+		public FluentParserResultAwaitable ParseAwaitable(IEnumerable<string> args)
+		{
+			return (FluentParserResultAwaitable)ParseInternal(args, true);
+		}
+		private FluentParserResultBase ParseInternal(IEnumerable<string> args, bool awaitable)
+		{
 			IFluentVerb verb = null;
-			FluentParserResult result;
+			FluentParserResultBase result;
 			if (args == null)
 			{
 				throw new ArgumentNullException("args");
 			}
-			if (IsUsingVerbs == true)
+			if (IsUsingVerbs)
 			{
 				// We need at least 1 element if we're using verbs
 				if (args.Any())
@@ -63,32 +79,33 @@ namespace CommandLineFluent
 					{
 						if (_verbs.TryGetValue(verbText, out verb))
 						{
-							result = new FluentParserResult(verb.Parse(args.Skip(1)), verb);
+							result = awaitable ? (FluentParserResultBase)new FluentParserResultAwaitable(verb.Parse(args.Skip(1)), verb)
+								: new FluentParserResult(verb.Parse(args.Skip(1)), verb);
 						}
 						else
 						{
-							result = new FluentParserResult(new Error[] { new Error(ErrorCode.InvalidVerb, true, $@"The verb {verbText} is not a recognized verb") }, null);
+							result = awaitable ? (FluentParserResultBase)new FluentParserResultAwaitable(new Error[] { new Error(ErrorCode.InvalidVerb, true, $@"The verb {verbText} is not a recognized verb") }, null)
+								: new FluentParserResult(new Error[] { new Error(ErrorCode.InvalidVerb, true, $@"The verb {verbText} is not a recognized verb") }, null);
 						}
 					}
 					else
 					{
-						result = new FluentParserResult(new Error[] { new Error(ErrorCode.HelpRequested, false) }, null);
+						result = awaitable ? (FluentParserResultBase)new FluentParserResultAwaitable(new Error[] { new Error(ErrorCode.HelpRequested, false) }, null)
+							: new FluentParserResult(new Error[] { new Error(ErrorCode.HelpRequested, false) }, null);
 					}
 				}
 				else
 				{
-					result = new FluentParserResult(new Error[] { new Error(ErrorCode.NoVerbFound, true, $@"A verb is required") }, null);
+					result = awaitable ? (FluentParserResultBase)new FluentParserResultAwaitable(new Error[] { new Error(ErrorCode.NoVerbFound, true, $@"A verb is required") }, null)
+						: new FluentParserResult(new Error[] { new Error(ErrorCode.NoVerbFound, true, $@"A verb is required") }, null);
 				}
-			}
-			else if (IsUsingVerbs == false)
-			{
-				IFluentVerb v = _verbs.First().Value;
-				v.Reset();
-				result = new FluentParserResult(v.Parse(args), v);
 			}
 			else
 			{
-				throw new FluentParserException($@"The FluentParser has not been configured with AddVerb or WithoutVerbs", ErrorCode.ProgrammerError);
+				IFluentVerb v = _verbs.First().Value;
+				v.Reset();
+				result = awaitable ? (FluentParserResultBase)new FluentParserResultAwaitable(v.Parse(args), v)
+					: new FluentParserResult(v.Parse(args), v);
 			}
 
 			if (!result.Success)

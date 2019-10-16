@@ -10,6 +10,21 @@
             </summary>
             <typeparam name="C">The type of the converted value</typeparam>
         </member>
+        <member name="P:CommandLineFluent.Arguments.Converted`1.ConvertedValue">
+            <summary>
+            The value converted to <typeparamref name="C"/>, if successful
+            </summary>
+        </member>
+        <member name="P:CommandLineFluent.Arguments.Converted`1.ErrorMessage">
+            <summary>
+            An error message explaining why the value could not be converted to <typeparamref name="C"/>
+            </summary>
+        </member>
+        <member name="P:CommandLineFluent.Arguments.Converted`1.Successful">
+            <summary>
+            Whether or not the conversion was successful
+            </summary>
+        </member>
         <member name="M:CommandLineFluent.Arguments.Converted`1.#ctor(`0)">
             <summary>
             Successfully converted the value
@@ -77,6 +92,12 @@
             </summary>
             <param name="target">The instance of <typeparamref name="T"/> on which to set the property</param>
             <param name="values">The raw values of all arguments found. If necessary, will be converted to the <typeparamref name="C"/> using the Converter set</param>
+        </member>
+        <member name="M:CommandLineFluent.Arguments.FluentManyValues`2.ForProperty(System.Linq.Expressions.Expression{System.Func{`0,`1}})">
+            <summary>
+            Configures this Value to set the provided property of <typeparamref name="T"/>.
+            </summary>
+            <param name="expression">The property to set</param>
         </member>
         <member name="M:CommandLineFluent.Arguments.FluentManyValues`2.IsRequired">
             <summary>
@@ -355,6 +376,11 @@
             </summary>
             <param name="validator">The validator that validates the raw value</param>
         </member>
+        <member name="T:CommandLineFluent.Arguments.IFluentArgument">
+            <summary>
+            A single argument on the command line. Can be a Switch, Option, or Value
+            </summary>
+        </member>
         <member name="P:CommandLineFluent.Arguments.IFluentArgument.Name">
             <summary>
             A human-readable name which describes this
@@ -368,6 +394,23 @@
         <member name="P:CommandLineFluent.Arguments.IFluentArgument.TargetProperty">
             <summary>
             The property that this argument maps to
+            </summary>
+        </member>
+        <member name="T:CommandLineFluent.Arguments.IFluentManyValues">
+            <summary>
+            Captures all lone values, such as: Foo.exe Value1 -t someswitch Value2 Value3. All 3 values there would be captured as an array: [Value1, Value2, Value3].
+            Use this when you want to consume an indeterminate number of values, regardless of their position.
+            </summary>
+        </member>
+        <member name="P:CommandLineFluent.Arguments.IFluentManyValues.IgnoredPrefixes">
+            <summary>
+            The prefixes that are ignored when capturing values. This is useful if you use a consistent prefixing scheme,
+            and want to avoid capturing possible user typos; an error will be thrown instead of using it as a value.
+            </summary>
+        </member>
+        <member name="P:CommandLineFluent.Arguments.IFluentManyValues.Required">
+            <summary>
+            Whether or not at least 1 value is required
             </summary>
         </member>
         <member name="T:CommandLineFluent.Arguments.IFluentOption">
@@ -673,6 +716,135 @@
             Any exceptions thrown when parsing the value
             </summary>
         </member>
+        <member name="M:CommandLineFluent.Error.#ctor(CommandLineFluent.ErrorCode,System.Boolean,System.String,System.Exception)">
+            <summary>
+            Creates a new instance of Error
+            </summary>
+            <param name="errorCode">The error code</param>
+            <param name="shouldBeShownToUser">Whether or not this error should be displayed to the user</param>
+            <param name="message">The message for this error</param>
+            <param name="exception">The Exception that caused this error</param>
+        </member>
+        <member name="M:CommandLineFluent.Error.ToString">
+            <summary>
+            Converts this Error to a string. Contains ErrorCode, Message, and Exception.ToString()
+            </summary>
+        </member>
+        <member name="T:CommandLineFluent.ErrorCode">
+            <summary>
+            Represents an error case
+            </summary>
+        </member>
+        <member name="F:CommandLineFluent.ErrorCode.Ok">
+            <summary>
+            All is well, nothing went wrong
+            </summary>
+        </member>
+        <member name="F:CommandLineFluent.ErrorCode.MissingRequiredValue">
+            <summary>
+            A required value was specified but the user did not provide it
+            </summary>
+        </member>
+        <member name="F:CommandLineFluent.ErrorCode.MissingRequiredValues">
+            <summary>
+            Many required values were specified but the user did not provide at least 1
+            </summary>
+        </member>
+        <member name="F:CommandLineFluent.ErrorCode.MissingRequiredOption">
+            <summary>
+            A required option was specified but the user did not provide it
+            </summary>
+        </member>
+        <member name="F:CommandLineFluent.ErrorCode.TooManyValues">
+            <summary>
+            The user specified more values than we were expecting
+            </summary>
+        </member>
+        <member name="F:CommandLineFluent.ErrorCode.OptionNotFound">
+            <summary>
+            The user specified an option which we were not expecting
+            </summary>
+        </member>
+        <member name="F:CommandLineFluent.ErrorCode.SwitchNotFound">
+            <summary>
+            The user specified a switch which we were not expecting
+            </summary>
+        </member>
+        <member name="F:CommandLineFluent.ErrorCode.UnexpectedEndOfArguments">
+            <summary>
+            We were expecting to find something more, e.g. A value after an option, but we did not
+            </summary>
+        </member>
+        <member name="F:CommandLineFluent.ErrorCode.UnexpectedArgument">
+            <summary>
+            The user specified something we were not expecting
+            </summary>
+        </member>
+        <member name="F:CommandLineFluent.ErrorCode.DuplicateOption">
+            <summary>
+            The user specified an option multiple times
+            </summary>
+        </member>
+        <member name="F:CommandLineFluent.ErrorCode.DuplicateSwitch">
+            <summary>
+            The user specified a switch multiple times
+            </summary>
+        </member>
+        <member name="F:CommandLineFluent.ErrorCode.OptionFailedValidation">
+            <summary>
+            The value that the user provided for an option failed validation
+            </summary>
+        </member>
+        <member name="F:CommandLineFluent.ErrorCode.ValueFailedValidation">
+            <summary>
+            The value that the user provided for a value failed validation
+            </summary>
+        </member>
+        <member name="F:CommandLineFluent.ErrorCode.ValuesFailedValidation">
+            <summary>
+            The values that the user provided for many values failed validation
+            </summary>
+        </member>
+        <member name="F:CommandLineFluent.ErrorCode.OptionFailedConversion">
+            <summary>
+            The value that the user provided for an option failed conversion
+            </summary>
+        </member>
+        <member name="F:CommandLineFluent.ErrorCode.ValueFailedConversion">
+            <summary>
+            The value that the user provided for a value failed conversion
+            </summary>
+        </member>
+        <member name="F:CommandLineFluent.ErrorCode.ValuesFailedConversion">
+            <summary>
+            The values that the user provided for many values failed conversion
+            </summary>
+        </member>
+        <member name="F:CommandLineFluent.ErrorCode.SwitchFailedConversion">
+            <summary>
+            The switch that the user specified failed conversion
+            </summary>
+        </member>
+        <member name="F:CommandLineFluent.ErrorCode.InvalidVerb">
+            <summary>
+            The verb that the user specified was not a defined verb
+            </summary>
+        </member>
+        <member name="F:CommandLineFluent.ErrorCode.NoVerbFound">
+            <summary>
+            The user didn't specify a verb, but we were expecting one
+            </summary>
+        </member>
+        <member name="F:CommandLineFluent.ErrorCode.HelpRequested">
+            <summary>
+            The user requested help
+            </summary>
+        </member>
+        <member name="F:CommandLineFluent.ErrorCode.ProgrammerError">
+            <summary>
+            This error code value indicates a bug in your program, you'll only see this ErrorCode when an exception is raised.
+            </summary>
+        </member>
         <member name="T:CommandLineFluent.FluentParser">
             <summary>
             Able to parse command line arguments (or other stuff, if suitable).
@@ -710,6 +882,16 @@
             </summary>
             <param name="args">The arguments to parse</param>
         </member>
+        <member name="M:CommandLineFluent.FluentParser.ParseAwaitable(System.Collections.Generic.IEnumerable{System.String})">
+            <summary>
+            Parses the provided arguments. If AddVerb was used, the first argument is interpreted as the verb name, and the rest of them are parsed normally.
+            If WithoutVerbs was used, all arguments are parsed normally.
+            If an error is encountered, help/usage will be written automatically, if that has been configured. Usage and Description is written for all verbs if no
+            verb was parsed, or if a specific verb was parsed, detailed help/usage is written for that verb.
+            This will allow you to specify awaitable methods.
+            </summary>
+            <param name="args">The arguments to parse</param>
+        </member>
         <member name="M:CommandLineFluent.FluentParser.WriteErrors(System.Collections.Generic.IEnumerable{CommandLineFluent.Error})">
             <summary>
             Writes the provided Errors.
@@ -741,6 +923,11 @@
             Once finished, use the method Build to validate and create a FluentParser.
             </summary>
         </member>
+        <member name="M:CommandLineFluent.FluentParserBuilder.#ctor">
+            <summary>
+            Creates a new instance of FluentParserBuilder
+            </summary>
+        </member>
         <member name="M:CommandLineFluent.FluentParserBuilder.Configure(System.Action{CommandLineFluent.FluentParserConfig})">
             <summary>
             Configures the parser's options
@@ -767,6 +954,29 @@
             Creates a FluentParser using the configuration of this FluentParserBuilder.
             Throws a FluentParserValidationException if anything or any verbs are improperly configured.
             </summary>
+        </member>
+        <member name="T:CommandLineFluent.FluentParserBuilderException">
+            <summary>
+            An exception that occured during setting up a FluentParserBuilder
+            </summary>
+        </member>
+        <member name="M:CommandLineFluent.FluentParserBuilderException.#ctor">
+            <summary>
+            Creates a new instance of FluentParserBuilderException
+            </summary>
+        </member>
+        <member name="M:CommandLineFluent.FluentParserBuilderException.#ctor(System.String)">
+            <summary>
+            Creates a new instance of FluentParserBuilderException
+            </summary>
+            <param name="message">The message that describes the error.</param>
+        </member>
+        <member name="M:CommandLineFluent.FluentParserBuilderException.#ctor(System.String,System.Exception)">
+            <summary>
+            Creates a new instance of FluentParserBuilderException
+            </summary>
+            <param name="message">The message that describes the error.</param>
+            <param name="innerException">The exception that is the cause of the current exception</param>
         </member>
         <member name="T:CommandLineFluent.FluentParserConfig">
             <summary>
@@ -907,54 +1117,146 @@
             The result of parsing some command line arguments
             </summary>
         </member>
-        <member name="P:CommandLineFluent.FluentParserResult.Errors">
-            <summary>
-            Any errors encountered when parsing
-            </summary>
-        </member>
-        <member name="P:CommandLineFluent.FluentParserResult.ParsedVerb">
-            <summary>
-            The verb that was parsed
-            </summary>
-        </member>
-        <member name="P:CommandLineFluent.FluentParserResult.Success">
-            <summary>
-            Whether or not parsing was successful
-            </summary>
-        </member>
         <member name="M:CommandLineFluent.FluentParserResult.OnSuccess``1(System.Action{``0})">
             <summary>
-            If parsing was successful and the type that was parsed matches the type specified, invokes the provided action.
+            If parsing was successful and the type that was parsed matches the type specified, invokes <paramref name="action"/>.
             </summary>
             <typeparam name="T">The type of the parsed class</typeparam>
-        </member>
-        <member name="M:CommandLineFluent.FluentParserResult.GetParsedObject``1">
-            <summary>
-            If parsing was successful and the type that was parsed matches the type specified, returns the object that was parsed.
-            Otherwise, returns the default value for type <typeparamref name="T"/>
-            </summary>
-            <typeparam name="T">The type of the parsed class</typeparam>
-        </member>
-        <member name="M:CommandLineFluent.FluentParserResult.OnFailure(System.Action{System.Collections.Generic.IReadOnlyCollection{CommandLineFluent.Error}})">
-            <summary>
-            If the arguments failed to be parsed, invokes the callback specified.
-            Generally you don't need to use this often, the help/usage text can tell the user what they did wrong.
-            </summary>
-            <param name="action">The action to take. If null, no action is taken</param>
-        </member>
-        <member name="M:CommandLineFluent.FluentParserResult.OnFailureAndStop(System.Action{System.Collections.Generic.IReadOnlyCollection{CommandLineFluent.Error}})">
-            <summary>
-            If the arguments failed to be parsed, invokes the callback and returns null. Allows you to do Parse().StopOnFailure()?.OnSuccess()... to stop the
-            fluent callchain immediately when there are errors, saving some unnecessary checks.
-            Generally you don't need to use this often, the help/usage text can tell the user what they did wrong.
-            </summary>
-            <param name="action">The action to take. If null, no action is taken</param>
         </member>
         <member name="M:CommandLineFluent.FluentParserResult.StopOnFailure">
             <summary>
             If the arguments failed to be parsed, returns null. Allows you to do Parse().StopOnFailure()?.OnSuccess() to stop the
             fluent callchain immediately when there are errors, saving unnecessary checks.
             </summary>
+        </member>
+        <member name="M:CommandLineFluent.FluentParserResult.OnFailure(System.Action{System.Collections.Generic.IReadOnlyCollection{CommandLineFluent.Error}})">
+            <summary>
+            If the arguments failed to be parsed, invokes <paramref name="action"/>.
+            Generally you don't need to use this often, the help/usage text can tell the user what they did wrong.
+            </summary>
+            <param name="action">The action to take. If null, no action is taken</param>
+        </member>
+        <member name="M:CommandLineFluent.FluentParserResult.OnFailureAndStop(System.Action{System.Collections.Generic.IReadOnlyCollection{CommandLineFluent.Error}})">
+            <summary>
+            If the arguments failed to be parsed, invokes <paramref name="action"/> and returns null. Allows you to do Parse().OnFailureAndStop()?.OnSuccess()... to stop the
+            fluent callchain immediately when there are errors, saving some unnecessary checks.
+            Generally you don't need to use this often, the help/usage text can tell the user what they did wrong.
+            </summary>
+            <param name="action">The action to take. If null, no action is taken</param>
+        </member>
+        <member name="T:CommandLineFluent.FluentParserResultAwaitable">
+            <summary>
+            The result of parsing some command line arguments.
+            Designed for invoking awaitable actions. Use this the same way you would the FluentParserResult,
+            except at the end of the fluent callchain, call .Invoke() or .InvokeAsync() and await the returned Task.
+            </summary>
+        </member>
+        <member name="P:CommandLineFluent.FluentParserResultAwaitable.Action">
+            <summary>
+            The Func that will be invoked on calling .Invoke() or .InvokeAsync(), which calls the correct Func supplied by OnSuccess() or OnFailure().
+            </summary>
+        </member>
+        <member name="M:CommandLineFluent.FluentParserResultAwaitable.OnSuccess``1(System.Func{``0,System.Threading.Tasks.Task})">
+            <summary>
+            If parsing was successful and the type that was parsed matches the type specified, then <paramref name="action"/> will
+            be run upon calling .Invoke() or .InvokeAsync()
+            </summary>
+            <typeparam name="T">The type of the parsed class</typeparam>
+        </member>
+        <member name="M:CommandLineFluent.FluentParserResultAwaitable.OnFailure(System.Func{System.Collections.Generic.IReadOnlyCollection{CommandLineFluent.Error},System.Threading.Tasks.Task})">
+            <summary>
+            If the arguments failed to be parsed, invokes <paramref name="action"/> on calling .Invoke().
+            Generally you don't need to use this often, the help/usage text can tell the user what they did wrong.
+            </summary>
+            <param name="action">The action to take. If null, no action is taken</param>
+        </member>
+        <member name="M:CommandLineFluent.FluentParserResultAwaitable.StopOnFailure">
+            <summary>
+            If the arguments failed to be parsed, returns null. Allows you to do Parse().StopOnFailure()?.OnSuccess() to stop the
+            fluent callchain immediately when there are errors, saving unnecessary checks.
+            It's not recommended you use this, because this will make awaiting the Task returned by Invoke() or InvokeAsync() trickier, since
+            you need to check for null before awaiting.
+            </summary>
+        </member>
+        <member name="M:CommandLineFluent.FluentParserResultAwaitable.Invoke">
+            <summary>
+            Invokes the Action specified by the relevant OnSuccess() call, and returns the resultant Task
+            </summary>
+        </member>
+        <member name="M:CommandLineFluent.FluentParserResultAwaitable.InvokeAsync">
+            <summary>
+            Invokes the Action specified by the relevant OnSuccess() call, and awaits the resultant Task
+            </summary>
+        </member>
+        <member name="T:CommandLineFluent.FluentParserResultBase">
+            <summary>
+            The result of parsing some command line arguments
+            </summary>
+        </member>
+        <member name="P:CommandLineFluent.FluentParserResultBase.Errors">
+            <summary>
+            Any errors encountered when parsing
+            </summary>
+        </member>
+        <member name="P:CommandLineFluent.FluentParserResultBase.ParsedVerb">
+            <summary>
+            The verb that was parsed
+            </summary>
+        </member>
+        <member name="P:CommandLineFluent.FluentParserResultBase.Success">
+            <summary>
+            Whether or not parsing was successful
+            </summary>
+        </member>
+        <member name="M:CommandLineFluent.FluentParserResultBase.GetParsedObject``1">
+            <summary>
+            If parsing was successful and the type that was parsed matches the type specified, returns the object that was parsed.
+            Otherwise, returns the default value for type <typeparamref name="T"/>
+            </summary>
+            <typeparam name="T">The type of the parsed class</typeparam>
+        </member>
+        <member name="T:CommandLineFluent.FluentParserValidationException">
+            <summary>
+            An exception that occurred when validating that a FluentParserBuilder was set up correctly.
+            </summary>
+        </member>
+        <member name="P:CommandLineFluent.FluentParserValidationException.Errors">
+            <summary>
+            Errors encountered upon validation
+            </summary>
+        </member>
+        <member name="M:CommandLineFluent.FluentParserValidationException.#ctor">
+            <summary>
+            Creates a new instance of FluentParserValidationException
+            </summary>
+        </member>
+        <member name="M:CommandLineFluent.FluentParserValidationException.#ctor(System.String)">
+            <summary>
+            Creates a new instance of FluentParserValidationException
+            </summary>
+            <param name="message">The message that describes the error.</param>
+        </member>
+        <member name="M:CommandLineFluent.FluentParserValidationException.#ctor(System.String,System.Collections.Generic.ICollection{CommandLineFluent.Error})">
+            <summary>
+            Creates a new instance of FluentParserValidationException
+            </summary>
+            <param name="message">The message that describes the error.</param>
+            <param name="errors">The errors encountered upon validation</param>
+        </member>
+        <member name="M:CommandLineFluent.FluentParserValidationException.#ctor(System.String,System.Exception)">
+            <summary>
+            Creates a new instance of FluentParserValidationException
+            </summary>
+            <param name="message">The message that describes the error.</param>
+            <param name="innerException">The exception that is the cause of the current exception</param>
+        </member>
+        <member name="M:CommandLineFluent.FluentParserValidationException.#ctor(System.String,System.Collections.Generic.ICollection{CommandLineFluent.Error},System.Exception)">
+            <summary>
+            Creates a new instance of FluentParserValidationException
+            </summary>
+            <param name="message">The message that describes the error.</param>
+            <param name="errors">The errors encountered upon validation</param>
+            <param name="innerException">The exception that is the cause of the current exception</param>
         </member>
         <member name="T:CommandLineFluent.FluentVerb`1">
             <summary>

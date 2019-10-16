@@ -13,6 +13,9 @@ namespace CommandLineFluent
 		internal Dictionary<string, IFluentVerb> Verbs { get; }
 		internal bool? IsUsingVerbs { get; private set; }
 		internal FluentParserConfig Config { get; }
+		/// <summary>
+		/// Creates a new instance of FluentParserBuilder
+		/// </summary>
 		public FluentParserBuilder()
 		{
 			Config = new FluentParserConfig();
@@ -35,7 +38,7 @@ namespace CommandLineFluent
 		{
 			if (IsUsingVerbs != null)
 			{
-				throw new FluentParserException($@"The FluentParserBuilder has already been configured to use verbs, or has already had WithoutVerbs invoked on it.", ErrorCode.ProgrammerError);
+				throw new FluentParserBuilderException($@"The FluentParserBuilder has already been configured to use verbs, or has already had WithoutVerbs invoked on it.");
 			}
 			IsUsingVerbs = false;
 			// ssshhh don't tell anybody it's actually a verb in disguise
@@ -55,11 +58,11 @@ namespace CommandLineFluent
 		{
 			if (IsUsingVerbs == false)
 			{
-				throw new FluentParserException($@"The FluentParserBuilder has already been configured to not use verbs.", ErrorCode.ProgrammerError);
+				throw new FluentParserBuilderException($@"The FluentParserBuilder has already been configured to not use verbs.");
 			}
 			if (Verbs.ContainsKey(verbName))
 			{
-				throw new FluentParserException($@"That verb name has already been used, you may only use unique verb names.", ErrorCode.ProgrammerError);
+				throw new FluentParserBuilderException($@"That verb name has already been used, you may only use unique verb names.");
 			}
 			IsUsingVerbs = true;
 			FluentVerb<T> v = new FluentVerb<T>(Config, verbName);

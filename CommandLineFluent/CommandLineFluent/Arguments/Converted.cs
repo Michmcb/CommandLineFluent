@@ -6,8 +6,17 @@
 	/// <typeparam name="C">The type of the converted value</typeparam>
 	public class Converted<C>
 	{
+		/// <summary>
+		/// The value converted to <typeparamref name="C"/>, if successful
+		/// </summary>
 		public C ConvertedValue { get; }
+		/// <summary>
+		/// An error message explaining why the value could not be converted to <typeparamref name="C"/>
+		/// </summary>
 		public string ErrorMessage { get; }
+		/// <summary>
+		/// Whether or not the conversion was successful
+		/// </summary>
 		public bool Successful { get; }
 		/// <summary>
 		/// Successfully converted the value

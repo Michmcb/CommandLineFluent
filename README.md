@@ -1,5 +1,5 @@
 # CommandLineFluent
-A .NET Command Line Parsing library which is set up and parsed using fluent syntax. It parses command line arguments into strongly-typed classes which you define. Supports conversion, validation, default values, and automatic help/usage text.
+A .NET Command Line Parsing library which is set up and parsed using fluent syntax. It parses command line arguments into strongly-typed classes which you define. Supports conversion, validation, default values, and automatic help/usage text. It also supports invoking awaitable or asynchronous actions with the classes you define.
 
 ## Terminology
 
@@ -122,6 +122,38 @@ verbless.AddValue<FileInfo>()
 	.WithHelpText("The file which has to be processed")
 	.IsOptional(new FileInfo()); // Optional values will also be typed as FileInfo objects
 ```
+
+### Awaitable/Asynchronous
+
+If your target methods are awaitble (i.e. They return a Task object) then you are able to invoke them and await the Task or invoke them asynchronously. The Invoke() method will return the Task your method returns, and the InvokeAsync() method will await the Task your method returns.
+
+```csharp
+FluentParser fp = new FluentParserBuilder()
+	.Configure(config =>
+	{
+		config.ConfigureWithDefaults();
+	})
+	.WithoutVerbs<ProcessFile>(verbless =>
+	{
+		// ValueProperty is a string
+		verbless.AddValue()
+			.ForProperty(theClass => theClass.InputFile)
+			.WithName("Input File")
+			.WithHelpText("The file which has to be processed")
+			.IsRequired();
+	}).Build();
+
+	// Await the task that MyFrobulationMethodAsync returns, .Invoke() will just return the Task without awaiting it
+	await fp.ParseAwaitable(args)
+		.OnSuccess<ProcessFile>(processFileInstance => MyFrobulationMethodAsync(processFileInstance))
+		.Invoke();
+
+	// Await the task that MyFrobulationMethodAsync returns, .InvokeAsync() will await the Task
+	await fp.ParseAwaitable(args)
+		.OnSuccess<ProcessFile>(processFileInstance => MyFrobulationMethodAsync(processFileInstance))
+		.InvokeAsync();
+```
+
 
 ### Multiple Verbs
 

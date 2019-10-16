@@ -24,7 +24,7 @@ namespace CommandLineFluentTest.Parser
 		[MemberData(nameof(SimpleParsingData))]
 		public void SimpleParsing(string id, bool outcome, Components components, HashSet<ErrorCode> errorCodes, params string[] args)
 		{
-			System.Console.WriteLine(id);
+			Console.WriteLine(id);
 			FluentParser fp = new FluentParserBuilder()
 				.WithoutVerbs<Verb1>(verblessConfig =>
 				{
@@ -300,12 +300,12 @@ namespace CommandLineFluentTest.Parser
 		[Fact]
 		public void MixingUpVerbConfiguration()
 		{
-			Assert.Throws<FluentParserException>(() =>
+			Assert.Throws<FluentParserBuilderException>(() =>
 				new FluentParserBuilder()
 				.AddVerb<Verb1>("verb1", null)
 				.WithoutVerbs<Verb2>(null)
 				.Build());
-			Assert.Throws<FluentParserException>(() =>
+			Assert.Throws<FluentParserBuilderException>(() =>
 				new FluentParserBuilder()
 				.WithoutVerbs<Verb1>(null)
 				.AddVerb<Verb2>("verb2", null)
@@ -323,7 +323,7 @@ namespace CommandLineFluentTest.Parser
 		[Fact]
 		public void AddingDuplicateVerbNames()
 		{
-			Assert.Throws<FluentParserException>(() => new FluentParserBuilder().AddVerb<Verb1>("Name", null).AddVerb<Verb2>("Name", null).Build());
+			Assert.Throws<FluentParserBuilderException>(() => new FluentParserBuilder().AddVerb<Verb1>("Name", null).AddVerb<Verb2>("Name", null).Build());
 		}
 		[Fact]
 		public void BuildingWithoutProperConfiguration()

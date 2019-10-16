@@ -2,6 +2,9 @@
 
 namespace CommandLineFluent.Arguments
 {
+	/// <summary>
+	/// A single argument on the command line. Can be a Switch, Option, or Value
+	/// </summary>
 	public interface IFluentArgument
 	{
 		/// <summary>

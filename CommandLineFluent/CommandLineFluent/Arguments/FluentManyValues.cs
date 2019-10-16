@@ -98,6 +98,10 @@ namespace CommandLineFluent.Arguments
 			}
 			return null;
 		}
+		/// <summary>
+		/// Configures this Value to set the provided property of <typeparamref name="T"/>.
+		/// </summary>
+		/// <param name="expression">The property to set</param>
 		public FluentManyValues<T, C> ForProperty(Expression<Func<T, C>> expression)
 		{
 			if (!(expression.Body is MemberExpression me))

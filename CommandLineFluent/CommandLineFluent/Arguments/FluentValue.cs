@@ -58,12 +58,12 @@ namespace CommandLineFluent.Arguments
 						converted = _converter.Invoke(value);
 						if (!converted.Successful)
 						{
-							return new Error(ErrorCode.ValuesFailedConversion, true, converted.ErrorMessage);
+							return new Error(ErrorCode.ValueFailedConversion, true, converted.ErrorMessage);
 						}
 					}
 					catch (Exception ex)
 					{
-						return new Error(ErrorCode.ValuesFailedConversion, false, $"Converter for Value {Name} threw an exception ({ex.Message})", ex);
+						return new Error(ErrorCode.ValueFailedConversion, false, $"Converter for Value {Name} threw an exception ({ex.Message})", ex);
 					}
 					TargetProperty.SetValue(target, converted.ConvertedValue);
 					return null;
