@@ -111,7 +111,7 @@ namespace CommandLineFluentTest.Parser
 				})
 				.WithoutVerbs<ComplexVerb1>(verb =>
 				{
-					verb.WithDescription("My Test Verb");
+					verb.WithHelpText("My Test Verb");
 
 					verb.AddValue()
 						.ForProperty(x => x.RequiredValue)

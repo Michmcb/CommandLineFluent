@@ -31,6 +31,8 @@ FluentParser fp = new FluentParserBuilder()
 	})
 	.WithoutVerbs<ProcessFile>(verbless =>
 	{
+		verbless.WithHelpText("Does something to the input file");
+
 		// ValueProperty is a string
 		verbless.AddValue()
 			.ForProperty(theClass => theClass.InputFile)

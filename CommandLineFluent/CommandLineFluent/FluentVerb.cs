@@ -43,7 +43,7 @@ namespace CommandLineFluent
 		/// <summary>
 		/// The custom function to use when displaying usage information, if UsageText is null.
 		/// </summary>s
-		public Func<IFluentVerb, string, string> UsageTextCreator { get; private set; }
+		public Func<IFluentVerb, string> UsageTextCreator { get; private set; }
 		/// <summary>
 		/// The object that the verb has successfully parsed. If no object has been parsed yet, this is the default
 		/// value for an object of type <typeparamref name="T"/>. This is also reset to default when Reset is invoked.
@@ -58,23 +58,20 @@ namespace CommandLineFluent
 		/// </summary>
 		public string Name { get; private set; }
 		/// <summary>
-		/// Custom help text to be used when dispalying help information. This takes precedence over HelpTextCreator
+		/// Human-readable text that provides a description as to what this verb is used for. This is used when displaying Help.
 		/// </summary>
 		public string HelpText { get; private set; }
 		/// <summary>
-		/// Custom help text to be used when dispalying help information. This takes precedence over UsageTextCreator
-		/// </summary>
-		public string UsageText { get; private set; }
-		/// <summary>
 		/// Human-readable text that provides a description as to what this verb is used for. This is used when displaying Help.
 		/// </summary>
+		[Obsolete("This is no longer used, HelpText is instead. Use WithHelpText() to set the text that is displayed when writing help/usage information")]
 		public string Description { get; private set; }
 		/// <summary>
 		/// True if the last parsing attempt was successful, false if it was unsuccessful. Null if the verb was not parsed.
 		/// This is automatically reset each time you invoke Parse on a FluentParser that owns this verb
 		/// </summary>
 		public bool? Successful { get; private set; }
-		internal FluentVerb(FluentParserConfig config, string name = null)
+		internal FluentVerb(FluentParserConfig config, string name)
 		{
 			_fluentValues = new List<IFluentValue>();
 			_fluentSwitches = new List<IFluentSwitch>();
@@ -87,6 +84,8 @@ namespace CommandLineFluent
 			Name = name;
 			_config = config;
 			TargetType = typeof(T);
+			HelpTextCreator = GetHelpTextDefault;
+			UsageTextCreator = GetUsageTextDefault;
 		}
 		/// <summary>
 		/// Returns errors if improperly configured, or an empty collection if all is well
@@ -140,8 +139,7 @@ namespace CommandLineFluent
 			ParsedObject = default;
 		}
 		/// <summary>
-		/// Custom help text to be used when dispalying help information. This takes precedence over anything else.
-		/// You might want WithDescription() to set a simple description to display when using default usage/help formatting.
+		/// The help text to be used when dispalying help information.
 		/// </summary>
 		/// <param name="helpText">The help text</param>
 		public void WithHelpText(string helpText)
@@ -149,18 +147,11 @@ namespace CommandLineFluent
 			HelpText = helpText;
 		}
 		/// <summary>
-		/// Custom help text to be used when dispalying help information. This takes precedence over anything else.
-		/// </summary>
-		/// <param name="usageText">The usage text</param>
-		public void WithUsageText(string usageText)
-		{
-			UsageText = usageText;
-		}
-		/// <summary>
 		/// Configures a description for this verb. This is used, by default, when writing help/usage information
 		/// when the user did not specify a verb.
 		/// </summary>
 		/// <param name="description">The description</param>
+		[Obsolete("This is no longer used. Instead, use WithHelpText() to set the text that is displayed when writing help/usage information")]
 		public void WithDescription(string description)
 		{
 			Description = description;
@@ -174,10 +165,10 @@ namespace CommandLineFluent
 			HelpTextCreator = helpTextCreator;
 		}
 		/// <summary>
-		/// Configures a custom usage text creator. The string parameter is the ExecuteCommand property set on FluentParserConfig.
+		/// Configures a custom usage text creator
 		/// </summary>
 		/// <param name="usageTextCreator">This takes an instance of this verb, and should return a string which is the help text</param>
-		public void WithUsageFormatter(Func<IFluentVerb, string, string> usageTextCreator)
+		public void WithUsageFormatter(Func<IFluentVerb, string> usageTextCreator)
 		{
 			UsageTextCreator = usageTextCreator;
 		}
@@ -484,7 +475,7 @@ namespace CommandLineFluent
 				{
 					return new Error[] { error };
 				}
-				return new Error[] { };
+				return Array.Empty<Error>();
 			}
 			else if (values.Length > 0)
 			{
@@ -494,7 +485,7 @@ namespace CommandLineFluent
 			else
 			{
 				// Otherwise, we're all good
-				return new Error[] { };
+				return Array.Empty<Error>();
 			}
 		}
 		/// <summary>
@@ -563,6 +554,14 @@ namespace CommandLineFluent
 				}
 				_nameMapping.Add(longName, new ArgumentNameAndType(longName, type));
 			}
+		}
+		internal string GetUsageTextDefault(IFluentVerb verb)
+		{
+			return HelpFormatter.FormatVerbUsage(this, _config.ExeceuteCommand);
+		}
+		internal string GetHelpTextDefault(IFluentVerb verb)
+		{
+			return HelpFormatter.FormatVerbHelp(this, _config.MaxLineLength);
 		}
 	}
 }

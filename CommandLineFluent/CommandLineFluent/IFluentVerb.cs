@@ -33,22 +33,19 @@ namespace CommandLineFluent
 		/// <summary>
 		/// The custom function to use when displaying usage information, if UsageText is null.
 		/// </summary>s
-		Func<IFluentVerb, string, string> UsageTextCreator { get; }
+		Func<IFluentVerb, string> UsageTextCreator { get; }
 		/// <summary>
 		/// The name used to invoke the verb. This must be unique.
 		/// </summary>
 		string Name { get; }
 		/// <summary>
-		/// Custom help text to be used when dispalying help information. This takes precedence over HelpTextCreator
+		/// Human-readable text that provides a description as to what this verb is used for. This is used when displaying Help.
 		/// </summary>
 		string HelpText { get; }
 		/// <summary>
-		/// Custom help text to be used when dispalying help information. This takes precedence over UsageTextCreator
-		/// </summary>
-		string UsageText { get; }
-		/// <summary>
 		/// Human-readable text that provides a description as to what this verb is used for. This is used when displaying Help.
 		/// </summary>
+		[Obsolete("This is no longer used. Instead, use HelpText")]
 		string Description { get; }
 		/// <summary>
 		/// True if the last parsing attempt was successful, false if it was unsuccessful. Null if the verb was not parsed.

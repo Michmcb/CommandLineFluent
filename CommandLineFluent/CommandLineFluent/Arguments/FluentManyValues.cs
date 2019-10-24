@@ -45,10 +45,10 @@ namespace CommandLineFluent.Arguments
 			if (values != null)
 			{
 				// If any value starts with any ignored prefix
-				var badVals = values.Where(val => IgnoredPrefixes.Any(prefix => val.StartsWith(prefix)));
+				System.Collections.Generic.IEnumerable<string> badVals = values.Where(val => IgnoredPrefixes.Any(prefix => val.StartsWith(prefix)));
 				if (badVals?.Any() == true)
 				{
-					return new Error(ErrorCode.UnexpectedArgument, true, $"Found some unexpected arguments: {String.Join(", ", badVals)}");
+					return new Error(ErrorCode.UnexpectedArgument, true, $"Found some unexpected arguments: {string.Join(", ", badVals)}");
 				}
 				string validateError = null;
 				try

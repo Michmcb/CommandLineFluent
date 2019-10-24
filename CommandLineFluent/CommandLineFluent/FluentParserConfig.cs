@@ -27,13 +27,21 @@ namespace CommandLineFluent
 		/// </summary>
 		public string DefaultLongPrefix { get; private set; }
 		/// <summary>
-		/// The Action to invoke to write Errors, Help, and Usage messages
+		/// The Action that will be invoked when writing Error, Help, or Usage text, with a newline
 		/// </summary>
-		public Action<string> WriteMessages { get; private set; }
+		public Action<string> WriteText { get; private set; }
 		/// <summary>
-		/// The Action to invoke to write Errors
+		/// The Action that will be invoked to get the Help text
 		/// </summary>
-		public Action<IEnumerable<Error>, Action<string>> WriteErrors { get; private set; }
+		public Func<FluentParser, string> GetHelpText { get; private set; }
+		/// <summary>
+		/// The Action that will be invoked to get the Usage text
+		/// </summary>
+		public Func<FluentParser, string> GetUsageText { get; private set; }
+		/// <summary>
+		/// The Action that will be invoked to create a human-readable string to display Errors to the user
+		/// </summary>
+		public Func<IEnumerable<Error>, string> GetErrorsText { get; private set; }
 		/// <summary>
 		/// Defines the maximum number of characters that can fit on one line when writing help/usage text
 		/// </summary>
@@ -51,17 +59,8 @@ namespace CommandLineFluent
 		/// </summary>
 		public string UsageText { get; private set; }
 		/// <summary>
-		/// The custom function to use when displaying help information, if HelpText is null.
-		/// </summary>
-		public Func<FluentParser, string> HelpTextCreator { get; private set; }
-		/// <summary>
-		/// The custom function to use when displaying usage information, if UsageText is null.
-		/// </summary>s
-		public Func<FluentParser, string, string> UsageTextCreator { get; private set; }
-
-		/// <summary>
 		/// Configures to use a DefaultShortPrefix of -, a DefaultLongPrefix of --, Help switches of -? and --help,
-		/// and Errors/Help/Usage is automatically written to Console.WriteLine on any error, with a MaxLineLength of Console.WindowWidth.
+		/// and Errors/Help/Usage is automatically written to Console.Write on any error, with a MaxLineLength of Console.WindowWidth.
 		/// If the Console cannot be used, then WriteHelp and WriteUsage will be set to null and MaxLineLength will be set to 10,000
 		/// </summary>
 		public void ConfigureWithDefaults()
@@ -74,9 +73,10 @@ namespace CommandLineFluent
 			try
 			{
 				MaxLineLength = Console.WindowWidth;
-				WriteMessages = Console.WriteLine;
-				ShowHelpAndUsageOnFailure();
-				ShowErrorsOnFailure();
+				WriteText = Console.Write;
+				GetHelpText = GetHelpTextDefault;
+				GetUsageText = GetUsageTextDefault;
+				GetErrorsText = HelpFormatter.FormatErrors;
 			}
 			catch (System.IO.IOException)
 			{
@@ -106,16 +106,25 @@ namespace CommandLineFluent
 			DefaultShortPrefix = defaultShortPrefix;
 			DefaultLongPrefix = defaultLongPrefix;
 		}
-		/// <summary>
-		/// Defines the delimiters that may be used to break up Options when parsing. e.g. If you define = as a delimiter,
-		/// then the string videoSource=C:\video.mp4 will be interpreted as an Option with name "videoSource", and its value will be "C:\video.mp4".
-		/// By default, this is nothing.
-		/// </summary>
-		/// <param name="delimiters">The delimiters that are allowed</param>
+		// <summary>
+		// Defines the delimiters that may be used to break up Options when parsing. e.g. If you define = as a delimiter,
+		// then the string videoSource=C:\video.mp4 will be interpreted as an Option with name "videoSource", and its value will be "C:\video.mp4".
+		// By default, this is nothing.
+		// </summary>
+		// <param name="delimiters">The delimiters that are allowed</param>
 		//public void UseDelimiters(params char[] delimiters)
 		//{
 		//	Delimiters = delimiters;
 		//}
+		/// <summary>
+		/// Defines the Action to invoke to write help, usage, and errors text. If null, this will be
+		/// Console.Write
+		/// </summary>
+		/// <param name="textWriter">The Action</param>
+		public void WithTextWriter(Action<string> textWriter = null)
+		{
+			WriteText = textWriter ?? Console.Write;
+		}
 		/// <summary>
 		/// The command used to execute the program. Used when writing help text.
 		/// If null, then the file name returned by System.Reflection.Assembly.GetEntryAssembly().Location will be used
@@ -125,55 +134,55 @@ namespace CommandLineFluent
 			ExeceuteCommand = execeuteCommand ?? System.IO.Path.GetFileName(System.Reflection.Assembly.GetEntryAssembly().Location);
 		}
 		/// <summary>
-		/// Defines the Action to invoke with the usage message on failure. By default, it will be Console.WriteLine.
-		/// This Action will automatically be invoked upon an Error of any kind (including encountering the help switch).
+		/// Configures the FluentParser to write default help and usage text on failure.
+		/// It will be written will automatically upon an Error of any kind (including encountering the help switch).
 		/// Usage is shown before Help.
 		/// </summary>
-		/// <param name="writeHelpAndUsage">What is invoked to write usage. If null, Console.WriteLine is used.</param>
-		public void ShowHelpAndUsageOnFailure(Action<string> writeHelpAndUsage = null)
+		public void ShowHelpAndUsageOnFailure()
 		{
-			WriteMessages = writeHelpAndUsage ?? Console.WriteLine;
+			GetHelpText = GetHelpTextDefault;
+			GetUsageText = GetUsageTextDefault;
 		}
 		/// <summary>
 		/// Defines the action to invoke when any errors are encountered. By default, it will write Errors that should be shown to the user to Console.WriteLine (Message property).
 		/// This Action will automatically be invoked upon an Error of any kind (including encountering the help switch).
 		/// </summary>
-		/// <param name="writeErrors">What is invoked to write Errors. If null, Console.WriteLine</param>
-		public void ShowErrorsOnFailure(Action<IEnumerable<Error>, Action<string>> writeErrors = null)
+		/// <param name="errorTextCreator">What is invoked to write Errors. If null, default formatting is used</param>
+		public void ShowErrorsOnFailure(Func<IEnumerable<Error>, string> errorTextCreator = null)
 		{
-			WriteErrors = writeErrors ?? Util.WriteErrors;
+			GetErrorsText = errorTextCreator ?? HelpFormatter.FormatErrors;
 		}
 		/// <summary>
-		/// Configures custom help text
+		/// Defines a custom errors text formatter, which returns the errors text to show to the user.
 		/// </summary>
-		/// <param name="helpText">The help text</param>
-		public void WithHelpText(string helpText)
+		/// <param name="errorTextCreator">What is invoked to write Errors. If null, Console.WriteLine</param>
+		public void WithErrorFormatter(Func<IEnumerable<Error>, string> errorTextCreator)
 		{
-			HelpText = helpText;
+			GetErrorsText = errorTextCreator;
 		}
 		/// <summary>
-		/// Configures custom usage text
-		/// </summary>
-		/// <param name="usageText">The usage text</param>
-		public void WithUsageText(string usageText)
-		{
-			UsageText = usageText;
-		}
-		/// <summary>
-		/// Configures a custom help text creator
+		/// Defines a custom help text formatter, which returns the help text to show to the user.
 		/// </summary>
 		/// <param name="helpTextCreator">This takes an instance of this verb, and should return a string which is the help text</param>
 		public void WithHelpFormatter(Func<FluentParser, string> helpTextCreator)
 		{
-			HelpTextCreator = helpTextCreator;
+			GetHelpText = helpTextCreator;
 		}
 		/// <summary>
-		/// Configures a custom usage text creator. The string parameter is the ExecuteCommand property
+		/// Defines a custom usage text creator, which returns the usage text to show to the user.
 		/// </summary>
 		/// <param name="usageTextCreator">This takes an instance of this verb, and should return a string which is the help text</param>
-		public void WithUsageFormatter(Func<FluentParser, string, string> usageTextCreator)
+		public void WithUsageFormatter(Func<FluentParser, string> usageTextCreator)
 		{
-			UsageTextCreator = usageTextCreator;
+			GetUsageText = usageTextCreator;
+		}
+		internal string GetHelpTextDefault(FluentParser fp)
+		{
+			return HelpFormatter.FormatOverallHelp(fp.Verbs.Values, Util.ShortAndLongName(ShortHelpSwitch, LongHelpSwitch), MaxLineLength);
+		}
+		internal string GetUsageTextDefault(FluentParser fp)
+		{
+			return HelpFormatter.FormatOverallUsage(fp.Verbs.Values, ExeceuteCommand);
 		}
 	}
 }

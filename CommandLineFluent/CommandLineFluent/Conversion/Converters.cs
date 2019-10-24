@@ -357,7 +357,7 @@ namespace CommandLineFluent.Conversion
 			}
 			else
 			{
-				return new Converted<T>(default, $@"""{s}"" should be one of: {String.Join(", ", Enum.GetNames(typeof(T)))}");
+				return new Converted<T>(default, $@"""{s}"" should be one of: {string.Join(", ", Enum.GetNames(typeof(T)))}");
 			}
 		}
 		/// <summary>

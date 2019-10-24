@@ -1,6 +1,4 @@
 ﻿using CommandLineFluent.Arguments;
-using System;
-using System.Collections.Generic;
 
 namespace CommandLineFluent
 {
@@ -33,27 +31,6 @@ namespace CommandLineFluent
 				return $"{shortName}|{longName}";
 			}
 			return shortName ?? longName;
-		}
-		/// <summary>
-		/// For each Error, if Error.ShouldBeShownToUser is true, invokes <paramref name="writeError"/> with Error.Message
-		/// </summary>
-		/// <param name="errors">The errors</param>
-		/// <param name="writeError">The action to invoke to write Error.Message</param>
-		public static void WriteErrors(IEnumerable<Error> errors, Action<string> writeError)
-		{
-			bool writeEndLine = false;
-			foreach (Error err in errors)
-			{
-				if (err.ShouldBeShownToUser)
-				{
-					writeError(err.Message);
-					writeEndLine = true;
-				}
-			}
-			if (writeEndLine)
-			{
-				writeError("");
-			}
 		}
 	}
 }

@@ -17,10 +17,8 @@ namespace CommandLineFluentTest.Parser
 				})
 				.WithoutVerbs<Verb1>(verb =>
 				{
-					verb.WithUsageText("ugase");
 					verb.WithHelpText("hlep");
 					verb.WithDescription("descr");
-					Assert.Equal("ugase", verb.UsageText);
 					Assert.Equal("hlep", verb.HelpText);
 					Assert.Equal("descr", verb.Description);
 

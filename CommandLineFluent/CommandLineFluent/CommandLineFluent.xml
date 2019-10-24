@@ -902,9 +902,9 @@
         <member name="M:CommandLineFluent.FluentParser.WriteOverallUsageAndHelp">
             <summary>
             Writes a summary of how you invoke the program and how you can obtain further help, by specifying a verb.
-            Order of priority is: this.Config.UsageText, then this.Config.UsageTextCreator, then the default HelpFormatter.FormatOverallUsage.
+            It uses Config.GetUsageText and Config.GetHelpText.
             Same thing for Help Text.
-            Does nothing if Config.WriteUsageAndHelp is null.
+            Does nothing if Config.WriteText is null.
             </summary>
         </member>
         <member name="M:CommandLineFluent.FluentParser.WriteUsageAndHelp(CommandLineFluent.IFluentVerb)">
@@ -912,7 +912,7 @@
             Writes the Usage Text, and then the Help Text for the specified verb. Order of priority is:
             verb.UsageText, then verb.UsageTextCreator, then the default HelpFormatter.FormatVerbUsage.
             Same thing for Help Text.
-            Does nothing if Config.WriteUsageAndHelp is null.
+            Does nothing if Config.WriteText is null.
             </summary>
             <param name="verb">The verb to write detailed usage/help for</param>
         </member>
@@ -1003,14 +1003,24 @@
             Default prefix for all long names
             </summary>
         </member>
-        <member name="P:CommandLineFluent.FluentParserConfig.WriteMessages">
+        <member name="P:CommandLineFluent.FluentParserConfig.WriteText">
             <summary>
-            The Action to invoke to write Errors, Help, and Usage messages
+            The Action that will be invoked when writing Error, Help, or Usage text, with a newline
             </summary>
         </member>
-        <member name="P:CommandLineFluent.FluentParserConfig.WriteErrors">
+        <member name="P:CommandLineFluent.FluentParserConfig.GetHelpText">
             <summary>
-            The Action to invoke to write Errors
+            The Action that will be invoked to get the Help text
+            </summary>
+        </member>
+        <member name="P:CommandLineFluent.FluentParserConfig.GetUsageText">
+            <summary>
+            The Action that will be invoked to get the Usage text
+            </summary>
+        </member>
+        <member name="P:CommandLineFluent.FluentParserConfig.GetErrorsText">
+            <summary>
+            The Action that will be invoked to create a human-readable string to display Errors to the user
             </summary>
         </member>
         <member name="P:CommandLineFluent.FluentParserConfig.MaxLineLength">
@@ -1033,20 +1043,10 @@
             Custom help text to be used when dispalying help information. This takes precedence over UsageTextCreator
             </summary>
         </member>
-        <member name="P:CommandLineFluent.FluentParserConfig.HelpTextCreator">
-            <summary>
-            The custom function to use when displaying help information, if HelpText is null.
-            </summary>
-        </member>
-        <member name="P:CommandLineFluent.FluentParserConfig.UsageTextCreator">
-            <summary>
-            The custom function to use when displaying usage information, if UsageText is null.
-            </summary>s
-        </member>
         <member name="M:CommandLineFluent.FluentParserConfig.ConfigureWithDefaults">
             <summary>
             Configures to use a DefaultShortPrefix of -, a DefaultLongPrefix of --, Help switches of -? and --help,
-            and Errors/Help/Usage is automatically written to Console.WriteLine on any error, with a MaxLineLength of Console.WindowWidth.
+            and Errors/Help/Usage is automatically written to Console.Write on any error, with a MaxLineLength of Console.WindowWidth.
             If the Console cannot be used, then WriteHelp and WriteUsage will be set to null and MaxLineLength will be set to 10,000
             </summary>
         </member>
@@ -1067,48 +1067,48 @@
             <param name="defaultLongPrefix">The prefix to apply to long names</param>
             <returns></returns>
         </member>
+        <member name="M:CommandLineFluent.FluentParserConfig.WithTextWriter(System.Action{System.String})">
+            <summary>
+            Defines the Action to invoke to write help, usage, and errors text. If null, this will be
+            Console.Write
+            </summary>
+            <param name="textWriter">The Action</param>
+        </member>
         <member name="M:CommandLineFluent.FluentParserConfig.WithExecuteCommand(System.String)">
             <summary>
             The command used to execute the program. Used when writing help text.
             If null, then the file name returned by System.Reflection.Assembly.GetEntryAssembly().Location will be used
             </summary>
         </member>
-        <member name="M:CommandLineFluent.FluentParserConfig.ShowHelpAndUsageOnFailure(System.Action{System.String})">
+        <member name="M:CommandLineFluent.FluentParserConfig.ShowHelpAndUsageOnFailure">
             <summary>
-            Defines the Action to invoke with the usage message on failure. By default, it will be Console.WriteLine.
-            This Action will automatically be invoked upon an Error of any kind (including encountering the help switch).
+            Configures the FluentParser to write default help and usage text on failure.
+            It will be written will automatically upon an Error of any kind (including encountering the help switch).
             Usage is shown before Help.
             </summary>
-            <param name="writeHelpAndUsage">What is invoked to write usage. If null, Console.WriteLine is used.</param>
         </member>
-        <member name="M:CommandLineFluent.FluentParserConfig.ShowErrorsOnFailure(System.Action{System.Collections.Generic.IEnumerable{CommandLineFluent.Error},System.Action{System.String}})">
+        <member name="M:CommandLineFluent.FluentParserConfig.ShowErrorsOnFailure(System.Func{System.Collections.Generic.IEnumerable{CommandLineFluent.Error},System.String})">
             <summary>
             Defines the action to invoke when any errors are encountered. By default, it will write Errors that should be shown to the user to Console.WriteLine (Message property).
             This Action will automatically be invoked upon an Error of any kind (including encountering the help switch).
             </summary>
-            <param name="writeErrors">What is invoked to write Errors. If null, Console.WriteLine</param>
+            <param name="errorTextCreator">What is invoked to write Errors. If null, default formatting is used</param>
         </member>
-        <member name="M:CommandLineFluent.FluentParserConfig.WithHelpText(System.String)">
+        <member name="M:CommandLineFluent.FluentParserConfig.WithErrorFormatter(System.Func{System.Collections.Generic.IEnumerable{CommandLineFluent.Error},System.String})">
             <summary>
-            Configures custom help text
+            Defines a custom errors text formatter, which returns the errors text to show to the user.
             </summary>
-            <param name="helpText">The help text</param>
-        </member>
-        <member name="M:CommandLineFluent.FluentParserConfig.WithUsageText(System.String)">
-            <summary>
-            Configures custom usage text
-            </summary>
-            <param name="usageText">The usage text</param>
+            <param name="errorTextCreator">What is invoked to write Errors. If null, Console.WriteLine</param>
         </member>
         <member name="M:CommandLineFluent.FluentParserConfig.WithHelpFormatter(System.Func{CommandLineFluent.FluentParser,System.String})">
             <summary>
-            Configures a custom help text creator
+            Defines a custom help text formatter, which returns the help text to show to the user.
             </summary>
             <param name="helpTextCreator">This takes an instance of this verb, and should return a string which is the help text</param>
         </member>
-        <member name="M:CommandLineFluent.FluentParserConfig.WithUsageFormatter(System.Func{CommandLineFluent.FluentParser,System.String,System.String})">
+        <member name="M:CommandLineFluent.FluentParserConfig.WithUsageFormatter(System.Func{CommandLineFluent.FluentParser,System.String})">
             <summary>
-            Configures a custom usage text creator. The string parameter is the ExecuteCommand property
+            Defines a custom usage text creator, which returns the usage text to show to the user.
             </summary>
             <param name="usageTextCreator">This takes an instance of this verb, and should return a string which is the help text</param>
         </member>
@@ -1312,12 +1312,7 @@
         </member>
         <member name="P:CommandLineFluent.FluentVerb`1.HelpText">
             <summary>
-            Custom help text to be used when dispalying help information. This takes precedence over HelpTextCreator
-            </summary>
-        </member>
-        <member name="P:CommandLineFluent.FluentVerb`1.UsageText">
-            <summary>
-            Custom help text to be used when dispalying help information. This takes precedence over UsageTextCreator
+            Human-readable text that provides a description as to what this verb is used for. This is used when displaying Help.
             </summary>
         </member>
         <member name="P:CommandLineFluent.FluentVerb`1.Description">
@@ -1343,16 +1338,9 @@
         </member>
         <member name="M:CommandLineFluent.FluentVerb`1.WithHelpText(System.String)">
             <summary>
-            Custom help text to be used when dispalying help information. This takes precedence over anything else.
-            You might want WithDescription() to set a simple description to display when using default usage/help formatting.
+            The help text to be used when dispalying help information.
             </summary>
             <param name="helpText">The help text</param>
-        </member>
-        <member name="M:CommandLineFluent.FluentVerb`1.WithUsageText(System.String)">
-            <summary>
-            Custom help text to be used when dispalying help information. This takes precedence over anything else.
-            </summary>
-            <param name="usageText">The usage text</param>
         </member>
         <member name="M:CommandLineFluent.FluentVerb`1.WithDescription(System.String)">
             <summary>
@@ -1367,9 +1355,9 @@
             </summary>
             <param name="helpTextCreator">This takes an instance of this verb, and should return a string which is the help text</param>
         </member>
-        <member name="M:CommandLineFluent.FluentVerb`1.WithUsageFormatter(System.Func{CommandLineFluent.IFluentVerb,System.String,System.String})">
+        <member name="M:CommandLineFluent.FluentVerb`1.WithUsageFormatter(System.Func{CommandLineFluent.IFluentVerb,System.String})">
             <summary>
-            Configures a custom usage text creator. The string parameter is the ExecuteCommand property set on FluentParserConfig.
+            Configures a custom usage text creator
             </summary>
             <param name="usageTextCreator">This takes an instance of this verb, and should return a string which is the help text</param>
         </member>
@@ -1510,6 +1498,12 @@
             <param name="verb">The verb to write Usage information for</param>
             <param name="executeCommand">The command used to invoke the program</param>
         </member>
+        <member name="M:CommandLineFluent.HelpFormatter.FormatErrors(System.Collections.Generic.IEnumerable{CommandLineFluent.Error})">
+            <summary>
+            Returns the Error.Message, if Error.ShouldBeShownToUser is true. One Message per line.
+            </summary>
+            <param name="errors">The errors</param>
+        </member>
         <member name="T:CommandLineFluent.IFluentVerb">
             <summary>
             A single verb, for example, foo.exe add.
@@ -1553,12 +1547,7 @@
         </member>
         <member name="P:CommandLineFluent.IFluentVerb.HelpText">
             <summary>
-            Custom help text to be used when dispalying help information. This takes precedence over HelpTextCreator
-            </summary>
-        </member>
-        <member name="P:CommandLineFluent.IFluentVerb.UsageText">
-            <summary>
-            Custom help text to be used when dispalying help information. This takes precedence over UsageTextCreator
+            Human-readable text that provides a description as to what this verb is used for. This is used when displaying Help.
             </summary>
         </member>
         <member name="P:CommandLineFluent.IFluentVerb.Description">
@@ -1613,13 +1602,6 @@
             <summary>
             Makes a string like: -s|--long, to show the user both ways of writing the switch
             </summary>
-        </member>
-        <member name="M:CommandLineFluent.Util.WriteErrors(System.Collections.Generic.IEnumerable{CommandLineFluent.Error},System.Action{System.String})">
-            <summary>
-            For each Error, if Error.ShouldBeShownToUser is true, invokes <paramref name="writeError"/> with Error.Message
-            </summary>
-            <param name="errors">The errors</param>
-            <param name="writeError">The action to invoke to write Error.Message</param>
         </member>
         <member name="T:CommandLineFluent.Validation.Validators">
             <summary>

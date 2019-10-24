@@ -1,6 +1,4 @@
-﻿using CommandLineFluent;
-
-namespace CommandLineFluent.Arguments
+﻿namespace CommandLineFluent.Arguments
 {
 	/// <summary>
 	/// A Fluent Argument that is able to have its value set to something

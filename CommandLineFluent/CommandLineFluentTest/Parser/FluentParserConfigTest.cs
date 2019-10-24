@@ -31,11 +31,7 @@ namespace CommandLineFluentTest.Parser
 					config.UseDefaultPrefixes("-", "--");
 					Assert.Equal("-", config.DefaultShortPrefix);
 					Assert.Equal("--", config.DefaultLongPrefix);
-
-					config.ShowHelpAndUsageOnFailure(Dummy);
-					Assert.Equal(config.WriteMessages, Dummy);
 				});
 		}
-		private void Dummy(string dummy) { }
 	}
 }

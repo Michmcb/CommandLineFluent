@@ -129,95 +129,59 @@ namespace CommandLineFluent
 		/// <param name="errors">The errors to write</param>
 		public void WriteErrors(IEnumerable<Error> errors)
 		{
-			Config.WriteErrors?.Invoke(errors, Config.WriteMessages);
+			string s = Config.GetErrorsText?.Invoke(errors);
+			if (s != null)
+			{
+				Config.WriteText(s);
+			}
 		}
 		/// <summary>
 		/// Writes a summary of how you invoke the program and how you can obtain further help, by specifying a verb.
-		/// Order of priority is: this.Config.UsageText, then this.Config.UsageTextCreator, then the default HelpFormatter.FormatOverallUsage.
+		/// It uses Config.GetUsageText and Config.GetHelpText.
 		/// Same thing for Help Text.
-		/// Does nothing if Config.WriteUsageAndHelp is null.
+		/// Does nothing if Config.WriteText is null.
 		/// </summary>
 		public void WriteOverallUsageAndHelp()
 		{
-			if (Config.WriteMessages == null)
+			if (Config.WriteText == null)
 			{
 				return;
 			}
 
-			if (Config.UsageText == null)
+			string s = Config.GetUsageText?.Invoke(this);
+			if (s != null)
 			{
-				if (Config.UsageTextCreator == null)
-				{
-					Config.WriteMessages(HelpFormatter.FormatOverallUsage(Verbs.Values, Config.ExeceuteCommand));
-				}
-				else
-				{
-					Config.WriteMessages(Config.UsageTextCreator.Invoke(this, Config.ExeceuteCommand));
-				}
+				Config.WriteText(s);
 			}
-			else
+			s = Config.GetHelpText?.Invoke(this);
+			if (s != null)
 			{
-				Config.WriteMessages(Config.UsageText);
-			}
-			if (Config.HelpText == null)
-			{
-				if (Config.HelpTextCreator == null)
-				{
-					Config.WriteMessages(HelpFormatter.FormatOverallHelp(Verbs.Values, Util.ShortAndLongName(Config.ShortHelpSwitch, Config.LongHelpSwitch), Config.MaxLineLength));
-				}
-				else
-				{
-					Config.WriteMessages(Config.HelpTextCreator.Invoke(this));
-				}
-			}
-			else
-			{
-				Config.WriteMessages(Config.HelpText);
+				Config.WriteText(s);
 			}
 		}
 		/// <summary>
 		/// Writes the Usage Text, and then the Help Text for the specified verb. Order of priority is:
 		/// verb.UsageText, then verb.UsageTextCreator, then the default HelpFormatter.FormatVerbUsage.
 		/// Same thing for Help Text.
-		/// Does nothing if Config.WriteUsageAndHelp is null.
+		/// Does nothing if Config.WriteText is null.
 		/// </summary>
 		/// <param name="verb">The verb to write detailed usage/help for</param>
 		public void WriteUsageAndHelp(IFluentVerb verb)
 		{
-			if (Config.WriteMessages == null)
+			if (Config.WriteText == null)
 			{
 				return;
 			}
 
-			if (verb.UsageText == null)
+			string s = verb.UsageTextCreator?.Invoke(verb);
+			if (s != null)
 			{
-				if (verb.UsageTextCreator == null)
-				{
-					Config.WriteMessages(HelpFormatter.FormatVerbUsage(verb, Config.ExeceuteCommand));
-				}
-				else
-				{
-					Config.WriteMessages(verb.UsageTextCreator.Invoke(verb, Config.ExeceuteCommand));
-				}
+				Config.WriteText(s);
 			}
-			else
+			s = verb.HelpTextCreator?.Invoke(verb);
+			if (s != null)
 			{
-				Config.WriteMessages(verb.UsageText);
-			}
-			if (verb.HelpText == null)
-			{
-				if (verb.HelpTextCreator == null)
-				{
-					Config.WriteMessages(HelpFormatter.FormatVerbHelp(verb, Config.MaxLineLength));
-				}
-				else
-				{
-					Config.WriteMessages(verb.HelpTextCreator.Invoke(verb));
-				}
-			}
-			else
-			{
-				Config.WriteMessages(verb.HelpText);
+				Config.WriteText(s);
 			}
 		}
 	}

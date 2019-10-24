@@ -23,7 +23,7 @@ namespace CommandLineFluent
 			{
 				execeuteCommand += ' ';
 			}
-			return $@"Usage: {execeuteCommand ?? ""}{string.Join("|", verbs.Select(x => x.Name))} options...";
+			return $@"Usage: {execeuteCommand ?? ""}{string.Join("|", verbs.Select(x => x.Name))} options...{Environment.NewLine}{Environment.NewLine}";
 		}
 		/// <summary>
 		/// Formats the overall help.
@@ -40,7 +40,7 @@ namespace CommandLineFluent
 			foreach (IFluentVerb verb in verbs)
 			{
 				charsForKey = Max(verb.Name.Length, charsForKey);
-				text.Add(new Tuple<string, string>(verb.Name, verb.Description));
+				text.Add(new Tuple<string, string>(verb.Name, verb.HelpText));
 			}
 			// A few more spaces just so it's easier to read
 			charsForKey += 3;
@@ -55,7 +55,9 @@ namespace CommandLineFluent
 					allTheHelp.AppendLine();
 				}
 			}
+			allTheHelp.AppendLine();
 			allTheHelp.AppendLine($@"Use verbname {helpSwitches} for detailed help.");
+			allTheHelp.AppendLine();
 			return allTheHelp.ToString();
 		}
 		/// <summary>
@@ -101,22 +103,22 @@ namespace CommandLineFluent
 				helpText[i++] = sw.HelpText;
 				charsForKey = Max(name.Length, charsForKey);
 			}
-			StringBuilder allTheHelp = new StringBuilder();
+			StringBuilder sb = new StringBuilder();
 
 			// A few more spaces just so it's easier to read
 			charsForKey += 3;
 			for (i = 0; i < keyText.Length; i++)
 			{
-				allTheHelp.Append(keyText[i].PadRight(charsForKey));
-				allTheHelp.AppendLine(helpText[i]);
+				sb.Append(keyText[i].PadRight(charsForKey));
+				sb.AppendLine(helpText[i]);
 				// If we've wrapped a line, just shove an extra newline in there so it's still easyish to read
 				if (maxLineLength < keyText[i].Length + helpText[i].Length)
 				{
-					allTheHelp.AppendLine();
+					sb.AppendLine();
 				}
 			}
-
-			return allTheHelp.ToString();
+			sb.AppendLine();
+			return sb.ToString();
 		}
 		/// <summary>
 		/// Formats the usage text of the Options, Switches, and Values of the verb.
@@ -126,21 +128,21 @@ namespace CommandLineFluent
 		/// <param name="executeCommand">The command used to invoke the program</param>
 		public static string FormatVerbUsage(IFluentVerb verb, string executeCommand)
 		{
-			StringBuilder usageText = new StringBuilder("Usage: ");
-			usageText.Append(executeCommand + ' ' + verb.Name + ' ');
+			StringBuilder sb = new StringBuilder("Usage: ");
+			sb.Append(executeCommand + ' ' + verb.Name + ' ');
 			if (verb.FluentManyValues == null)
 			{
 				int i = 1;
 				foreach (IFluentValue val in verb.FluentValues)
 				{
-					usageText.Append(val.Required ? val.Name ?? $"value{i}" : $"[{val.Name ?? $"value{i}"}]");
-					usageText.Append(' ');
+					sb.Append(val.Required ? val.Name ?? $"value{i}" : $"[{val.Name ?? $"value{i}"}]");
+					sb.Append(' ');
 				}
 			}
 			else
 			{
-				usageText.Append(verb.FluentManyValues.Required ? verb.FluentManyValues.Name : $"[{verb.FluentManyValues.Name}]");
-				usageText.Append(' ');
+				sb.Append(verb.FluentManyValues.Required ? verb.FluentManyValues.Name : $"[{verb.FluentManyValues.Name}]");
+				sb.Append(' ');
 			}
 
 			foreach (IFluentOption opt in verb.FluentOptions)
@@ -148,21 +150,45 @@ namespace CommandLineFluent
 				string bothNames = Util.ShortAndLongName(opt);
 				if (opt.Required)
 				{
-					usageText.Append($"{bothNames} {opt.Name ?? "value"} ");
+					sb.Append($"{bothNames} {opt.Name ?? "value"} ");
 				}
 				else
 				{
-					usageText.Append($"[{bothNames} {opt.Name ?? "value"}] ");
+					sb.Append($"[{bothNames} {opt.Name ?? "value"}] ");
 				}
 			}
 			foreach (IFluentSwitch sw in verb.FluentSwitches)
 			{
 				// Switches are always optional
-				usageText.Append($"[{Util.ShortAndLongName(sw)}] ");
+				sb.Append($"[{Util.ShortAndLongName(sw)}] ");
 			}
-			usageText.AppendLine();
-			usageText.AppendLine(verb.Description);
-			return usageText.ToString();
+			sb.AppendLine();
+			sb.AppendLine(verb.HelpText);
+			sb.AppendLine();
+			return sb.ToString();
+		}
+		/// <summary>
+		/// Returns the Error.Message, if Error.ShouldBeShownToUser is true. One Message per line.
+		/// </summary>
+		/// <param name="errors">The errors</param>
+		public static string FormatErrors(IEnumerable<Error> errors)
+		{
+			if (errors.Any())
+			{
+				StringBuilder sb = new StringBuilder();
+				foreach (Error err in errors)
+				{
+					if (err.ShouldBeShownToUser)
+					{
+						sb.AppendLine(err.Message);
+					}
+				}
+				return sb.ToString();
+			}
+			else
+			{
+				return "";
+			}
 		}
 	}
 }

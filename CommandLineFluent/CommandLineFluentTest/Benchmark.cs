@@ -22,7 +22,7 @@ namespace CommandLineFluentTest
 					})
 					.AddVerb<Verb1>("verb1", verb =>
 					{
-						verb.WithDescription("A verb");
+						verb.WithHelpText("A verb");
 
 						verb.AddValue()
 							.ForProperty(x => x.Value)
@@ -40,7 +40,7 @@ namespace CommandLineFluentTest
 					})
 					.AddVerb<Verb2>("verb2", verb =>
 					{
-						verb.WithDescription("A verb");
+						verb.WithHelpText("A verb");
 
 						verb.AddValue()
 							.ForProperty(x => x.Value)
@@ -58,7 +58,7 @@ namespace CommandLineFluentTest
 					})
 					.AddVerb<Verb3>("verb3", verb =>
 					{
-						verb.WithDescription("A verb");
+						verb.WithHelpText("A verb");
 
 						verb.AddValue()
 							.ForProperty(x => x.Value)
@@ -76,7 +76,7 @@ namespace CommandLineFluentTest
 					})
 					.AddVerb<Verb4>("verb4", verb =>
 					{
-						verb.WithDescription("A verb");
+						verb.WithHelpText("A verb");
 
 						verb.AddValue()
 							.ForProperty(x => x.Value)
@@ -94,7 +94,7 @@ namespace CommandLineFluentTest
 					})
 					.AddVerb<Verb5>("verb5", verb =>
 					{
-						verb.WithDescription("A verb");
+						verb.WithHelpText("A verb");
 
 						verb.AddValue()
 							.ForProperty(x => x.Value)
@@ -112,7 +112,7 @@ namespace CommandLineFluentTest
 					})
 					.AddVerb<Verb6>("verb6", verb =>
 					{
-						verb.WithDescription("A verb");
+						verb.WithHelpText("A verb");
 
 						verb.AddValue()
 							.ForProperty(x => x.Value)
@@ -130,7 +130,7 @@ namespace CommandLineFluentTest
 					})
 					.AddVerb<Verb7>("verb7", verb =>
 					{
-						verb.WithDescription("A verb");
+						verb.WithHelpText("A verb");
 
 						verb.AddValue()
 							.ForProperty(x => x.Value)
@@ -148,7 +148,7 @@ namespace CommandLineFluentTest
 					})
 					.AddVerb<Verb8>("verb8", verb =>
 					{
-						verb.WithDescription("A verb");
+						verb.WithHelpText("A verb");
 
 						verb.AddValue()
 							.ForProperty(x => x.Value)
@@ -166,7 +166,7 @@ namespace CommandLineFluentTest
 					})
 					.AddVerb<Verb9>("verb9", verb =>
 					{
-						verb.WithDescription("A verb");
+						verb.WithHelpText("A verb");
 
 						verb.AddValue()
 							.ForProperty(x => x.Value)
