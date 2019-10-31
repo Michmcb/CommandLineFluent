@@ -1363,7 +1363,8 @@
         </member>
         <member name="M:CommandLineFluent.FluentVerb`1.AddOption(System.String,System.String)">
             <summary>
-            Creates a new Option and adds it to this verb. Its plain text value will be assigned to the target property
+            Creates a new Option and adds it to this verb. Its plain text value will be assigned to the target property.
+            Either <paramref name="shortName"/> or <paramref name="longName"/> can be null to not use a short or long name, but both cannot be null.
             </summary>
             <param name="shortName">The short name for the Option</param>
             <param name="longName">The long name for the Option</param>
@@ -1372,6 +1373,7 @@
             <summary>
             Creates a new Option and adds it to this verb. A converted value will be assigned to the target property,
             based on the converter with which the Option is configured.
+            Either <paramref name="shortName"/> or <paramref name="longName"/> can be null to not use a short or long name, but both cannot be null.
             </summary>
             <param name="shortName">The short name for the Option</param>
             <param name="longName">The long name for the Option</param>
@@ -1409,6 +1411,7 @@
             <summary>
             Creates a new Switch and adds it to this verb. True or False will be assigned to the target property,
             depending on whether or not the Switch is present
+            Either <paramref name="shortName"/> or <paramref name="longName"/> can be null to not use a short or long name, but both cannot be null.
             </summary>
             <param name="shortName">The short name for the Switch</param>
             <param name="longName">The long name for the Switch</param>
@@ -1417,6 +1420,7 @@
             <summary>
             Creates a new Switch and adds it to this verb. A converted value will be assigned to the target property,
             based on the converter with which the Switch is configured.
+            Either <paramref name="shortName"/> or <paramref name="longName"/> can be null to not use a short or long name, but both cannot be null.
             </summary>
             <param name="shortName">The short name for the Switch</param>
             <param name="longName">The long name for the Switch</param>

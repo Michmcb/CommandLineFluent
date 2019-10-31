@@ -125,7 +125,7 @@ namespace CommandLineFluent.Arguments
 		/// Configures these Values as optional, with a default value when not provided.
 		/// </summary>
 		/// <param name="defaultValue">The value to use as a default value when no Values are provided. If not provided, this is the default value for <typeparamref name="C"/></param>
-		public FluentManyValues<T, C> IsOptional(C defaultValue)
+		public FluentManyValues<T, C> IsOptional(C defaultValue = default)
 		{
 			Required = false;
 			DefaultValue = defaultValue;

@@ -89,7 +89,7 @@ namespace CommandLineFluent
 		/// </summary>
 		/// <param name="shortName">The short name. By default, -?</param>
 		/// <param name="longName">The long name. By default, --help</param>
-		public void UseHelpSwitch(string shortName = null, string longName = null)
+		public void UseHelpSwitch(string shortName = "-?", string longName = "--help")
 		{
 			ShortHelpSwitch = shortName;
 			LongHelpSwitch = longName;

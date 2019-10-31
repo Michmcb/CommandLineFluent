@@ -107,22 +107,12 @@ Converters take the raw string value and convert it to something else. They are 
 Constructing a Converted<T> instance like the below indicates success. An optional second parameter denotes the error message; if provided, conversion is considered to have failed.
 
 ```csharp
-verbless.AddValue<FileInfo>()
+verbless.AddOption<bool>("f", "frobulateTheFile")
 	.ForProperty(theClass => theClass.InputFileInfo)
-	.WithName("Input File")
-	.WithConverter(rawValue =>
-	{
-		if(File.Exists(rawValue))
-		{
-			return new Converted<FileInfo>(new FileInfo(rawValue));
-		}
-		else
-		{
-			return new Converted<FileInfo>(null, $"The file {rawValue} doesn't exist");
-		}
-	})
-	.WithHelpText("The file which has to be processed")
-	.IsOptional(new FileInfo()); // Optional values will also be typed as FileInfo objects
+	.WithName("Frobulation")
+	.WithConverter(Converters.ToBool)
+	.WithHelpText("Whether or not to frobulate the file")
+	.IsOptional(false); // Optional values will also be typed as bools
 ```
 
 ### Awaitable/Asynchronous

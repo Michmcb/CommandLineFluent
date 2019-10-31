@@ -173,7 +173,8 @@ namespace CommandLineFluent
 			UsageTextCreator = usageTextCreator;
 		}
 		/// <summary>
-		/// Creates a new Option and adds it to this verb. Its plain text value will be assigned to the target property
+		/// Creates a new Option and adds it to this verb. Its plain text value will be assigned to the target property.
+		/// Either <paramref name="shortName"/> or <paramref name="longName"/> can be null to not use a short or long name, but both cannot be null.
 		/// </summary>
 		/// <param name="shortName">The short name for the Option</param>
 		/// <param name="longName">The long name for the Option</param>
@@ -184,6 +185,7 @@ namespace CommandLineFluent
 		/// <summary>
 		/// Creates a new Option and adds it to this verb. A converted value will be assigned to the target property,
 		/// based on the converter with which the Option is configured.
+		/// Either <paramref name="shortName"/> or <paramref name="longName"/> can be null to not use a short or long name, but both cannot be null.
 		/// </summary>
 		/// <param name="shortName">The short name for the Option</param>
 		/// <param name="longName">The long name for the Option</param>
@@ -252,6 +254,7 @@ namespace CommandLineFluent
 		/// <summary>
 		/// Creates a new Switch and adds it to this verb. True or False will be assigned to the target property,
 		/// depending on whether or not the Switch is present
+		/// Either <paramref name="shortName"/> or <paramref name="longName"/> can be null to not use a short or long name, but both cannot be null.
 		/// </summary>
 		/// <param name="shortName">The short name for the Switch</param>
 		/// <param name="longName">The long name for the Switch</param>
@@ -262,6 +265,7 @@ namespace CommandLineFluent
 		/// <summary>
 		/// Creates a new Switch and adds it to this verb. A converted value will be assigned to the target property,
 		/// based on the converter with which the Switch is configured.
+		/// Either <paramref name="shortName"/> or <paramref name="longName"/> can be null to not use a short or long name, but both cannot be null.
 		/// </summary>
 		/// <param name="shortName">The short name for the Switch</param>
 		/// <param name="longName">The long name for the Switch</param>
@@ -507,7 +511,11 @@ namespace CommandLineFluent
 				{
 					throw new ArgumentException($"Short Name for verb {Name ?? "parsing"} was empty or entirely whitespace");
 				}
-				shortName = _config.DefaultShortPrefix + shortName;
+				// Apply the prefix if it doesn't already start with it. The user really shouldn't be prefixing them if they configured it though...
+				if (_config.DefaultShortPrefix != null && !shortName.StartsWith(_config.DefaultShortPrefix))
+				{
+					shortName = _config.DefaultShortPrefix + shortName;
+				}
 				if (shortName == _config.ShortHelpSwitch)
 				{
 					throw new ArgumentException($"Short Name for verb {Name ?? "parsing"} is already used by the short help Switch ({_config.ShortHelpSwitch})");
@@ -519,7 +527,10 @@ namespace CommandLineFluent
 				{
 					throw new ArgumentException($"Short Name for verb {Name ?? "parsing"} was empty or entirely whitespace");
 				}
-				longName = _config.DefaultLongPrefix + longName;
+				if (_config.DefaultLongPrefix != null && !longName.StartsWith(_config.DefaultLongPrefix))
+				{
+					longName = _config.DefaultLongPrefix + longName;
+				}
 				if (longName == _config.ShortHelpSwitch)
 				{
 					throw new ArgumentException($"Long Name for verb {Name ?? "parsing"} is already used by the long help Switch ({_config.LongHelpSwitch})");

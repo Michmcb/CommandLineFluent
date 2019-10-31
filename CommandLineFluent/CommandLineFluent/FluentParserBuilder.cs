@@ -56,13 +56,17 @@ namespace CommandLineFluent
 		/// <param name="verbConfig">The action to configure the verb</param>
 		public FluentParserBuilder AddVerb<T>(string verbName, Action<FluentVerb<T>> verbConfig) where T : class, new()
 		{
+			if (verbName == null)
+			{
+				throw new ArgumentNullException(nameof(verbName), $@"Verb Name cannot be null");
+			}
 			if (IsUsingVerbs == false)
 			{
-				throw new FluentParserBuilderException($@"The FluentParserBuilder has already been configured to not use verbs.");
+				throw new FluentParserBuilderException(@"The FluentParserBuilder has already been configured to not use verbs.");
 			}
 			if (Verbs.ContainsKey(verbName))
 			{
-				throw new FluentParserBuilderException($@"That verb name has already been used, you may only use unique verb names.");
+				throw new FluentParserBuilderException(@"That verb name has already been used, you may only use unique verb names.");
 			}
 			IsUsingVerbs = true;
 			FluentVerb<T> v = new FluentVerb<T>(Config, verbName);

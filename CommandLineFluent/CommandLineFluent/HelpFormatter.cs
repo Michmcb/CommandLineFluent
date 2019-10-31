@@ -77,15 +77,15 @@ namespace CommandLineFluent
 			{
 				foreach (IFluentValue val in verb.FluentValues)
 				{
-					keyText[i] = val.Required ? val.Name ?? $"value{i}" : $"[{val.Name ?? $"value{i}"}]";
-					helpText[i] = val.HelpText;
+					keyText[i] = val.Required ? val.Name ?? $"value{i + 1}" : $"[{val.Name ?? $"value{i + 1}"}]";
+					helpText[i] = val.HelpText ?? "";
 					charsForKey = Max(keyText[i++].Length, charsForKey);
 				}
 			}
 			else
 			{
 				keyText[i] = verb.FluentManyValues.Required ? verb.FluentManyValues.Name ?? "Values" : $"[{verb.FluentManyValues.Name ?? "Values"}]";
-				helpText[i] = verb.FluentManyValues.HelpText;
+				helpText[i] = verb.FluentManyValues.HelpText ?? "";
 				// This is the very first one we do, so just set the widest key to whatever its length was
 				charsForKey = helpText[i++].Length;
 			}
@@ -93,14 +93,14 @@ namespace CommandLineFluent
 			{
 				string name = Util.ShortAndLongName(opt);
 				keyText[i] = $"[{name}]";
-				helpText[i++] = opt.HelpText;
+				helpText[i++] = opt.HelpText ?? "";
 				charsForKey = Max(name.Length, charsForKey);
 			}
 			foreach (IFluentSwitch sw in verb.FluentSwitches)
 			{
 				string name = sw.ShortAndLongName();
 				keyText[i] = name;
-				helpText[i++] = sw.HelpText;
+				helpText[i++] = sw.HelpText ?? "";
 				charsForKey = Max(name.Length, charsForKey);
 			}
 			StringBuilder sb = new StringBuilder();

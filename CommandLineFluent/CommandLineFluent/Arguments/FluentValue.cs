@@ -112,7 +112,7 @@ namespace CommandLineFluent.Arguments
 		/// and you provide a single value, that single value will map to the 0th Value and throw an error because the 1st Value was missing. It's recommended you use this judiciously.
 		/// </summary>
 		/// <param name="defaultValue">The value to use as a default value when this Value is not provided. If not provided, this is the default value for <typeparamref name="C"/></param>
-		public FluentValue<T, C> IsOptional(C defaultValue)
+		public FluentValue<T, C> IsOptional(C defaultValue = default)
 		{
 			Required = false;
 			DefaultValue = defaultValue;
