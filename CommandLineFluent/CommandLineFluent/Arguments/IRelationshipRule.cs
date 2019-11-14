@@ -18,6 +18,9 @@
 		/// The error message when this rule is violated
 		/// </summary>
 		string ErrorMessage { get; }
+		/// <summary>
+		/// Does this rule say it's required, or must NOT appear
+		/// </summary>
 		Requiredness Requiredness { get; }
 	}
 }

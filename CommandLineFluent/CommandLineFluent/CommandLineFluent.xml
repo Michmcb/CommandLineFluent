@@ -35,6 +35,97 @@
             Failed to convert the value
             </summary>
         </member>
+        <member name="T:CommandLineFluent.Arguments.DependencyRule`2">
+            <summary>
+            Defines a single rule of a FluentRelationship.
+            </summary>
+            <typeparam name="T">The class</typeparam>
+            <typeparam name="V">The value</typeparam>
+        </member>
+        <member name="P:CommandLineFluent.Arguments.DependencyRule`2.Requiredness">
+            <summary>
+            Does this rule say it's required, or must NOT appear
+            </summary>
+        </member>
+        <member name="P:CommandLineFluent.Arguments.DependencyRule`2.TargetProperty">
+            <summary>
+            The target property to use when evaluating this rule
+            </summary>
+        </member>
+        <member name="P:CommandLineFluent.Arguments.DependencyRule`2.Value">
+            <summary>
+            If IsEqualTo is used, this is the value this target property's value is compared to
+            </summary>
+        </member>
+        <member name="P:CommandLineFluent.Arguments.DependencyRule`2.Predicate">
+            <summary>
+            The predicate used for this rule
+            </summary>
+        </member>
+        <member name="P:CommandLineFluent.Arguments.DependencyRule`2.AppliesWhenPredicate">
+            <summary>
+            This rule applies when the predicate returns this value
+            </summary>
+        </member>
+        <member name="P:CommandLineFluent.Arguments.DependencyRule`2.ErrorMessage">
+            <summary>
+            The error message when this rule is violated
+            </summary>
+        </member>
+        <member name="M:CommandLineFluent.Arguments.DependencyRule`2.ThrowIfPredicateNotNull">
+            <summary>
+            A helper validation method that throws an exception if a DependencyRule gets configured twice
+            </summary>
+        </member>
+        <member name="M:CommandLineFluent.Arguments.DependencyRule`2.IsEqualTo(`1)">
+            <summary>
+            Configures the dependency rule to apply when the property specified prior is equal to the provided value
+            </summary>
+            <param name="value">The value to which the property value has to equal for the rule to apply</param>
+        </member>
+        <member name="M:CommandLineFluent.Arguments.DependencyRule`2.IsNotEqualTo(`1)">
+            <summary>
+            Configures the dependency rule to apply when the property specified prior is not equal to the provided value
+            </summary>
+            <param name="value">The value to which the property value must not equal for the rule to apply</param>
+        </member>
+        <member name="M:CommandLineFluent.Arguments.DependencyRule`2.When(System.Func{`1,System.Boolean})">
+            <summary>
+            Configures the dependency rule to apply when the provided predicate evaluates to true
+            </summary>
+            <param name="predicate">The predicate which determines whether or not this rule applies</param>
+        </member>
+        <member name="M:CommandLineFluent.Arguments.DependencyRule`2.WhenNot(System.Func{`1,System.Boolean})">
+            <summary>
+            Configures the dependency rule to apply when the provided predicate evaluates to false
+            </summary>
+            <param name="predicate">The predicate which determines whether or not this rule applies</param>
+        </member>
+        <member name="M:CommandLineFluent.Arguments.DependencyRule`2.IsNull">
+            <summary>
+            Configures the dependency rule to apply when the property specified prior is null
+            </summary>
+        </member>
+        <member name="M:CommandLineFluent.Arguments.DependencyRule`2.IsNotNull">
+            <summary>
+            Configures the dependency rule to apply when the property specified prior is not null
+            </summary>
+        </member>
+        <member name="M:CommandLineFluent.Arguments.DependencyRule`2.WithErrorMessage(System.String)">
+            <summary>
+            Configures the error message to show when this rule is violated
+            </summary>
+            <param name="errorMessage"></param>
+        </member>
+        <member name="M:CommandLineFluent.Arguments.DependencyRule`2.DoesSatifyRule(`0,System.Boolean)">
+            <summary>
+            You don't need to call this; but this checks that the specified property of an object
+            of type T satisfies the rule, given whether or not the FluentArgument on which this rule was configured
+            had the string appear during parsing or not
+            </summary>
+            <param name="obj">The object</param>
+            <param name="didAppear">If a string appeared during parsing</param>
+        </member>
         <member name="T:CommandLineFluent.Arguments.FluentArgument">
             <summary>
             A single argument on the command line. Can be a Switch, Option, or Value
@@ -66,6 +157,43 @@
             Validates this FluentArgument, returning an Error object if something is invalid.
             </summary>
         </member>
+        <member name="T:CommandLineFluent.Arguments.FluentDependencies`2">
+            <summary>
+            Defines a relationship between a FluentArgument and a property of the target object.
+            It allows you to specify that certain FluentArguments are only required under certain circumstances.
+            </summary>
+            <typeparam name="T">The class of the property which this FluentRelationship is for</typeparam>
+            <typeparam name="C">The type of the property</typeparam>
+        </member>
+        <member name="P:CommandLineFluent.Arguments.FluentDependencies`2.Rules">
+            <summary>
+            The rules which make up this relationship
+            </summary>
+        </member>
+        <member name="M:CommandLineFluent.Arguments.FluentDependencies`2.RequiredIf``1(System.Linq.Expressions.Expression{System.Func{`0,``0}})">
+            <summary>
+            Specifies that a property of type <typeparamref name="V"/> of an object of type <typeparamref name="T"/>
+            is required to be provided under specific circumstances.
+            </summary>
+            <typeparam name="V">The type of the property</typeparam>
+            <param name="expression">The property that is required</param>
+        </member>
+        <member name="M:CommandLineFluent.Arguments.FluentDependencies`2.MustNotAppearIf``1(System.Linq.Expressions.Expression{System.Func{`0,``0}})">
+            <summary>
+            Specifies that a property of type <typeparamref name="V"/> of an object of type <typeparamref name="T"/>
+            is required to NOT be provided under specific circumstances.
+            </summary>
+            <typeparam name="V">The type of the property</typeparam>
+            <param name="expression">The property that is required</param>
+        </member>
+        <member name="M:CommandLineFluent.Arguments.FluentDependencies`2.EvaluateRelationship(`0,System.Boolean,CommandLineFluent.Arguments.FluentArgumentType)">
+            <summary>
+            Returns null if all rules of the relationship have been respected, and an Error otherwise.
+            </summary>
+            <param name="obj">The object to check</param>
+            <param name="wasValueProvided">Whether or not the FluentArgument received a value from parsing</param>
+            <param name="fluentArgumentType">The type of argument, used to return the correct error code</param>
+        </member>
         <member name="T:CommandLineFluent.Arguments.FluentManyValues`2">
             <summary>
             Captures all lone values, such as: Foo.exe Value1 -t someswitch Value2 Value3. All 3 values there would be captured as an array: [Value1, Value2, Value3].
@@ -82,12 +210,18 @@
         </member>
         <member name="P:CommandLineFluent.Arguments.FluentManyValues`2.Required">
             <summary>
-            Whether or not at least 1 value is required
+            Whether or not at least 1 value is required. By default, it is required.
+            If null, then Dependencies will be used to determine whether or not these Values are required.
             </summary>
         </member>
         <member name="P:CommandLineFluent.Arguments.FluentManyValues`2.DefaultValue">
             <summary>
             If not required, this is the default value used when no Values are provided
+            </summary>
+        </member>
+        <member name="P:CommandLineFluent.Arguments.FluentManyValues`2.Dependencies">
+            <summary>
+            Dependencies on other properties which dictate whether or not this is required.
             </summary>
         </member>
         <member name="M:CommandLineFluent.Arguments.FluentManyValues`2.SetValue(`0,System.String[])">
@@ -113,8 +247,15 @@
         <member name="M:CommandLineFluent.Arguments.FluentManyValues`2.IsOptional(`1)">
             <summary>
             Configures these Values as optional, with a default value when not provided.
+            If you want to use ConditionallyRequired(), use WithDefaultValue instead to specify a fallback value.
             </summary>
             <param name="defaultValue">The value to use as a default value when no Values are provided. If not provided, this is the default value for <typeparamref name="C"/></param>
+        </member>
+        <member name="M:CommandLineFluent.Arguments.FluentManyValues`2.WithDefaultValue(`1)">
+            <summary>
+            Configures a default value without specifying that these Values are optional. Use this instead of IsOptional when you use ConditionallyRequired()
+            </summary>
+            <param name="defaultValue">The value to use as a default when nothing else has been provided</param>
         </member>
         <member name="M:CommandLineFluent.Arguments.FluentManyValues`2.WithHelpText(System.String)">
             <summary>
@@ -154,6 +295,26 @@
             </summary>
             <param name="prefixes">The prefixes to ignore</param>
         </member>
+        <member name="M:CommandLineFluent.Arguments.FluentManyValues`2.WithDependencies(System.Action{CommandLineFluent.Arguments.FluentDependencies{`0,`1}})">
+            <summary>
+            Configures this ManyValue to only be required or must not appear under certain circumstances.
+            If any rule is violated, parsing is considered to have failed. If all rules pass, then parsing is considered to have succeeded.
+            You can specify that the user has to provide this Value depending upon the value of other properties (after parsing, validation, and conversion)
+            </summary>
+        </member>
+        <member name="M:CommandLineFluent.Arguments.FluentManyValues`2.EvaluateDependencies(`0)">
+            <summary>
+            Checks to make sure that all dependencies are respected. If they are not, returns an Error
+            describing the first dependency that was violated.
+            If no dependencies have been set up, returns null.
+            </summary>
+            <param name="obj">The object to check</param>
+        </member>
+        <member name="M:CommandLineFluent.Arguments.FluentManyValues`2.ThrowIfRequirednessAlreadyConfigured">
+            <summary>
+            Throws if _configuredRequiredness is true.
+            </summary>
+        </member>
         <member name="T:CommandLineFluent.Arguments.FluentOption`2">
             <summary>
             An option with one value, supplied like -t Value
@@ -174,11 +335,17 @@
         <member name="P:CommandLineFluent.Arguments.FluentOption`2.Required">
             <summary>
             Whether or not this Option is required to be included. By default, it is required.
+            If null, then Dependencies will be used to determine whether or not this Option is required.
             </summary>
         </member>
         <member name="P:CommandLineFluent.Arguments.FluentOption`2.DefaultValue">
             <summary>
             If not required, this is the default value used when the Option is not provided
+            </summary>
+        </member>
+        <member name="P:CommandLineFluent.Arguments.FluentOption`2.Dependencies">
+            <summary>
+            Dependencies on other properties which dictate whether or not this is required.
             </summary>
         </member>
         <member name="M:CommandLineFluent.Arguments.FluentOption`2.SetValue(`0,System.String)">
@@ -204,8 +371,15 @@
         <member name="M:CommandLineFluent.Arguments.FluentOption`2.IsOptional(`1)">
             <summary>
             Configures this Option as optional, with a default value when not provided.
+            If you are setting up Conditional requirements, use WithDefaultValue instead to specify a fallback value.
             </summary>
             <param name="defaultValue">The value to use as a default value when this Option is not provided. If not provided, this is the default value for <typeparamref name="C"/></param>
+        </member>
+        <member name="M:CommandLineFluent.Arguments.FluentOption`2.WithDefaultValue(`1)">
+            <summary>
+            Configures a default value without specifying that this Option is optional. Use this instead of IsOptional when you use ConditionallyRequired()
+            </summary>
+            <param name="defaultValue">The value to use as a default when nothing else has been provided</param>
         </member>
         <member name="M:CommandLineFluent.Arguments.FluentOption`2.WithHelpText(System.String)">
             <summary>
@@ -243,62 +417,25 @@
             The short and long name joined with a |
             </summary>
         </member>
-        <member name="T:CommandLineFluent.Arguments.FluentRelationship`2">
+        <member name="M:CommandLineFluent.Arguments.FluentOption`2.WithDependencies(System.Action{CommandLineFluent.Arguments.FluentDependencies{`0,`1}})">
             <summary>
-            Defines a relationship between a FluentArgument and a property of the target object.
-            It allows you to specify that certain FluentArguments are only required under certain circumstances.
-            </summary>
-            <typeparam name="T">The class of the property which this FluentRelationship is for</typeparam>
-            <typeparam name="C">The type of the property</typeparam>
-        </member>
-        <member name="P:CommandLineFluent.Arguments.FluentRelationship`2.Rules">
-            <summary>
-            The rules which make up this relationship
+            Configures this Option to only be required or must not appear under certain circumstances.
+            If any rule is violated, parsing is considered to have failed. If all rules pass, then parsing is considered to have succeeded.
+            You can specify that the user has to provide this Value depending upon the value of other properties (after parsing, validation, and conversion)
             </summary>
         </member>
-        <member name="M:CommandLineFluent.Arguments.FluentRelationship`2.RequiredIf``1(System.Linq.Expressions.Expression{System.Func{`0,``0}})">
+        <member name="M:CommandLineFluent.Arguments.FluentOption`2.EvaluateDependencies(`0)">
             <summary>
-            Specifies that a property of type <typeparamref name="V"/> of an object of type <typeparamref name="T"/>
-            is required to be provided under specific circumstances.
-            </summary>
-            <typeparam name="V">The type of the property</typeparam>
-            <param name="expression">The property that is required</param>
-        </member>
-        <member name="M:CommandLineFluent.Arguments.FluentRelationship`2.OptionalIf``1(System.Linq.Expressions.Expression{System.Func{`0,``0}})">
-            <summary>
-            Specifies that a property of type <typeparamref name="V"/> of an object of type <typeparamref name="T"/>
-            may not be provided under specific circumstances.
-            </summary>
-            <typeparam name="V">The type of the property</typeparam>
-            <param name="expression">The property that is required</param>
-        </member>
-        <member name="M:CommandLineFluent.Arguments.FluentRelationship`2.MustNotAppearIf``1(System.Linq.Expressions.Expression{System.Func{`0,``0}})">
-            <summary>
-            Specifies that a property of type <typeparamref name="V"/> of an object of type <typeparamref name="T"/>
-            is required to NOT be provided under specific circumstances.
-            </summary>
-            <typeparam name="V">The type of the property</typeparam>
-            <param name="expression">The property that is required</param>
-        </member>
-        <member name="M:CommandLineFluent.Arguments.FluentRelationship`2.EvaluateRelationship(`0,System.Boolean)">
-            <summary>
-            Returns null if all rules of the relationship have been respected, and an Error otherwise.
+            Checks to make sure that all dependencies are respected. If they are not, returns an Error
+            describing the first dependency that was violated.
+            If no dependencies have been set up, returns null.
             </summary>
             <param name="obj">The object to check</param>
-            <param name="wasValueProvided">Whether or not the FluentArgument received a value from parsing</param>
         </member>
-        <member name="T:CommandLineFluent.Arguments.IRelationshipRule`1">
+        <member name="M:CommandLineFluent.Arguments.FluentOption`2.ThrowIfRequirednessAlreadyConfigured">
             <summary>
-            Defines a single rule of a FluentRelationship.
+            Throws if _configuredRequiredness is true.
             </summary>
-            <typeparam name="T">The class</typeparam>
-        </member>
-        <member name="T:CommandLineFluent.Arguments.RelationshipRule`2">
-            <summary>
-            Defines a single rule of a FluentRelationship.
-            </summary>
-            <typeparam name="T">The class</typeparam>
-            <typeparam name="V">The value</typeparam>
         </member>
         <member name="T:CommandLineFluent.Arguments.FluentSwitch`2">
             <summary>
@@ -320,6 +457,11 @@
         <member name="P:CommandLineFluent.Arguments.FluentSwitch`2.DefaultValue">
             <summary>
             If the switch is not present, this is the default value to use
+            </summary>
+        </member>
+        <member name="P:CommandLineFluent.Arguments.FluentSwitch`2.Dependencies">
+            <summary>
+            Dependencies on other properties which dictate whether or not this is required.
             </summary>
         </member>
         <member name="M:CommandLineFluent.Arguments.FluentSwitch`2.SetValue(`0,System.Boolean)">
@@ -364,6 +506,26 @@
             The short and long name joined with a |
             </summary>
         </member>
+        <member name="M:CommandLineFluent.Arguments.FluentSwitch`2.WithDependencies(System.Action{CommandLineFluent.Arguments.FluentDependencies{`0,`1}})">
+            <summary>
+            Configures this Switch to only be required or must not appear under certain circumstances.
+            If any rule is violated, parsing is considered to have failed. If all rules pass, then parsing is considered to have succeeded.
+            You can specify that the user has to provide this Value depending upon the value of other properties (after parsing, validation, and conversion)
+            </summary>
+        </member>
+        <member name="M:CommandLineFluent.Arguments.FluentSwitch`2.EvaluateDependencies(`0)">
+            <summary>
+            Checks to make sure that all dependencies are respected. If they are not, returns an Error
+            describing the first dependency that was violated.
+            If no dependencies have been set up, returns null.
+            </summary>
+            <param name="obj">The object to check</param>
+        </member>
+        <member name="M:CommandLineFluent.Arguments.FluentSwitch`2.ThrowIfRequirednessAlreadyConfigured">
+            <summary>
+            Throws if _configuredRequiredness is true.
+            </summary>
+        </member>
         <member name="T:CommandLineFluent.Arguments.FluentValue`2">
             <summary>
             A lone value, such as: Foo.exe MyFile.
@@ -373,7 +535,8 @@
         </member>
         <member name="P:CommandLineFluent.Arguments.FluentValue`2.Required">
             <summary>
-            Whether or not this Value is required to be included. By default, it is required.
+            Whether or not this Value is required to be provided. By default, it is required.
+            If null, then Dependencies will be used to determine whether or not this Value is required.
             </summary>
         </member>
         <member name="P:CommandLineFluent.Arguments.FluentValue`2.DefaultValue">
@@ -381,9 +544,9 @@
             If not required, this is the default value used when the Value is not provided
             </summary>
         </member>
-        <member name="P:CommandLineFluent.Arguments.FluentValue`2.Relationship">
+        <member name="P:CommandLineFluent.Arguments.FluentValue`2.Dependencies">
             <summary>
-            
+            Dependencies on other properties which dictate whether or not this is required.
             </summary>
         </member>
         <member name="M:CommandLineFluent.Arguments.FluentValue`2.SetValue(`0,System.String)">
@@ -410,8 +573,15 @@
             <summary>
             Configures this Value as optional, with a default value when not provided. Note that if the 0th Value is optional and the 1st Value is required,
             and you provide a single value, that single value will map to the 0th Value and throw an error because the 1st Value was missing. It's recommended you use this judiciously.
+            If you are setting up Conditional requirements, use WithDefaultValue instead to specify a fallback value.
             </summary>
             <param name="defaultValue">The value to use as a default value when this Value is not provided. If not provided, this is the default value for <typeparamref name="C"/></param>
+        </member>
+        <member name="M:CommandLineFluent.Arguments.FluentValue`2.WithDefaultValue(`1)">
+            <summary>
+            Configures a default value without specifying that this Value is optional. Use this instead of IsOptional when you use ConditionallyRequired()
+            </summary>
+            <param name="defaultValue">The value to use as a default when nothing else has been provided</param>
         </member>
         <member name="M:CommandLineFluent.Arguments.FluentValue`2.WithHelpText(System.String)">
             <summary>
@@ -444,10 +614,24 @@
             </summary>
             <param name="validator">The validator that validates the raw value</param>
         </member>
-        <member name="M:CommandLineFluent.Arguments.FluentValue`2.WithDependencies(System.Action{CommandLineFluent.Arguments.FluentRelationship{`0,`1}})">
+        <member name="M:CommandLineFluent.Arguments.FluentValue`2.WithDependencies(System.Action{CommandLineFluent.Arguments.FluentDependencies{`0,`1}})">
             <summary>
-            Configures this Value to only be required, optional, or must not appear under certain circumstances.
+            Configures this Value to only be required or must not appear under certain circumstances.
+            If any rule is violated, parsing is considered to have failed. If all rules pass, then parsing is considered to have succeeded.
             You can specify that the user has to provide this Value depending upon the value of other properties (after parsing, validation, and conversion)
+            </summary>
+        </member>
+        <member name="M:CommandLineFluent.Arguments.FluentValue`2.EvaluateDependencies(`0)">
+            <summary>
+            Checks to make sure that all dependencies are respected. If they are not, returns an Error
+            describing the first dependency that was violated.
+            If no dependencies have been set up, returns null.
+            </summary>
+            <param name="obj">The object to check</param>
+        </member>
+        <member name="M:CommandLineFluent.Arguments.FluentValue`2.ThrowIfRequirednessAlreadyConfigured">
+            <summary>
+            Throws if _configuredRequiredness is true.
             </summary>
         </member>
         <member name="T:CommandLineFluent.Arguments.IFluentArgument">
@@ -489,7 +673,8 @@
         </member>
         <member name="P:CommandLineFluent.Arguments.IFluentManyValues.Required">
             <summary>
-            Whether or not at least 1 value is required
+            Whether or not at least 1 value is required. By default, it is required.
+            If null, then Dependencies will be used to determine whether or not these Values are required.
             </summary>
         </member>
         <member name="T:CommandLineFluent.Arguments.IFluentOption">
@@ -509,7 +694,8 @@
         </member>
         <member name="P:CommandLineFluent.Arguments.IFluentOption.Required">
             <summary>
-            If true, this FluentOption is required to be specified
+            Whether or not this Option is required to be included. By default, it is required.
+            If null, then Dependencies will be used to determine whether or not this Option is required.
             </summary>
         </member>
         <member name="M:CommandLineFluent.Arguments.IFluentOption.ShortAndLongName">
@@ -536,6 +722,14 @@
             <summary>
             Returns an error if improperly configured, or null if all is well
             </summary>
+        </member>
+        <member name="M:CommandLineFluent.Arguments.IFluentSettable`2.EvaluateDependencies(`0)">
+            <summary>
+            Checks to make sure that all dependencies are respected. If they are not, returns an Error
+            describing the first dependency that was violated.
+            If no dependencies have been set up, returns null.
+            </summary>
+            <param name="obj">The object to check</param>
         </member>
         <member name="T:CommandLineFluent.Arguments.IFluentSwitch">
             <summary>
@@ -564,7 +758,48 @@
         </member>
         <member name="P:CommandLineFluent.Arguments.IFluentValue.Required">
             <summary>
-            Whether or not this is required
+            Whether or not this Value is required to be provided. By default, it is required.
+            If null, then Dependencies will be used to determine whether or not this Value is required.
+            </summary>
+        </member>
+        <member name="T:CommandLineFluent.Arguments.IRelationshipRule`1">
+            <summary>
+            Defines a single rule of a FluentRelationship.
+            </summary>
+            <typeparam name="T">The class</typeparam>
+        </member>
+        <member name="M:CommandLineFluent.Arguments.IRelationshipRule`1.DoesSatifyRule(`0,System.Boolean)">
+            <summary>
+            You don't need to call this; but this checks that the specified property of an object
+            of type T satisfies the rule, given whether or not the FluentArgument on which this rule was configured
+            had the string appear during parsing or not
+            </summary>
+            <param name="obj">The object</param>
+            <param name="didAppear">If a string appeared during parsing</param>
+        </member>
+        <member name="P:CommandLineFluent.Arguments.IRelationshipRule`1.ErrorMessage">
+            <summary>
+            The error message when this rule is violated
+            </summary>
+        </member>
+        <member name="P:CommandLineFluent.Arguments.IRelationshipRule`1.Requiredness">
+            <summary>
+            Does this rule say it's required, or must NOT appear
+            </summary>
+        </member>
+        <member name="T:CommandLineFluent.Arguments.Requiredness">
+            <summary>
+            Whether 
+            </summary>
+        </member>
+        <member name="F:CommandLineFluent.Arguments.Requiredness.Required">
+            <summary>
+            Required to appear
+            </summary>
+        </member>
+        <member name="F:CommandLineFluent.Arguments.Requiredness.MustNotAppear">
+            <summary>
+            Required to NOT appear
             </summary>
         </member>
         <member name="T:CommandLineFluent.Conversion.Converters">
@@ -601,7 +836,7 @@
         </member>
         <member name="M:CommandLineFluent.Conversion.Converters.ToInt(System.String)">
             <summary>
-            Converts the provided string to an int
+            Converts the provided string to an int.
             Uses int.TryParse()
             </summary>
             <param name="s">The string to convert</param>
@@ -614,7 +849,7 @@
         </member>
         <member name="M:CommandLineFluent.Conversion.Converters.ToUInt(System.String)">
             <summary>
-            Converts the provided string to an uint
+            Converts the provided string to an uint.
             Uses uint.TryParse()
             </summary>
             <param name="s">The string to convert</param>
@@ -627,7 +862,7 @@
         </member>
         <member name="M:CommandLineFluent.Conversion.Converters.ToLong(System.String)">
             <summary>
-            Converts the provided string to a long
+            Converts the provided string to a long.
             Uses long.TryParse()
             </summary>
             <param name="s">The string to convert</param>
@@ -640,7 +875,7 @@
         </member>
         <member name="M:CommandLineFluent.Conversion.Converters.ToULong(System.String)">
             <summary>
-            Converts the provided string to an ulong
+            Converts the provided string to an ulong.
             Uses ulong.TryParse()
             </summary>
             <param name="s">The string to convert</param>
@@ -922,6 +1157,36 @@
         <member name="F:CommandLineFluent.ErrorCode.ProgrammerError">
             <summary>
             This error code value indicates a bug in your program, you'll only see this ErrorCode when an exception is raised.
+            </summary>
+        </member>
+        <member name="F:CommandLineFluent.ErrorCode.OptionMustNotBeProvided">
+            <summary>
+            An option must not be provided
+            </summary>
+        </member>
+        <member name="F:CommandLineFluent.ErrorCode.MissingRequiredSwitch">
+            <summary>
+            A switch was required but was missing
+            </summary>
+        </member>
+        <member name="F:CommandLineFluent.ErrorCode.SwitchMustNotBeProvided">
+            <summary>
+            A switch must not be provided
+            </summary>
+        </member>
+        <member name="F:CommandLineFluent.ErrorCode.ValueMustNotBeProvided">
+            <summary>
+            A value must not be provided
+            </summary>
+        </member>
+        <member name="F:CommandLineFluent.ErrorCode.MissingRequiredManyValues">
+            <summary>
+            Many values were required but were missing
+            </summary>
+        </member>
+        <member name="F:CommandLineFluent.ErrorCode.ManyValuesMustNotBeProvided">
+            <summary>
+            Many values must not be provided
             </summary>
         </member>
         <member name="T:CommandLineFluent.FluentParser">

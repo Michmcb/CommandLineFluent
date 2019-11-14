@@ -11,6 +11,9 @@ namespace CommandLineFluent.Arguments
 	/// <typeparam name="V">The value</typeparam>
 	public class DependencyRule<T, V> : IRelationshipRule<T> where T : new()
 	{
+		/// <summary>
+		/// Does this rule say it's required, or must NOT appear
+		/// </summary>
 		public Requiredness Requiredness { get; }
 		/// <summary>
 		/// The target property to use when evaluating this rule
@@ -39,6 +42,9 @@ namespace CommandLineFluent.Arguments
 			Requiredness = required;
 			Predicate = null;
 		}
+		/// <summary>
+		/// A helper validation method that throws an exception if a DependencyRule gets configured twice
+		/// </summary>
 		public void ThrowIfPredicateNotNull()
 		{
 			if (Predicate != null)

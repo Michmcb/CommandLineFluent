@@ -93,11 +93,29 @@
 		/// This error code value indicates a bug in your program, you'll only see this ErrorCode when an exception is raised.
 		/// </summary>
 		ProgrammerError,
+		/// <summary>
+		/// An option must not be provided
+		/// </summary>
 		OptionMustNotBeProvided,
+		/// <summary>
+		/// A switch was required but was missing
+		/// </summary>
 		MissingRequiredSwitch,
+		/// <summary>
+		/// A switch must not be provided
+		/// </summary>
 		SwitchMustNotBeProvided,
+		/// <summary>
+		/// A value must not be provided
+		/// </summary>
 		ValueMustNotBeProvided,
+		/// <summary>
+		/// Many values were required but were missing
+		/// </summary>
 		MissingRequiredManyValues,
+		/// <summary>
+		/// Many values must not be provided
+		/// </summary>
 		ManyValuesMustNotBeProvided
 	}
 }

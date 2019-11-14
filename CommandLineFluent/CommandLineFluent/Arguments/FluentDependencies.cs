@@ -50,6 +50,7 @@ namespace CommandLineFluent.Arguments
 		/// </summary>
 		/// <param name="obj">The object to check</param>
 		/// <param name="wasValueProvided">Whether or not the FluentArgument received a value from parsing</param>
+		/// <param name="fluentArgumentType">The type of argument, used to return the correct error code</param>
 		internal Error EvaluateRelationship(T obj, bool wasValueProvided, FluentArgumentType fluentArgumentType)
 		{
 			foreach (IRelationshipRule<T> rule in rules)
