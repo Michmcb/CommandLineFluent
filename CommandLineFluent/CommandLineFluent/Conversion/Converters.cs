@@ -82,7 +82,7 @@ namespace CommandLineFluent.Conversion
 			return new Converted<bool?>(false, $@"""{s}"" was not y, yes, true, or n, no, false");
 		}
 		/// <summary>
-		/// Converts the provided string to an int
+		/// Converts the provided string to an int.
 		/// Uses int.TryParse()
 		/// </summary>
 		/// <param name="s">The string to convert</param>
@@ -113,7 +113,7 @@ namespace CommandLineFluent.Conversion
 			}
 		}
 		/// <summary>
-		/// Converts the provided string to an uint
+		/// Converts the provided string to an uint.
 		/// Uses uint.TryParse()
 		/// </summary>
 		/// <param name="s">The string to convert</param>
@@ -144,7 +144,7 @@ namespace CommandLineFluent.Conversion
 			}
 		}
 		/// <summary>
-		/// Converts the provided string to a long
+		/// Converts the provided string to a long.
 		/// Uses long.TryParse()
 		/// </summary>
 		/// <param name="s">The string to convert</param>
@@ -175,7 +175,7 @@ namespace CommandLineFluent.Conversion
 			}
 		}
 		/// <summary>
-		/// Converts the provided string to an ulong
+		/// Converts the provided string to an ulong.
 		/// Uses ulong.TryParse()
 		/// </summary>
 		/// <param name="s">The string to convert</param>

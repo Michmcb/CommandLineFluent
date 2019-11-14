@@ -32,9 +32,8 @@ namespace CommandLineFluentTest.Parser
 					Assert.Equal("help", opt.HelpText);
 					Assert.Equal("name", opt.Name);
 					Assert.True(opt.Required);
-					opt.IsOptional("test");
-					Assert.Equal("test", opt.DefaultValue);
-					Assert.False(opt.Required);
+					// Not allowed to set it more than once
+					Assert.Throws<InvalidOperationException>(() => opt.IsOptional("test"));
 
 					FluentValue<Verb1, string> val = verb.AddValue()
 						.WithHelpText("help")
@@ -44,9 +43,8 @@ namespace CommandLineFluentTest.Parser
 					Assert.Equal("help", val.HelpText);
 					Assert.Equal("name", val.Name);
 					Assert.True(val.Required);
-					val.IsOptional("test");
-					Assert.Equal("test", val.DefaultValue);
-					Assert.False(val.Required);
+					// Not allowed to set it more than once
+					Assert.Throws<InvalidOperationException>(() => val.IsOptional("test"));
 
 					FluentSwitch<Verb1, bool> sw = verb.AddSwitch("s", "switch")
 						.WithHelpText("help");
@@ -75,9 +73,7 @@ namespace CommandLineFluentTest.Parser
 					Assert.Equal("help", val.HelpText);
 					Assert.Equal("name", val.Name);
 					Assert.True(val.Required);
-					val.IsOptional(new string[] { "test" });
-					Assert.Equal("test", val.DefaultValue[0]);
-					Assert.False(val.Required);
+					Assert.Throws<InvalidOperationException>(() => val.IsOptional(new string[] { "test" }));
 				}).Build();
 		}
 		[Fact]

@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Linq.Expressions;
-using System.Reflection;
 
 namespace CommandLineFluent.Arguments
 {
@@ -12,6 +11,9 @@ namespace CommandLineFluent.Arguments
 	public class FluentSwitch<T, C> : FluentArgument, IFluentSwitch, IFluentSettable<T, bool> where T : new()
 	{
 		private Func<bool, Converted<C>> _converter;
+		private bool _configuredRequiredness;
+		private bool _hasDefaultValue;
+
 		/// <summary>
 		/// Short name for this switch
 		/// </summary>
@@ -24,11 +26,14 @@ namespace CommandLineFluent.Arguments
 		/// If the switch is not present, this is the default value to use
 		/// </summary>
 		public C DefaultValue { get; private set; }
+		/// <summary>
+		/// Dependencies on other properties which dictate whether or not this is required.
+		/// </summary>
+		public FluentDependencies<T, C> Dependencies { get; private set; }
 		internal FluentSwitch(string shortName, string longName)
 		{
 			ShortName = shortName;
 			LongName = longName;
-			Name = null;
 		}
 		/// <summary>
 		/// Attempts to set the value of the target property of the target object to the provided value. Uses any converter/validator provided.
@@ -39,6 +44,7 @@ namespace CommandLineFluent.Arguments
 		/// <param name="value">If the switch is provided, this is true. Otherwise, false. If necessary, will be converted to type <typeparamref name="C"/> using the Converter</param>
 		public Error SetValue(T target, bool value)
 		{
+			GotValue = false;
 			if (value)
 			{
 				if (_converter != null)
@@ -57,16 +63,21 @@ namespace CommandLineFluent.Arguments
 						return new Error(ErrorCode.SwitchFailedConversion, false, $"Converter for Switch {Util.ShortAndLongName(this)} threw an exception ({ex.Message})", ex);
 					}
 					TargetProperty.SetValue(target, converted.ConvertedValue);
-					return null;
+					GotValue = true;
 				}
 				else
 				{
 					TargetProperty.SetValue(target, value);
+					GotValue = true;
 				}
 			}
 			else
 			{
-				TargetProperty.SetValue(target, DefaultValue);
+				// A bit different for switches; getting false means we never got a value, in which case we use the default value.
+				if (_hasDefaultValue)
+				{
+					TargetProperty.SetValue(target, DefaultValue);
+				}
 			}
 			return null;
 		}
@@ -76,12 +87,7 @@ namespace CommandLineFluent.Arguments
 		/// <param name="expression">The property to set</param>
 		public FluentSwitch<T, C> ForProperty(Expression<Func<T, C>> expression)
 		{
-			if (!(expression.Body is MemberExpression me))
-			{
-				throw new ArgumentException($"Expression has to be a property of type {typeof(T)}", nameof(expression));
-			}
-			PropertyInfo prop = me.Member as PropertyInfo;
-			TargetProperty = prop ?? throw new ArgumentException($"Expression has to be a property of type {typeof(T)}", nameof(expression));
+			TargetProperty = Util.PropertyInfoFromExpression(expression);
 			return this;
 		}
 		/// <summary>
@@ -100,6 +106,7 @@ namespace CommandLineFluent.Arguments
 		/// <returns></returns>
 		public FluentSwitch<T, C> WithDefaultValue(C defaultValue)
 		{
+			_hasDefaultValue = true;
 			DefaultValue = defaultValue;
 			return this;
 		}
@@ -121,6 +128,48 @@ namespace CommandLineFluent.Arguments
 		public string ShortAndLongName()
 		{
 			return Util.ShortAndLongName(this);
+		}
+		/// <summary>
+		/// Configures this Switch to only be required or must not appear under certain circumstances.
+		/// If any rule is violated, parsing is considered to have failed. If all rules pass, then parsing is considered to have succeeded.
+		/// You can specify that the user has to provide this Value depending upon the value of other properties (after parsing, validation, and conversion)
+		/// </summary>
+		public void WithDependencies(Action<FluentDependencies<T, C>> config)
+		{
+			ThrowIfRequirednessAlreadyConfigured();
+			if (config != null)
+			{
+				_configuredRequiredness = true;
+				config.Invoke(Dependencies = new FluentDependencies<T, C>());
+			}
+			else
+			{
+				throw new ArgumentNullException(nameof(config), @"config cannot be null");
+			}
+		}
+		/// <summary>
+		/// Checks to make sure that all dependencies are respected. If they are not, returns an Error
+		/// describing the first dependency that was violated.
+		/// If no dependencies have been set up, returns null.
+		/// </summary>
+		/// <param name="obj">The object to check</param>
+		public Error EvaluateDependencies(T obj)
+		{
+			if (Dependencies == null)
+			{
+				return null;
+			}
+			return Dependencies.EvaluateRelationship(obj, GotValue, FluentArgumentType.Switch);
+		}
+		/// <summary>
+		/// Throws if _configuredRequiredness is true.
+		/// </summary>
+		private void ThrowIfRequirednessAlreadyConfigured()
+		{
+			if (_configuredRequiredness)
+			{
+				throw new InvalidOperationException($@"Do not call {nameof(WithDependencies)} more than once.");
+			}
 		}
 	}
 }

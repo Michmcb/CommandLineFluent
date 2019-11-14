@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Linq;
 using System.Linq.Expressions;
-using System.Reflection;
 
 namespace CommandLineFluent.Arguments
 {
@@ -15,22 +14,29 @@ namespace CommandLineFluent.Arguments
 	{
 		private Func<string[], Converted<C>> _converter;
 		private Func<string[], string> _validator;
+		private bool _configuredRequiredness;
+		private bool _hasDefaultValue;
+
 		/// <summary>
 		/// The prefixes that are ignored when capturing values. This is useful if you use a consistent prefixing scheme,
 		/// and want to avoid capturing possible user typos; an error will be thrown instead of using it as a value.
 		/// </summary>
-		public string[] IgnoredPrefixes { get; private set; }
+		public System.Collections.Generic.IReadOnlyCollection<string> IgnoredPrefixes { get; private set; }
 		/// <summary>
-		/// Whether or not at least 1 value is required
+		/// Whether or not at least 1 value is required. By default, it is required.
+		/// If null, then Dependencies will be used to determine whether or not these Values are required.
 		/// </summary>
-		public bool Required { get; private set; }
+		public bool? Required { get; private set; }
 		/// <summary>
 		/// If not required, this is the default value used when no Values are provided
 		/// </summary>
 		public C DefaultValue { get; private set; }
+		/// <summary>
+		/// Dependencies on other properties which dictate whether or not this is required.
+		/// </summary>
+		public FluentDependencies<T, C> Dependencies { get; private set; }
 		internal FluentManyValues()
 		{
-			Name = null;
 			Required = true;
 		}
 		/// <summary>
@@ -42,11 +48,12 @@ namespace CommandLineFluent.Arguments
 		/// <param name="values">The raw values of all arguments found. If necessary, will be converted to the <typeparamref name="C"/> using the Converter set</param>
 		public Error SetValue(T target, string[] values)
 		{
+			GotValue = false;
 			if (values != null)
 			{
-				// If any value starts with any ignored prefix
+				// If any value starts with any ignored prefix, then it's not a valid value. Probably something the user typed in wrong.
 				System.Collections.Generic.IEnumerable<string> badVals = values.Where(val => IgnoredPrefixes.Any(prefix => val.StartsWith(prefix)));
-				if (badVals?.Any() == true)
+				if (badVals.Any())
 				{
 					return new Error(ErrorCode.UnexpectedArgument, true, $"Found some unexpected arguments: {string.Join(", ", badVals)}");
 				}
@@ -79,17 +86,21 @@ namespace CommandLineFluent.Arguments
 						return new Error(ErrorCode.ValuesFailedConversion, false, $"Converter for ManyValues threw an exception ({ex.Message})", ex);
 					}
 					TargetProperty.SetValue(target, converted.ConvertedValue);
-					return null;
+					GotValue = true;
 				}
 				else
 				{
 					TargetProperty.SetValue(target, values);
+					GotValue = true;
 				}
 			}
-			else if (!Required)
+			else if (Dependencies != null || Required == false)
 			{
-				// It's not required, so assign its default value
-				TargetProperty.SetValue(target, DefaultValue);
+				// Either it's not required, or we have dependencies. In either case, assign the default value for now
+				if (_hasDefaultValue)
+				{
+					TargetProperty.SetValue(target, DefaultValue);
+				}
 			}
 			else
 			{
@@ -104,12 +115,7 @@ namespace CommandLineFluent.Arguments
 		/// <param name="expression">The property to set</param>
 		public FluentManyValues<T, C> ForProperty(Expression<Func<T, C>> expression)
 		{
-			if (!(expression.Body is MemberExpression me))
-			{
-				throw new ArgumentException($"Expression has to be a property of type {typeof(T)}", nameof(expression));
-			}
-			PropertyInfo prop = me.Member as PropertyInfo;
-			TargetProperty = prop ?? throw new ArgumentException($"Expression has to be a property of type {typeof(T)}", nameof(expression));
+			TargetProperty = Util.PropertyInfoFromExpression(expression);
 			return this;
 		}
 		/// <summary>
@@ -117,17 +123,31 @@ namespace CommandLineFluent.Arguments
 		/// </summary>
 		public FluentManyValues<T, C> IsRequired()
 		{
+			ThrowIfRequirednessAlreadyConfigured();
+			_configuredRequiredness = true;
 			Required = true;
-			DefaultValue = default;
 			return this;
 		}
 		/// <summary>
 		/// Configures these Values as optional, with a default value when not provided.
+		/// If you want to use ConditionallyRequired(), use WithDefaultValue instead to specify a fallback value.
 		/// </summary>
 		/// <param name="defaultValue">The value to use as a default value when no Values are provided. If not provided, this is the default value for <typeparamref name="C"/></param>
 		public FluentManyValues<T, C> IsOptional(C defaultValue = default)
 		{
+			ThrowIfRequirednessAlreadyConfigured();
+			_configuredRequiredness = true;
 			Required = false;
+			WithDefaultValue(defaultValue);
+			return this;
+		}
+		/// <summary>
+		/// Configures a default value without specifying that these Values are optional. Use this instead of IsOptional when you use ConditionallyRequired()
+		/// </summary>
+		/// <param name="defaultValue">The value to use as a default when nothing else has been provided</param>
+		public FluentManyValues<T, C> WithDefaultValue(C defaultValue = default)
+		{
+			_hasDefaultValue = true;
 			DefaultValue = defaultValue;
 			return this;
 		}
@@ -183,6 +203,49 @@ namespace CommandLineFluent.Arguments
 		{
 			IgnoredPrefixes = prefixes;
 			return this;
+		}
+		/// <summary>
+		/// Configures this ManyValue to only be required or must not appear under certain circumstances.
+		/// If any rule is violated, parsing is considered to have failed. If all rules pass, then parsing is considered to have succeeded.
+		/// You can specify that the user has to provide this Value depending upon the value of other properties (after parsing, validation, and conversion)
+		/// </summary>
+		public void WithDependencies(Action<FluentDependencies<T, C>> config)
+		{
+			ThrowIfRequirednessAlreadyConfigured();
+			if (config != null)
+			{
+				Required = null;
+				_configuredRequiredness = true;
+				config.Invoke(Dependencies = new FluentDependencies<T, C>());
+			}
+			else
+			{
+				throw new ArgumentNullException(nameof(config), @"config cannot be null");
+			}
+		}
+		/// <summary>
+		/// Checks to make sure that all dependencies are respected. If they are not, returns an Error
+		/// describing the first dependency that was violated.
+		/// If no dependencies have been set up, returns null.
+		/// </summary>
+		/// <param name="obj">The object to check</param>
+		public Error EvaluateDependencies(T obj)
+		{
+			if (Dependencies == null)
+			{
+				return null;
+			}
+			return Dependencies.EvaluateRelationship(obj, GotValue, FluentArgumentType.Value);
+		}
+		/// <summary>
+		/// Throws if _configuredRequiredness is true.
+		/// </summary>
+		private void ThrowIfRequirednessAlreadyConfigured()
+		{
+			if (_configuredRequiredness)
+			{
+				throw new InvalidOperationException($@"Do not call {nameof(IsRequired)}, {nameof(IsOptional)}, or {nameof(WithDependencies)} more than once.");
+			}
 		}
 	}
 }

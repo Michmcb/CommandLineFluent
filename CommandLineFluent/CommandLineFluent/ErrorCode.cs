@@ -92,6 +92,12 @@
 		/// <summary>
 		/// This error code value indicates a bug in your program, you'll only see this ErrorCode when an exception is raised.
 		/// </summary>
-		ProgrammerError
+		ProgrammerError,
+		OptionMustNotBeProvided,
+		MissingRequiredSwitch,
+		SwitchMustNotBeProvided,
+		ValueMustNotBeProvided,
+		MissingRequiredManyValues,
+		ManyValuesMustNotBeProvided
 	}
 }

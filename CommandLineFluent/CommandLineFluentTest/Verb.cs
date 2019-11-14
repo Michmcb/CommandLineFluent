@@ -6,6 +6,13 @@
 		public string Option { get; set; }
 		public bool Switch { get; set; }
 	}
+	public class VerbVariety
+	{
+		public string Value { get; set; }
+		public int Option { get; set; }
+		public bool Switch { get; set; }
+		public int? OptionNullable { get; set; }
+	}
 	public class Verb1 : Verb { }
 	public class Verb2 : Verb { }
 	public class Verb3 : Verb { }

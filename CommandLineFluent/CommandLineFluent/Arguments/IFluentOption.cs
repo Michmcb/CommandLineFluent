@@ -14,9 +14,10 @@
 		/// </summary>
 		string LongName { get; }
 		/// <summary>
-		/// If true, this FluentOption is required to be specified
+		/// Whether or not this Option is required to be included. By default, it is required.
+		/// If null, then Dependencies will be used to determine whether or not this Option is required.
 		/// </summary>
-		bool Required { get; }
+		bool? Required { get; }
 		/// <summary>
 		/// The short and long name joined with a |
 		/// </summary>

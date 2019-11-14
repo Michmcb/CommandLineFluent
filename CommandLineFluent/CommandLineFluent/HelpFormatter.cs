@@ -77,14 +77,14 @@ namespace CommandLineFluent
 			{
 				foreach (IFluentValue val in verb.FluentValues)
 				{
-					keyText[i] = val.Required ? val.Name ?? $"value{i + 1}" : $"[{val.Name ?? $"value{i + 1}"}]";
+					keyText[i] = val.Required != false ? val.Name ?? $"value{i + 1}" : $"[{val.Name ?? $"value{i + 1}"}]";
 					helpText[i] = val.HelpText ?? "";
 					charsForKey = Max(keyText[i++].Length, charsForKey);
 				}
 			}
 			else
 			{
-				keyText[i] = verb.FluentManyValues.Required ? verb.FluentManyValues.Name ?? "Values" : $"[{verb.FluentManyValues.Name ?? "Values"}]";
+				keyText[i] = verb.FluentManyValues.Required != false ? verb.FluentManyValues.Name ?? "Values" : $"[{verb.FluentManyValues.Name ?? "Values"}]";
 				helpText[i] = verb.FluentManyValues.HelpText ?? "";
 				// This is the very first one we do, so just set the widest key to whatever its length was
 				charsForKey = helpText[i++].Length;
@@ -92,14 +92,14 @@ namespace CommandLineFluent
 			foreach (IFluentOption opt in verb.FluentOptions)
 			{
 				string name = Util.ShortAndLongName(opt);
-				keyText[i] = $"[{name}]";
+				keyText[i] = name;
 				helpText[i++] = opt.HelpText ?? "";
 				charsForKey = Max(name.Length, charsForKey);
 			}
 			foreach (IFluentSwitch sw in verb.FluentSwitches)
 			{
 				string name = sw.ShortAndLongName();
-				keyText[i] = name;
+				keyText[i] = $"[{name}]";
 				helpText[i++] = sw.HelpText ?? "";
 				charsForKey = Max(name.Length, charsForKey);
 			}
@@ -135,31 +135,31 @@ namespace CommandLineFluent
 				int i = 1;
 				foreach (IFluentValue val in verb.FluentValues)
 				{
-					sb.Append(val.Required ? val.Name ?? $"value{i}" : $"[{val.Name ?? $"value{i}"}]");
+					sb.Append(val.Required != false ? '"' + (val.Name ?? $"value{i}") + '"' : $"[{val.Name ?? $"value{i}"}]");
 					sb.Append(' ');
 				}
 			}
 			else
 			{
-				sb.Append(verb.FluentManyValues.Required ? verb.FluentManyValues.Name : $"[{verb.FluentManyValues.Name}]");
+				sb.Append(verb.FluentManyValues.Required != false ? '"' + verb.FluentManyValues.Name + '"' : $"[{verb.FluentManyValues.Name}]");
 				sb.Append(' ');
 			}
 
 			foreach (IFluentOption opt in verb.FluentOptions)
 			{
 				string bothNames = Util.ShortAndLongName(opt);
-				if (opt.Required)
+				if (opt.Required == true)
 				{
-					sb.Append($"{bothNames} {opt.Name ?? "value"} ");
+					sb.Append($@"{bothNames} ""{opt.Name ?? "value"}"" ");
 				}
 				else
 				{
-					sb.Append($"[{bothNames} {opt.Name ?? "value"}] ");
+					sb.Append($@"[{bothNames} {opt.Name ?? "value"}] ");
 				}
 			}
 			foreach (IFluentSwitch sw in verb.FluentSwitches)
 			{
-				// Switches are always optional
+				// Switches are always optional - well except maybe not if they have dependency rules. Still, put them in brackets
 				sb.Append($"[{Util.ShortAndLongName(sw)}] ");
 			}
 			sb.AppendLine();

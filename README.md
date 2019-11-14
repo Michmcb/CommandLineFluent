@@ -85,6 +85,44 @@ verbless.AddOption("-p", "--parameters")
 	.IsOptional("defaultFile.frob"); // If not provided, property will be assigned this string
 ```
 
+### Conditional Dependencies
+By using WithDependencies(config), we can define some arguments are only required under certain conditions.
+For example, we can allow somebody to log on with either a username and password, or denote that they want to use a single sign on method, for their current account. In this case it doesn't make sense to provide a username/password AND use single sign on, so we can configure the FluentParser to only accept one or the other.
+
+```csharp
+verbless.AddOption("-u", "--username")
+	.ForProperty(theClass => theClass.Username)
+	.WithDependencies(config =>
+	{
+		// We have to specify when it's required AND when it mustn't appear. There are no implicit rules when you use dependencies.
+
+		config.RequiredIf(theClass => theClass.UseSingleSignOn)
+			.IsEqualTo(false) // We can compare the property value against a specific value like this
+			.WithErrorMessage("If you don't want to use Single Sign On, you must provide a username");
+
+		config.MustNotAppearIf(theClass => theClass.UseSingleSignOn)
+			.When(UseSingleSignOnValue => UseSingleSignOnValue == true) // Or we can use a predicate for more complex comparisons
+			.WithErrorMessage("If you want to use Single Sign On, you cannot provide a username");
+	});
+
+verbless.AddOption("-p", "--password")
+	.ForProperty(theClass => theClass.Password)
+	.WithDependencies(config =>
+	{
+		// Note you don't HAVE to specify a property. You can specify the class itself if you need to check multiple properties at once
+		config.RequiredIf(theClass => theClass)
+			.When(theClass => theClass.UseSingleSignOn == false)
+			.WithErrorMessage("If you don't want to use Single Sign On, you must provide a password");
+
+		config.MustNotAppearIf(theClass => theClass.UseSingleSignOn)
+			.IsEqualTo(true)
+			.WithErrorMessage("If you don't want to use Single Sign On, you must provide a password");
+	});
+
+verbless.AddSwitch("-s", "--singlesignon")
+	.ForProperty(theClass => theClass.UseSingleSignOn);
+```
+
 ### Validators
 
 You can also add some validation. CommandLineFluent comes with some basic validators. For example, Validators.FileExists is a method that takes a string and makes sure that it is a file which exists.

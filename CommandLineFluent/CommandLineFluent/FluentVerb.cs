@@ -324,7 +324,6 @@ namespace CommandLineFluent
 						// It's either a switch or an Option
 						switch (fanat.Type)
 						{
-							default:
 							case FluentArgumentType.Option:
 								if (aEnum.MoveNext())
 								{
@@ -357,6 +356,9 @@ namespace CommandLineFluent
 									errors.Add(new Error(ErrorCode.DuplicateSwitch, true, $"The Switch {arg} appeared twice"));
 								}
 								break;
+							default:
+								System.Diagnostics.Debug.Assert(false, "Should never happen");
+								break;
 						}
 					}
 					// If we're using many values, or if we're using a determined number and still have more to find, it's a value
@@ -371,8 +373,15 @@ namespace CommandLineFluent
 				}
 			}
 
+			// Now here, it's a bit tricky. The Options/Switches/Values may or may not be required and we may not know this
+			// until we've assigned everything. So we have no choice but to go ahead and assign everything null.
+			// Then after that, we need to check all of their advanced rules, and if any are bad then return those.
+
+			// Oh yeah it's very important we assign -everything- at least something. That sets their "GotValue" property correctly,
+			// which is what allows us to calculate the Dependencies correctly.
+
 			// For all of our remaining options, and values, give them null, which means set them to their default value
-			// If they haven't been given a default value, they'll throw an exception
+			// If they haven't been given a default value, they'll return an error
 			foreach (string name in remainingOptions)
 			{
 				Error oErr = Option(name, parsed, null);
@@ -386,7 +395,7 @@ namespace CommandLineFluent
 			// Give it all of the values, and suck in all of the errors we had, if any
 			errors.AddRange(Values(parsed, valuesFound.ToArray()));
 
-			// For switches, their abscence means false, which is completely fine.
+			// For switches, their abscence means false.
 			foreach (string name in remainingSwitches)
 			{
 				Error sErr = Switch(name, parsed, false);
@@ -394,6 +403,49 @@ namespace CommandLineFluent
 				{
 					errors.Add(sErr);
 					break;
+				}
+			}
+
+			if (_values != null)
+			{
+				// Evaluate all dependencies for the values
+				foreach (IFluentSettable<T, string> value in _values)
+				{
+					Error err = value.EvaluateDependencies(parsed);
+					if (err != null)
+					{
+						errors.Add(err);
+					}
+				}
+			}
+			// And all the options
+			foreach (IFluentSettable<T, string> option in _options.Values)
+			{
+				Error err = option.EvaluateDependencies(parsed);
+				if (err != null)
+				{
+					errors.Add(err);
+				}
+			}
+
+			// And all dependencies for switches
+			foreach (IFluentSettable<T, bool> swatch in _switches.Values)
+			{
+				// (switch is a keyword, swatch is close enough right?)
+				Error err = swatch.EvaluateDependencies(parsed);
+				if (err != null)
+				{
+					errors.Add(err);
+				}
+			}
+
+			// And all dependencies for manyvalues
+			if (_manyValues != null)
+			{
+				Error err = _manyValues.EvaluateDependencies(parsed);
+				if (err != null)
+				{
+					errors.Add(err);
 				}
 			}
 

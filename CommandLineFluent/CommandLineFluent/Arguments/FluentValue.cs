@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Linq.Expressions;
-using System.Reflection;
 
 namespace CommandLineFluent.Arguments
 {
@@ -13,17 +12,24 @@ namespace CommandLineFluent.Arguments
 	{
 		private Func<string, Converted<C>> _converter;
 		private Func<string, string> _validator;
+		private bool _configuredRequiredness;
+		private bool _hasDefaultValue;
+
 		/// <summary>
-		/// Whether or not this Value is required to be included. By default, it is required.
+		/// Whether or not this Value is required to be provided. By default, it is required.
+		/// If null, then Dependencies will be used to determine whether or not this Value is required.
 		/// </summary>
-		public bool Required { get; private set; }
+		public bool? Required { get; set; }
 		/// <summary>
 		/// If not required, this is the default value used when the Value is not provided
 		/// </summary>
 		public C DefaultValue { get; private set; }
+		/// <summary>
+		/// Dependencies on other properties which dictate whether or not this is required.
+		/// </summary>
+		public FluentDependencies<T, C> Dependencies { get; private set; }
 		internal FluentValue()
 		{
-			Name = null;
 			Required = true;
 		}
 		/// <summary>
@@ -35,9 +41,11 @@ namespace CommandLineFluent.Arguments
 		/// <param name="value">The raw value of the argument. If necessary, will be converted to the <typeparamref name="C"/> using the Converter set</param>
 		public Error SetValue(T target, string value)
 		{
+			GotValue = false;
 			if (value != null)
 			{
 				string validateError = null;
+				// Here we validate it
 				try
 				{
 					validateError = _validator?.Invoke(value);
@@ -50,6 +58,7 @@ namespace CommandLineFluent.Arguments
 				{
 					return new Error(ErrorCode.ValueFailedValidation, false, $"Validator for Value {Name} threw an exception ({ex.Message})", ex);
 				}
+				// Then we convert it
 				if (_converter != null)
 				{
 					Converted<C> converted;
@@ -65,21 +74,28 @@ namespace CommandLineFluent.Arguments
 					{
 						return new Error(ErrorCode.ValueFailedConversion, false, $"Converter for Value {Name} threw an exception ({ex.Message})", ex);
 					}
+					// Assignment for converted value
 					TargetProperty.SetValue(target, converted.ConvertedValue);
-					return null;
+					GotValue = true;
 				}
 				else
 				{
+					// Assignment for non-converted value (validated or not)
 					TargetProperty.SetValue(target, value);
+					GotValue = true;
 				}
 			}
-			else if (!Required)
+			else if (Dependencies != null || Required == false)
 			{
-				// It's not required, so assign its default value
-				TargetProperty.SetValue(target, DefaultValue);
+				// Either it's not required, or we have dependencies. In either case, assign the default value for now.
+				if (_hasDefaultValue)
+				{
+					TargetProperty.SetValue(target, DefaultValue);
+				}
 			}
 			else
 			{
+				// It is required, so return an error
 				return new Error(ErrorCode.MissingRequiredValue, true, $"Value {Name} is required and did not have a value provided");
 			}
 			return null;
@@ -90,12 +106,7 @@ namespace CommandLineFluent.Arguments
 		/// <param name="expression">The property to set</param>
 		public FluentValue<T, C> ForProperty(Expression<Func<T, C>> expression)
 		{
-			if (!(expression.Body is MemberExpression me))
-			{
-				throw new ArgumentException($"Expression has to be a property of type {typeof(T)}", nameof(expression));
-			}
-			PropertyInfo prop = me.Member as PropertyInfo;
-			TargetProperty = prop ?? throw new ArgumentException($"Expression has to be a property of type {typeof(T)}", nameof(expression));
+			TargetProperty = Util.PropertyInfoFromExpression(expression);
 			return this;
 		}
 		/// <summary>
@@ -103,18 +114,32 @@ namespace CommandLineFluent.Arguments
 		/// </summary>
 		public FluentValue<T, C> IsRequired()
 		{
+			ThrowIfRequirednessAlreadyConfigured();
+			_configuredRequiredness = true;
 			Required = true;
-			DefaultValue = default;
 			return this;
 		}
 		/// <summary>
 		/// Configures this Value as optional, with a default value when not provided. Note that if the 0th Value is optional and the 1st Value is required,
 		/// and you provide a single value, that single value will map to the 0th Value and throw an error because the 1st Value was missing. It's recommended you use this judiciously.
+		/// If you are setting up Conditional requirements, use WithDefaultValue instead to specify a fallback value.
 		/// </summary>
 		/// <param name="defaultValue">The value to use as a default value when this Value is not provided. If not provided, this is the default value for <typeparamref name="C"/></param>
 		public FluentValue<T, C> IsOptional(C defaultValue = default)
 		{
+			ThrowIfRequirednessAlreadyConfigured();
+			_configuredRequiredness = true;
 			Required = false;
+			WithDefaultValue(defaultValue);
+			return this;
+		}
+		/// <summary>
+		/// Configures a default value without specifying that this Value is optional. Use this instead of IsOptional when you use ConditionallyRequired()
+		/// </summary>
+		/// <param name="defaultValue">The value to use as a default when nothing else has been provided</param>
+		public FluentValue<T, C> WithDefaultValue(C defaultValue = default)
+		{
+			_hasDefaultValue = true;
 			DefaultValue = defaultValue;
 			return this;
 		}
@@ -160,6 +185,49 @@ namespace CommandLineFluent.Arguments
 		{
 			_validator = validator;
 			return this;
+		}
+		/// <summary>
+		/// Configures this Value to only be required or must not appear under certain circumstances.
+		/// If any rule is violated, parsing is considered to have failed. If all rules pass, then parsing is considered to have succeeded.
+		/// You can specify that the user has to provide this Value depending upon the value of other properties (after parsing, validation, and conversion)
+		/// </summary>
+		public void WithDependencies(Action<FluentDependencies<T, C>> config)
+		{
+			ThrowIfRequirednessAlreadyConfigured();
+			if (config != null)
+			{
+				Required = null;
+				_configuredRequiredness = true;
+				config.Invoke(Dependencies = new FluentDependencies<T, C>());
+			}
+			else
+			{
+				throw new ArgumentNullException(nameof(config), @"config cannot be null");
+			}
+		}
+		/// <summary>
+		/// Checks to make sure that all dependencies are respected. If they are not, returns an Error
+		/// describing the first dependency that was violated.
+		/// If no dependencies have been set up, returns null.
+		/// </summary>
+		/// <param name="obj">The object to check</param>
+		public Error EvaluateDependencies(T obj)
+		{
+			if (Dependencies == null)
+			{
+				return null;
+			}
+			return Dependencies.EvaluateRelationship(obj, GotValue, FluentArgumentType.Value);
+		}
+		/// <summary>
+		/// Throws if _configuredRequiredness is true.
+		/// </summary>
+		private void ThrowIfRequirednessAlreadyConfigured()
+		{
+			if (_configuredRequiredness)
+			{
+				throw new InvalidOperationException($@"Do not call {nameof(IsRequired)}, {nameof(IsOptional)}, or {nameof(WithDependencies)} more than once.");
+			}
 		}
 	}
 }

@@ -10,10 +10,11 @@
 		/// The prefixes that are ignored when capturing values. This is useful if you use a consistent prefixing scheme,
 		/// and want to avoid capturing possible user typos; an error will be thrown instead of using it as a value.
 		/// </summary>
-		string[] IgnoredPrefixes { get; }
+		System.Collections.Generic.IReadOnlyCollection<string> IgnoredPrefixes { get; }
 		/// <summary>
-		/// Whether or not at least 1 value is required
+		/// Whether or not at least 1 value is required. By default, it is required.
+		/// If null, then Dependencies will be used to determine whether or not these Values are required.
 		/// </summary>
-		bool Required { get; }
+		bool? Required { get; }
 	}
 }

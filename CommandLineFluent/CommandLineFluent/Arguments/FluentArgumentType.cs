@@ -3,6 +3,8 @@
 	internal enum FluentArgumentType
 	{
 		Option,
-		Switch
+		Switch,
+		Value,
+		ManyValues
 	}
 }

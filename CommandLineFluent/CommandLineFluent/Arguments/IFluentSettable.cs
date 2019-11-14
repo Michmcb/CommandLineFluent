@@ -18,5 +18,12 @@
 		/// Returns an error if improperly configured, or null if all is well
 		/// </summary>
 		Error Validate();
+		/// <summary>
+		/// Checks to make sure that all dependencies are respected. If they are not, returns an Error
+		/// describing the first dependency that was violated.
+		/// If no dependencies have been set up, returns null.
+		/// </summary>
+		/// <param name="obj">The object to check</param>
+		Error EvaluateDependencies(T obj);
 	}
 }

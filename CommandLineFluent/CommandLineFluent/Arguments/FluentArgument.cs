@@ -16,6 +16,11 @@ namespace CommandLineFluent.Arguments
 		/// </summary>
 		public string HelpText { get; protected set; }
 		/// <summary>
+		/// True if the FluentArgument got a value from parsing arguments, false otherwise.
+		/// Returns false if the 
+		/// </summary>
+		public bool GotValue { get; internal set; }
+		/// <summary>
 		/// The property that this argument maps to
 		/// </summary>
 		public PropertyInfo TargetProperty { get; protected set; }

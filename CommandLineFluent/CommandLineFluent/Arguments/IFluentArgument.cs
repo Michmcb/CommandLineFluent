@@ -16,6 +16,10 @@ namespace CommandLineFluent.Arguments
 		/// </summary>
 		string HelpText { get; }
 		/// <summary>
+		/// True if the FluentArgument got a value from parsing arguments, false otherwise.
+		/// </summary>
+		bool GotValue { get; }
+		/// <summary>
 		/// The property that this argument maps to
 		/// </summary>
 		PropertyInfo TargetProperty { get; }
