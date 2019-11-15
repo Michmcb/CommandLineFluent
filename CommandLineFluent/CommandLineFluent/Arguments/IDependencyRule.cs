@@ -4,7 +4,7 @@
 	/// Defines a single rule of a FluentRelationship.
 	/// </summary>
 	/// <typeparam name="T">The class</typeparam>
-	public interface IRelationshipRule<T> where T : new()
+	public interface IDependencyRule<T> where T : new()
 	{
 		/// <summary>
 		/// You don't need to call this; but this checks that the specified property of an object
@@ -22,5 +22,9 @@
 		/// Does this rule say it's required, or must NOT appear
 		/// </summary>
 		Requiredness Requiredness { get; }
+		/// <summary>
+		/// Validates this rule. Returns an Error if something is invalid, or null otherwise.
+		/// </summary>
+		Error Validate();
 	}
 }

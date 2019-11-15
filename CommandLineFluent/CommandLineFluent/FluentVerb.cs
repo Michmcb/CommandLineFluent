@@ -92,41 +92,25 @@ namespace CommandLineFluent
 		/// </summary>
 		public ICollection<Error> Validate()
 		{
-			ICollection<Error> errors = new List<Error>();
+			List<Error> errors = new List<Error>();
 			foreach (KeyValuePair<string, IFluentSettable<T, string>> opt in _options)
 			{
-				Error error = opt.Value.Validate();
-				if (error != null)
-				{
-					errors.Add(error);
-				}
+				errors.AddRange(opt.Value.Validate());
 			}
 			foreach (KeyValuePair<string, IFluentSettable<T, bool>> sw in _switches)
 			{
-				Error error = sw.Value.Validate();
-				if (error != null)
-				{
-					errors.Add(error);
-				}
+				errors.AddRange(sw.Value.Validate());
 			}
 			if (_values != null)
 			{
 				foreach (IFluentSettable<T, string> value in _values)
 				{
-					Error error = value.Validate();
-					if (error != null)
-					{
-						errors.Add(error);
-					}
+					errors.AddRange(value.Validate());
 				}
 			}
 			else if (_manyValues != null)
 			{
-				Error error = _manyValues.Validate();
-				if (error != null)
-				{
-					errors.Add(error);
-				}
+				errors.AddRange(_manyValues.Validate());
 			}
 			return errors;
 		}

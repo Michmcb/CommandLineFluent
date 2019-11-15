@@ -9,7 +9,7 @@ namespace CommandLineFluent.Arguments
 	/// </summary>
 	/// <typeparam name="T">The class</typeparam>
 	/// <typeparam name="V">The value</typeparam>
-	public class DependencyRule<T, V> : IRelationshipRule<T> where T : new()
+	public class DependencyRule<T, V> : IDependencyRule<T> where T : new()
 	{
 		/// <summary>
 		/// Does this rule say it's required, or must NOT appear
@@ -156,6 +156,17 @@ namespace CommandLineFluent.Arguments
 					return mustNotAppear ? !didAppear : true;
 			}
 			return AppliesWhenPredicate == Predicate(propertyVal);
+		}
+		/// <summary>
+		/// Validates this rule. Returns an Error if something is invalid, or null otherwise.
+		/// </summary>
+		public Error Validate()
+		{
+			if (Predicate == null)
+			{
+				return new Error(ErrorCode.ProgrammerError, false, $@"A rule that is {Requiredness} for the property {TargetProperty.Name} has no predicate. Probably missing a When, IsEqualTo, or IsNull call.");
+			}
+			return null;
 		}
 		private bool PredicateEquals(V val)
 		{

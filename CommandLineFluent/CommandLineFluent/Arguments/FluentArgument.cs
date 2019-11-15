@@ -24,16 +24,5 @@ namespace CommandLineFluent.Arguments
 		/// The property that this argument maps to
 		/// </summary>
 		public PropertyInfo TargetProperty { get; protected set; }
-		/// <summary>
-		/// Validates this FluentArgument, returning an Error object if something is invalid.
-		/// </summary>
-		public virtual Error Validate()
-		{
-			if (TargetProperty == null)
-			{
-				return new Error(ErrorCode.ProgrammerError, false, $"{Name} does not have a target property set");
-			}
-			return null;
-		}
 	}
 }

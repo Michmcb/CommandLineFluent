@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq.Expressions;
 
 namespace CommandLineFluent.Arguments
@@ -203,7 +204,7 @@ namespace CommandLineFluent.Arguments
 		/// If any rule is violated, parsing is considered to have failed. If all rules pass, then parsing is considered to have succeeded.
 		/// You can specify that the user has to provide this Value depending upon the value of other properties (after parsing, validation, and conversion)
 		/// </summary>
-		public void WithDependencies(Action<FluentDependencies<T, C>> config)
+		public FluentOption<T, C> WithDependencies(Action<FluentDependencies<T, C>> config)
 		{
 			ThrowIfRequirednessAlreadyConfigured();
 			if (config != null)
@@ -211,6 +212,7 @@ namespace CommandLineFluent.Arguments
 				Required = null;
 				_configuredRequiredness = true;
 				config.Invoke(Dependencies = new FluentDependencies<T, C>());
+				return this;
 			}
 			else
 			{
@@ -230,6 +232,23 @@ namespace CommandLineFluent.Arguments
 				return null;
 			}
 			return Dependencies.EvaluateRelationship(obj, GotValue, FluentArgumentType.Option);
+		}
+		/// <summary>
+		/// Validates this FluentArgument, returning an Error object if something is invalid.
+		/// </summary>
+		public IEnumerable<Error> Validate()
+		{
+			if (TargetProperty == null)
+			{
+				yield return new Error(ErrorCode.ProgrammerError, false, $"{Name} does not have a target property set");
+			}
+			if (Dependencies != null)
+			{
+				foreach (Error error in Dependencies.Validate())
+				{
+					yield return error;
+				}
+			}
 		}
 		/// <summary>
 		/// Throws if _configuredRequiredness is true.

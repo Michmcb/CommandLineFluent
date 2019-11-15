@@ -12,14 +12,14 @@ namespace CommandLineFluent.Arguments
 	/// <typeparam name="C">The type of the property</typeparam>
 	public class FluentDependencies<T, C> where T : new()
 	{
-		private readonly List<IRelationshipRule<T>> rules;
+		private readonly List<IDependencyRule<T>> rules;
 		/// <summary>
 		/// The rules which make up this relationship
 		/// </summary>
-		public IReadOnlyCollection<IRelationshipRule<T>> Rules => rules;
+		public IReadOnlyCollection<IDependencyRule<T>> Rules => rules;
 		internal FluentDependencies()
 		{
-			rules = new List<IRelationshipRule<T>>();
+			rules = new List<IDependencyRule<T>>();
 		}
 		/// <summary>
 		/// Specifies that a property of type <typeparamref name="V"/> of an object of type <typeparamref name="T"/>
@@ -46,6 +46,20 @@ namespace CommandLineFluent.Arguments
 			return rule;
 		}
 		/// <summary>
+		/// Validates this rule. Returns an Error for each invalid thing.
+		/// </summary>
+		public IEnumerable<Error> Validate()
+		{
+			foreach (IDependencyRule<T> rule in rules)
+			{
+				Error err = rule.Validate();
+				if (err != null)
+				{
+					yield return err;
+				}
+			}
+		}
+		/// <summary>
 		/// Returns null if all rules of the relationship have been respected, and an Error otherwise.
 		/// </summary>
 		/// <param name="obj">The object to check</param>
@@ -53,7 +67,7 @@ namespace CommandLineFluent.Arguments
 		/// <param name="fluentArgumentType">The type of argument, used to return the correct error code</param>
 		internal Error EvaluateRelationship(T obj, bool wasValueProvided, FluentArgumentType fluentArgumentType)
 		{
-			foreach (IRelationshipRule<T> rule in rules)
+			foreach (IDependencyRule<T> rule in rules)
 			{
 				if (!rule.DoesSatifyRule(obj, wasValueProvided))
 				{

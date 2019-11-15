@@ -1,4 +1,6 @@
-﻿namespace CommandLineFluent.Arguments
+﻿using System.Collections.Generic;
+
+namespace CommandLineFluent.Arguments
 {
 	/// <summary>
 	/// A Fluent Argument that is able to have its value set to something
@@ -15,9 +17,9 @@
 		/// <param name="value">The value to set the property to (before any conversion)</param>
 		Error SetValue(T target, V value);
 		/// <summary>
-		/// Returns an error if improperly configured, or null if all is well
+		/// Returns an Error for each invalid thing.
 		/// </summary>
-		Error Validate();
+		IEnumerable<Error> Validate();
 		/// <summary>
 		/// Checks to make sure that all dependencies are respected. If they are not, returns an Error
 		/// describing the first dependency that was violated.

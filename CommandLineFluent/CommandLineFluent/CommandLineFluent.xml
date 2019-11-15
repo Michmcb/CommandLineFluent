@@ -126,6 +126,11 @@
             <param name="obj">The object</param>
             <param name="didAppear">If a string appeared during parsing</param>
         </member>
+        <member name="M:CommandLineFluent.Arguments.DependencyRule`2.Validate">
+            <summary>
+            Validates this rule. Returns an Error if something is invalid, or null otherwise.
+            </summary>
+        </member>
         <member name="T:CommandLineFluent.Arguments.FluentArgument">
             <summary>
             A single argument on the command line. Can be a Switch, Option, or Value
@@ -150,11 +155,6 @@
         <member name="P:CommandLineFluent.Arguments.FluentArgument.TargetProperty">
             <summary>
             The property that this argument maps to
-            </summary>
-        </member>
-        <member name="M:CommandLineFluent.Arguments.FluentArgument.Validate">
-            <summary>
-            Validates this FluentArgument, returning an Error object if something is invalid.
             </summary>
         </member>
         <member name="T:CommandLineFluent.Arguments.FluentDependencies`2">
@@ -185,6 +185,11 @@
             </summary>
             <typeparam name="V">The type of the property</typeparam>
             <param name="expression">The property that is required</param>
+        </member>
+        <member name="M:CommandLineFluent.Arguments.FluentDependencies`2.Validate">
+            <summary>
+            Validates this rule. Returns an Error for each invalid thing.
+            </summary>
         </member>
         <member name="M:CommandLineFluent.Arguments.FluentDependencies`2.EvaluateRelationship(`0,System.Boolean,CommandLineFluent.Arguments.FluentArgumentType)">
             <summary>
@@ -310,6 +315,11 @@
             </summary>
             <param name="obj">The object to check</param>
         </member>
+        <member name="M:CommandLineFluent.Arguments.FluentManyValues`2.Validate">
+            <summary>
+            Validates this FluentArgument, returning an Error object if something is invalid.
+            </summary>
+        </member>
         <member name="M:CommandLineFluent.Arguments.FluentManyValues`2.ThrowIfRequirednessAlreadyConfigured">
             <summary>
             Throws if _configuredRequiredness is true.
@@ -432,6 +442,11 @@
             </summary>
             <param name="obj">The object to check</param>
         </member>
+        <member name="M:CommandLineFluent.Arguments.FluentOption`2.Validate">
+            <summary>
+            Validates this FluentArgument, returning an Error object if something is invalid.
+            </summary>
+        </member>
         <member name="M:CommandLineFluent.Arguments.FluentOption`2.ThrowIfRequirednessAlreadyConfigured">
             <summary>
             Throws if _configuredRequiredness is true.
@@ -520,6 +535,11 @@
             If no dependencies have been set up, returns null.
             </summary>
             <param name="obj">The object to check</param>
+        </member>
+        <member name="M:CommandLineFluent.Arguments.FluentSwitch`2.Validate">
+            <summary>
+            Validates this FluentArgument, returning an Error object if something is invalid.
+            </summary>
         </member>
         <member name="M:CommandLineFluent.Arguments.FluentSwitch`2.ThrowIfRequirednessAlreadyConfigured">
             <summary>
@@ -629,9 +649,44 @@
             </summary>
             <param name="obj">The object to check</param>
         </member>
+        <member name="M:CommandLineFluent.Arguments.FluentValue`2.Validate">
+            <summary>
+            Validates this FluentArgument, returning an Error object if something is invalid.
+            </summary>
+        </member>
         <member name="M:CommandLineFluent.Arguments.FluentValue`2.ThrowIfRequirednessAlreadyConfigured">
             <summary>
             Throws if _configuredRequiredness is true.
+            </summary>
+        </member>
+        <member name="T:CommandLineFluent.Arguments.IDependencyRule`1">
+            <summary>
+            Defines a single rule of a FluentRelationship.
+            </summary>
+            <typeparam name="T">The class</typeparam>
+        </member>
+        <member name="M:CommandLineFluent.Arguments.IDependencyRule`1.DoesSatifyRule(`0,System.Boolean)">
+            <summary>
+            You don't need to call this; but this checks that the specified property of an object
+            of type T satisfies the rule, given whether or not the FluentArgument on which this rule was configured
+            had the string appear during parsing or not
+            </summary>
+            <param name="obj">The object</param>
+            <param name="didAppear">If a string appeared during parsing</param>
+        </member>
+        <member name="P:CommandLineFluent.Arguments.IDependencyRule`1.ErrorMessage">
+            <summary>
+            The error message when this rule is violated
+            </summary>
+        </member>
+        <member name="P:CommandLineFluent.Arguments.IDependencyRule`1.Requiredness">
+            <summary>
+            Does this rule say it's required, or must NOT appear
+            </summary>
+        </member>
+        <member name="M:CommandLineFluent.Arguments.IDependencyRule`1.Validate">
+            <summary>
+            Validates this rule. Returns an Error if something is invalid, or null otherwise.
             </summary>
         </member>
         <member name="T:CommandLineFluent.Arguments.IFluentArgument">
@@ -720,7 +775,7 @@
         </member>
         <member name="M:CommandLineFluent.Arguments.IFluentSettable`2.Validate">
             <summary>
-            Returns an error if improperly configured, or null if all is well
+            Returns an Error for each invalid thing.
             </summary>
         </member>
         <member name="M:CommandLineFluent.Arguments.IFluentSettable`2.EvaluateDependencies(`0)">
@@ -760,31 +815,6 @@
             <summary>
             Whether or not this Value is required to be provided. By default, it is required.
             If null, then Dependencies will be used to determine whether or not this Value is required.
-            </summary>
-        </member>
-        <member name="T:CommandLineFluent.Arguments.IRelationshipRule`1">
-            <summary>
-            Defines a single rule of a FluentRelationship.
-            </summary>
-            <typeparam name="T">The class</typeparam>
-        </member>
-        <member name="M:CommandLineFluent.Arguments.IRelationshipRule`1.DoesSatifyRule(`0,System.Boolean)">
-            <summary>
-            You don't need to call this; but this checks that the specified property of an object
-            of type T satisfies the rule, given whether or not the FluentArgument on which this rule was configured
-            had the string appear during parsing or not
-            </summary>
-            <param name="obj">The object</param>
-            <param name="didAppear">If a string appeared during parsing</param>
-        </member>
-        <member name="P:CommandLineFluent.Arguments.IRelationshipRule`1.ErrorMessage">
-            <summary>
-            The error message when this rule is violated
-            </summary>
-        </member>
-        <member name="P:CommandLineFluent.Arguments.IRelationshipRule`1.Requiredness">
-            <summary>
-            Does this rule say it's required, or must NOT appear
             </summary>
         </member>
         <member name="T:CommandLineFluent.Arguments.Requiredness">
