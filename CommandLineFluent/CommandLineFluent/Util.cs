@@ -40,18 +40,17 @@ namespace CommandLineFluent
 		/// which references an object property
 		/// </summary>
 		/// <typeparam name="T">Argument which is passed to the expression</typeparam>
-		/// <typeparam name="V">What the expression returns</typeparam>
+		/// <typeparam name="C">What the expression returns</typeparam>
 		/// <param name="expression">The expression to convert into a PropertyInfo</param>
-		public static PropertyInfo PropertyInfoFromExpression<T, V>(Expression<Func<T, V>> expression)
+		public static PropertyInfo PropertyInfoFromExpression<T, C>(Expression<Func<T, C>> expression)
 		{
 			if (!(expression.Body is MemberExpression me))
 			{
-				throw new ArgumentException($"Expression has to be a property of type {typeof(T)}", nameof(expression));
+				throw new ArgumentException($"Expression has to be a property of type {typeof(C)} of class {typeof(T)}", nameof(expression));
 			}
 			PropertyInfo prop = me.Member as PropertyInfo;
-			return prop ?? throw new ArgumentException($"Expression has to be a property of type {typeof(T)}", nameof(expression));
+			return prop ?? throw new ArgumentException($"Expression has to be a property of type {typeof(C)} of class {typeof(T)}", nameof(expression));
 		}
-
 		internal static void ThrowIfRequirednessAlreadyConfigured(bool configuredRequiredness)
 		{
 			throw new NotImplementedException();

@@ -1987,7 +1987,7 @@
             which references an object property
             </summary>
             <typeparam name="T">Argument which is passed to the expression</typeparam>
-            <typeparam name="V">What the expression returns</typeparam>
+            <typeparam name="C">What the expression returns</typeparam>
             <param name="expression">The expression to convert into a PropertyInfo</param>
         </member>
         <member name="T:CommandLineFluent.Validation.Validators">

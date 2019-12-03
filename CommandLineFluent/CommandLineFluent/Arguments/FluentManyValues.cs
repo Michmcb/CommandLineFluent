@@ -39,6 +39,7 @@ namespace CommandLineFluent.Arguments
 		internal FluentManyValues()
 		{
 			Required = true;
+			IgnoredPrefixes = Array.Empty<string>();
 		}
 		/// <summary>
 		/// Attempts to set the value of the target property of the target object to the provided value. Uses any converter/validator provided.
