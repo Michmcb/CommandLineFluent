@@ -11,29 +11,47 @@ namespace CommandLineFluent
 	public static class Util
 	{
 		/// <summary>
-		/// Makes a string like: -s|--long, to show the user both ways of writing the switch
+		/// Makes a string like: -s|--long, to show the user both ways of writing the option
+		/// </summary>
+		public static string ShortAndLongName(IFluentOption fluentOption, string valueName)
+		{
+			// If it's true or null, don't enclose. If it's false, do enclose.
+			return ShortAndLongNameWithValueName(fluentOption.ShortName, fluentOption.LongName, valueName, (fluentOption.Required == null || fluentOption.Required == true) ? false : true);
+		}
+		/// <summary>
+		/// Makes a string like: -s|--long, to show the user both ways of writing the option
 		/// </summary>
 		public static string ShortAndLongName(IFluentOption fluentOption)
 		{
-			return ShortAndLongName(fluentOption.ShortName, fluentOption.LongName);
+			// If it's true or null, don't enclose. If it's false, do enclose.
+			return ShortAndLongName(fluentOption.ShortName, fluentOption.LongName, (fluentOption.Required == null || fluentOption.Required == true) ? false : true);
 		}
 		/// <summary>
 		/// Makes a string like: -s|--long, to show the user both ways of writing the switch
 		/// </summary>
 		public static string ShortAndLongName(IFluentSwitch fluentSwitch)
 		{
-			return ShortAndLongName(fluentSwitch.ShortName, fluentSwitch.LongName);
+			// Switches are always 
+			return ShortAndLongName(fluentSwitch.ShortName, fluentSwitch.LongName, true);
 		}
 		/// <summary>
 		/// Makes a string like: -s|--long, to show the user both ways of writing the switch
 		/// </summary>
-		public static string ShortAndLongName(string shortName, string longName)
+		public static string ShortAndLongName(string shortName, string longName, bool encloseInBrackets = false)
 		{
 			if (shortName != null && longName != null)
 			{
-				return $"{shortName}|{longName}";
+				return encloseInBrackets ? $"[{shortName}|{longName}]" : $"{shortName}|{longName}";
 			}
-			return shortName ?? longName;
+			return encloseInBrackets ? "[" + (shortName ?? longName) + "]" : shortName ?? longName;
+		}
+		public static string ShortAndLongNameWithValueName(string shortName, string longName, string valueName, bool encloseInBrackets = false)
+		{
+			if (shortName != null && longName != null)
+			{
+				return encloseInBrackets ? $"[{shortName}|{longName} \"{valueName}\"]" : $"{shortName}|{longName} \"{valueName}\"";
+			}
+			return encloseInBrackets ? "[" + (shortName ?? longName) + $" \"{valueName}\"]" : (shortName ?? longName) + "\"" + valueName + "\"";
 		}
 		/// <summary>
 		/// Given an Expression, returns the corresponding Property. Throws an exception if <paramref name="expression"/> is not a MemberExpression
@@ -50,10 +68,6 @@ namespace CommandLineFluent
 			}
 			PropertyInfo prop = me.Member as PropertyInfo;
 			return prop ?? throw new ArgumentException($"Expression has to be a property of type {typeof(C)} of class {typeof(T)}", nameof(expression));
-		}
-		internal static void ThrowIfRequirednessAlreadyConfigured(bool configuredRequiredness)
-		{
-			throw new NotImplementedException();
 		}
 	}
 }

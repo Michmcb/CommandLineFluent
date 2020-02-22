@@ -61,66 +61,6 @@ namespace CommandLineFluent
 			return allTheHelp.ToString();
 		}
 		/// <summary>
-		/// Formats the help text of the Options, Switches, and Values of the verb. If custom HelpText has been provided, that will be used.
-		/// If not, then if custom HelpFormatter is set on the verb, that is used to produce the help text. Otherwise, default formatting is used.
-		/// </summary>
-		public static string FormatVerbHelp(IFluentVerb verb, int maxLineLength)
-		{
-			// This is the number of characters we're reserving for the key text
-			int charsForKey = 0;
-			int i = 0;
-			string[] keyText = new string[(verb.FluentValues?.Count ?? 1) + verb.FluentOptions.Count + verb.FluentSwitches.Count];
-			string[] helpText = new string[keyText.Length];
-			// Nothing provided, so default it is
-			// So, we need to have one line per argument. We want to write the Name/shortName/longName, and then the HelpText associated with it. Easy as pie.
-			if (verb.FluentManyValues == null)
-			{
-				foreach (IFluentValue val in verb.FluentValues)
-				{
-					keyText[i] = val.Required != false ? val.Name ?? $"value{i + 1}" : $"[{val.Name ?? $"value{i + 1}"}]";
-					helpText[i] = val.HelpText ?? "";
-					charsForKey = Max(keyText[i++].Length, charsForKey);
-				}
-			}
-			else
-			{
-				keyText[i] = verb.FluentManyValues.Required != false ? verb.FluentManyValues.Name ?? "Values" : $"[{verb.FluentManyValues.Name ?? "Values"}]";
-				helpText[i] = verb.FluentManyValues.HelpText ?? "";
-				// This is the very first one we do, so just set the widest key to whatever its length was
-				charsForKey = helpText[i++].Length;
-			}
-			foreach (IFluentOption opt in verb.FluentOptions)
-			{
-				string name = Util.ShortAndLongName(opt);
-				keyText[i] = name;
-				helpText[i++] = opt.HelpText ?? "";
-				charsForKey = Max(name.Length, charsForKey);
-			}
-			foreach (IFluentSwitch sw in verb.FluentSwitches)
-			{
-				string name = sw.ShortAndLongName();
-				keyText[i] = $"[{name}]";
-				helpText[i++] = sw.HelpText ?? "";
-				charsForKey = Max(name.Length, charsForKey);
-			}
-			StringBuilder sb = new StringBuilder();
-
-			// A few more spaces just so it's easier to read
-			charsForKey += 3;
-			for (i = 0; i < keyText.Length; i++)
-			{
-				sb.Append(keyText[i].PadRight(charsForKey));
-				sb.AppendLine(helpText[i]);
-				// If we've wrapped a line, just shove an extra newline in there so it's still easyish to read
-				if (maxLineLength < keyText[i].Length + helpText[i].Length)
-				{
-					sb.AppendLine();
-				}
-			}
-			sb.AppendLine();
-			return sb.ToString();
-		}
-		/// <summary>
 		/// Formats the usage text of the Options, Switches, and Values of the verb.
 		/// Usage is formatted by writing the executeCommand, followed by the verb's Name,
 		/// </summary>
@@ -129,41 +69,110 @@ namespace CommandLineFluent
 		public static string FormatVerbUsage(IFluentVerb verb, string executeCommand)
 		{
 			StringBuilder sb = new StringBuilder("Usage: ");
-			sb.Append(executeCommand + ' ' + verb.Name + ' ');
+			if (!string.IsNullOrEmpty(executeCommand))
+			{
+				sb.Append(executeCommand);
+				sb.Append(' ');
+			}
+			if (!string.IsNullOrEmpty(verb.Name))
+			{
+				sb.Append(verb.Name);
+				sb.Append(' ');
+			}
 			if (verb.FluentManyValues == null)
 			{
 				int i = 1;
 				foreach (IFluentValue val in verb.FluentValues)
 				{
-					sb.Append(val.Required != false ? '"' + (val.Name ?? $"value{i}") + '"' : $"[{val.Name ?? $"value{i}"}]");
+					sb.Append(val.Required != false ? "\"" + (string.IsNullOrEmpty(val.Name) ? $"value{i}" : val.Name) + "\"" : $"[{val.Name ?? $"value{i}"}]");
 					sb.Append(' ');
 				}
 			}
 			else
 			{
-				sb.Append(verb.FluentManyValues.Required != false ? '"' + verb.FluentManyValues.Name + '"' : $"[{verb.FluentManyValues.Name}]");
+				sb.Append(verb.FluentManyValues.Required != false ? "\"" + (string.IsNullOrEmpty(verb.FluentManyValues.Name) ? "Values" : verb.FluentManyValues.Name) + "\"" : $"[{verb.FluentManyValues.Name ?? "Values"}]");
 				sb.Append(' ');
 			}
 
 			foreach (IFluentOption opt in verb.FluentOptions)
 			{
-				string bothNames = Util.ShortAndLongName(opt);
-				if (opt.Required == true)
+				string bothNames = Util.ShortAndLongName(opt, opt.Name);
+				sb.Append(bothNames);
+				sb.Append(' ');
+				/*if (opt.Required == true)
 				{
 					sb.Append($@"{bothNames} ""{opt.Name ?? "value"}"" ");
 				}
 				else
 				{
 					sb.Append($@"[{bothNames} {opt.Name ?? "value"}] ");
-				}
+				}*/
 			}
 			foreach (IFluentSwitch sw in verb.FluentSwitches)
 			{
 				// Switches are always optional - well except maybe not if they have dependency rules. Still, put them in brackets
-				sb.Append($"[{Util.ShortAndLongName(sw)}] ");
+				sb.Append($"{Util.ShortAndLongName(sw)} ");
 			}
 			sb.AppendLine();
 			sb.AppendLine(verb.HelpText);
+			sb.AppendLine();
+			return sb.ToString();
+		}
+		/// <summary>
+		/// Formats the help text of the Options, Switches, and Values of the verb. If custom HelpText has been provided, that will be used.
+		/// If not, then if custom HelpFormatter is set on the verb, that is used to produce the help text. Otherwise, default formatting is used.
+		/// </summary>
+		public static string FormatVerbHelp(IFluentVerb verb, int maxLineLength)
+		{
+			// This is the number of characters we're reserving for the key text
+			int charsForKey = 0;
+			string key;
+			List<(string key, string help)> texts = new List<(string key, string help)>();
+			// Nothing provided, so default it is
+			// So, we need to have one line per argument. We want to write the Name/shortName/longName, and then the HelpText associated with it. Easy as pie.
+			if (verb.FluentManyValues == null)
+			{
+				int i = 1;
+				foreach (IFluentValue val in verb.FluentValues)
+				{
+					key = val.Required != false ? string.IsNullOrEmpty(val.Name) ? $"value{i}" : val.Name : $"[{val.Name ?? $"value{i}"}]";
+					texts.Add((key, val.HelpText ?? ""));
+					charsForKey = Max(key.Length, charsForKey);
+					i++;
+				}
+			}
+			else
+			{
+				key = verb.FluentManyValues.Required != false ? string.IsNullOrEmpty(verb.FluentManyValues.Name) ? "Values" : verb.FluentManyValues.Name : $"[{verb.FluentManyValues.Name ?? "Values"}]";
+				texts.Add((key, verb.FluentManyValues.HelpText ?? ""));
+				charsForKey = key.Length;
+			}
+			foreach (IFluentOption opt in verb.FluentOptions)
+			{
+				key = Util.ShortAndLongName(opt);
+				texts.Add((key, opt.HelpText ?? ""));
+				charsForKey = Max(key.Length, charsForKey);
+			}
+			foreach (IFluentSwitch sw in verb.FluentSwitches)
+			{
+				key = sw.ShortAndLongName();
+				texts.Add((key, sw.HelpText ?? ""));
+				charsForKey = Max(key.Length, charsForKey);
+			}
+			StringBuilder sb = new StringBuilder();
+
+			// A few more spaces just so it's easier to read
+			charsForKey += 3;
+			foreach ((string key, string help) t in texts)
+			{
+				sb.Append(t.key.PadRight(charsForKey));
+				sb.AppendLine(t.help);
+				// If we've wrapped a line, just shove an extra newline in there so it's still easyish to read
+				if (maxLineLength < t.key.Length + t.help.Length)
+				{
+					sb.AppendLine();
+				}
+			}
 			sb.AppendLine();
 			return sb.ToString();
 		}

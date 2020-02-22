@@ -61,7 +61,7 @@ namespace CommandLineFluent
 		/// <summary>
 		/// Configures to use a DefaultShortPrefix of -, a DefaultLongPrefix of --, Help switches of -? and --help,
 		/// and Errors/Help/Usage is automatically written to Console.Write on any error, with a MaxLineLength of Console.WindowWidth.
-		/// If the Console cannot be used, then WriteHelp and WriteUsage will be set to null and MaxLineLength will be set to 10,000
+		/// If the Console cannot be used, MaxLineLength will be set to 10,000 and WriteText will be set to an Action that does nothing.
 		/// </summary>
 		public void ConfigureWithDefaults()
 		{
@@ -69,17 +69,18 @@ namespace CommandLineFluent
 			DefaultLongPrefix = "--";
 			ShortHelpSwitch = "-?";
 			LongHelpSwitch = "--help";
-			// If they're not using a console then we'll get an exception on trying to read WindowWidth, so catch that
+			// If they're not using a console then we'll get an exception on trying to read Console.WindowWidth or Console.Write, so catch that
 			try
 			{
-				MaxLineLength = Console.WindowWidth;
-				WriteText = Console.Write;
 				GetHelpText = GetHelpTextDefault;
 				GetUsageText = GetUsageTextDefault;
 				GetErrorsText = HelpFormatter.FormatErrors;
+				MaxLineLength = Console.WindowWidth;
+				WriteText = Console.Write;
 			}
 			catch (System.IO.IOException)
 			{
+				WriteText = (x) => { };
 				MaxLineLength = 10000;
 			}
 		}

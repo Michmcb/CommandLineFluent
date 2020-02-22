@@ -117,7 +117,14 @@ namespace CommandLineFluent
 				}
 				else
 				{
-					WriteOverallUsageAndHelp();
+					if (_verbs.Count > 1)
+					{
+						WriteOverallUsageAndHelp();
+					}
+					else
+					{
+						WriteUsageAndHelp(_verbs.First().Value);
+					}
 				}
 			}
 			return result;

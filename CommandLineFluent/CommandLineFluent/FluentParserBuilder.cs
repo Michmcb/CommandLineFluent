@@ -42,7 +42,7 @@ namespace CommandLineFluent
 			}
 			IsUsingVerbs = false;
 			// ssshhh don't tell anybody it's actually a verb in disguise
-			FluentVerb<T> v = new FluentVerb<T>(Config, "default");
+			FluentVerb<T> v = new FluentVerb<T>(Config, "");
 			verblessConfig?.Invoke(v);
 			Verbs.Add("default", v);
 			return this;
@@ -56,9 +56,9 @@ namespace CommandLineFluent
 		/// <param name="verbConfig">The action to configure the verb</param>
 		public FluentParserBuilder AddVerb<T>(string verbName, Action<FluentVerb<T>> verbConfig) where T : class, new()
 		{
-			if (verbName == null)
+			if (string.IsNullOrEmpty(verbName))
 			{
-				throw new ArgumentNullException(nameof(verbName), $@"Verb Name cannot be null");
+				throw new ArgumentNullException(nameof(verbName), $@"Verb Name cannot be null or an empty string");
 			}
 			if (IsUsingVerbs == false)
 			{

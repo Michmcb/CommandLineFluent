@@ -64,14 +64,15 @@ namespace CommandLineFluent
 			return this;
 		}
 		/// <summary>
-		/// Invokes the Action specified by the relevant OnSuccess() call, and returns the resultant Task
+		/// Invokes the Action specified by the relevant OnSuccess() call, and returns that resultant Task.
+		/// The task is not awaited by this method. If no OnSuccess() call was relevant, returns Task.CompletedTask.
 		/// </summary>
 		public Task Invoke()
 		{
 			return Action?.Invoke() ?? Task.CompletedTask;
 		}
 		/// <summary>
-		/// Invokes the Action specified by the relevant OnSuccess() call, and awaits the resultant Task
+		/// Invokes the Action specified by the relevant OnSuccess() call, and awaits the resultant Task.
 		/// </summary>
 		public async Task InvokeAsync()
 		{

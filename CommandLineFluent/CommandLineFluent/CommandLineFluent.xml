@@ -1421,7 +1421,7 @@
             <summary>
             Configures to use a DefaultShortPrefix of -, a DefaultLongPrefix of --, Help switches of -? and --help,
             and Errors/Help/Usage is automatically written to Console.Write on any error, with a MaxLineLength of Console.WindowWidth.
-            If the Console cannot be used, then WriteHelp and WriteUsage will be set to null and MaxLineLength will be set to 10,000
+            If the Console cannot be used, MaxLineLength will be set to 10,000 and WriteText will be set to an Action that does nothing.
             </summary>
         </member>
         <member name="M:CommandLineFluent.FluentParserConfig.UseHelpSwitch(System.String,System.String)">
@@ -1554,12 +1554,13 @@
         </member>
         <member name="M:CommandLineFluent.FluentParserResultAwaitable.Invoke">
             <summary>
-            Invokes the Action specified by the relevant OnSuccess() call, and returns the resultant Task
+            Invokes the Action specified by the relevant OnSuccess() call, and returns that resultant Task.
+            The task is not awaited by this method. If no OnSuccess() call was relevant, returns Task.CompletedTask.
             </summary>
         </member>
         <member name="M:CommandLineFluent.FluentParserResultAwaitable.InvokeAsync">
             <summary>
-            Invokes the Action specified by the relevant OnSuccess() call, and awaits the resultant Task
+            Invokes the Action specified by the relevant OnSuccess() call, and awaits the resultant Task.
             </summary>
         </member>
         <member name="T:CommandLineFluent.FluentParserResultBase">
@@ -1862,12 +1863,6 @@
             <param name="helpSwitches">A human-readable string showing the short and long help switches</param>
             <param name="maxLineLength">The maximum line length. If exceeded, an extra line break will be added</param>
         </member>
-        <member name="M:CommandLineFluent.HelpFormatter.FormatVerbHelp(CommandLineFluent.IFluentVerb,System.Int32)">
-            <summary>
-            Formats the help text of the Options, Switches, and Values of the verb. If custom HelpText has been provided, that will be used.
-            If not, then if custom HelpFormatter is set on the verb, that is used to produce the help text. Otherwise, default formatting is used.
-            </summary>
-        </member>
         <member name="M:CommandLineFluent.HelpFormatter.FormatVerbUsage(CommandLineFluent.IFluentVerb,System.String)">
             <summary>
             Formats the usage text of the Options, Switches, and Values of the verb.
@@ -1875,6 +1870,12 @@
             </summary>
             <param name="verb">The verb to write Usage information for</param>
             <param name="executeCommand">The command used to invoke the program</param>
+        </member>
+        <member name="M:CommandLineFluent.HelpFormatter.FormatVerbHelp(CommandLineFluent.IFluentVerb,System.Int32)">
+            <summary>
+            Formats the help text of the Options, Switches, and Values of the verb. If custom HelpText has been provided, that will be used.
+            If not, then if custom HelpFormatter is set on the verb, that is used to produce the help text. Otherwise, default formatting is used.
+            </summary>
         </member>
         <member name="M:CommandLineFluent.HelpFormatter.FormatErrors(System.Collections.Generic.IEnumerable{CommandLineFluent.Error})">
             <summary>
@@ -1966,9 +1967,14 @@
             Utility methods
             </summary>
         </member>
+        <member name="M:CommandLineFluent.Util.ShortAndLongName(CommandLineFluent.Arguments.IFluentOption,System.String)">
+            <summary>
+            Makes a string like: -s|--long, to show the user both ways of writing the option
+            </summary>
+        </member>
         <member name="M:CommandLineFluent.Util.ShortAndLongName(CommandLineFluent.Arguments.IFluentOption)">
             <summary>
-            Makes a string like: -s|--long, to show the user both ways of writing the switch
+            Makes a string like: -s|--long, to show the user both ways of writing the option
             </summary>
         </member>
         <member name="M:CommandLineFluent.Util.ShortAndLongName(CommandLineFluent.Arguments.IFluentSwitch)">
@@ -1976,7 +1982,7 @@
             Makes a string like: -s|--long, to show the user both ways of writing the switch
             </summary>
         </member>
-        <member name="M:CommandLineFluent.Util.ShortAndLongName(System.String,System.String)">
+        <member name="M:CommandLineFluent.Util.ShortAndLongName(System.String,System.String,System.Boolean)">
             <summary>
             Makes a string like: -s|--long, to show the user both ways of writing the switch
             </summary>

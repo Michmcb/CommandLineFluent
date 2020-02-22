@@ -66,7 +66,7 @@ namespace CommandLineFluent.Arguments
 				}
 				catch (Exception ex)
 				{
-					return new Error(ErrorCode.OptionFailedValidation, false, $"Validator for Option {Util.ShortAndLongName(this)} threw an exception ({ex.Message})", ex);
+					return new Error(ErrorCode.OptionFailedValidation, false, $"Validator for Option {Util.ShortAndLongName(this, this.Name)} threw an exception ({ex.Message})", ex);
 				}
 				if (_converter != null)
 				{
@@ -81,7 +81,7 @@ namespace CommandLineFluent.Arguments
 					}
 					catch (Exception ex)
 					{
-						return new Error(ErrorCode.OptionFailedConversion, false, $"Converter for Option {Util.ShortAndLongName(this)} threw an exception ({ex.Message})", ex);
+						return new Error(ErrorCode.OptionFailedConversion, false, $"Converter for Option {Util.ShortAndLongName(this, this.Name)} threw an exception ({ex.Message})", ex);
 					}
 					TargetProperty.SetValue(target, converted.ConvertedValue);
 					GotValue = true;
@@ -103,7 +103,7 @@ namespace CommandLineFluent.Arguments
 			else
 			{
 				// It is required, so return an error
-				return new Error(ErrorCode.MissingRequiredOption, true, $"Option {Util.ShortAndLongName(this)} is required and did not have a value provided");
+				return new Error(ErrorCode.MissingRequiredOption, true, $"Option {Util.ShortAndLongName(this, this.Name)} is required and did not have a value provided");
 			}
 			return null;
 		}
@@ -197,7 +197,7 @@ namespace CommandLineFluent.Arguments
 		/// </summary>
 		public string ShortAndLongName()
 		{
-			return Util.ShortAndLongName(this);
+			return Util.ShortAndLongName(this, this.Name);
 		}
 		/// <summary>
 		/// Configures this Option to only be required or must not appear under certain circumstances.
