@@ -38,7 +38,7 @@ namespace CommandLineFluent.Arguments
 
 		internal DependencyRule(Expression<Func<T, V>> expression, Requiredness required)
 		{
-			TargetProperty = Util.PropertyInfoFromExpression(expression);
+			TargetProperty = ArgUtils.PropertyInfoFromExpression(expression);
 			Requiredness = required;
 			Predicate = null;
 		}

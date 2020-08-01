@@ -328,7 +328,7 @@ namespace CommandLineFluentTest.Parser
 		[Fact]
 		public void BuildingWithoutProperConfiguration()
 		{
-			Assert.Throws<FluentParserValidationException>(() => new FluentParserBuilder().Build());
+			Assert.Throws<CliParserBuilderException>(() => new FluentParserBuilder().Build());
 		}
 		[Fact]
 		public void ParsingNullArgs()

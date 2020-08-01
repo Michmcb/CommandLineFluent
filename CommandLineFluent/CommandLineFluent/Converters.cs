@@ -1,115 +1,38 @@
-﻿using CommandLineFluent.Arguments;
-using System;
-
-namespace CommandLineFluent.Conversion
+﻿namespace CommandLineFluent
 {
-	/// <summary>
-	/// Has some commonly-used converters. For those that just take one string, you can do this:
-	/// verb.WithConverter(Converters.ToInt32)
-	/// </summary>
+	using System;
+
 	public static class Converters
 	{
-		/// <summary>
-		/// Converts the provided string to a bool.
-		/// Uses bool.TryParse()
-		/// </summary>
-		/// <param name="s">The string to convert</param>
-		public static Converted<bool> ToBool(string s)
-		{
-			if (bool.TryParse(s, out bool v))
-			{
-				return new Converted<bool>(v);
-			}
-			else
-			{
-				return new Converted<bool>(false, $@"""{s}"" could not be parsed as a true/false value");
-			}
-		}
-		/// <summary>
-		/// Converts the provided string to a nullable bool. Identical to ToBool, but can be used with Optional parameters.
-		/// </summary>
-		/// <param name="s">The string to convert</param>
-		public static Converted<bool?> ToNullableBool(string s)
-		{
-			if (bool.TryParse(s, out bool v))
-			{
-				return new Converted<bool?>(v);
-			}
-			else
-			{
-				return new Converted<bool?>(false, $@"""{s}"" could not be parsed as a true/false value");
-			}
-		}
-		/// <summary>
-		/// Converts the provided string to a bool. y, yes, or true will convert to true. n, no, or false will convert to false.
-		/// Case insensitive.
-		/// </summary>
-		/// <param name="s">The string to convert</param>
-		public static Converted<bool> ToBoolYesNo(string s)
-		{
-			if (s != null)
-			{
-				string v = s.Trim();
-				if (v.Equals("y", StringComparison.OrdinalIgnoreCase) || v.Equals("yes", StringComparison.OrdinalIgnoreCase) || v.Equals("true", StringComparison.OrdinalIgnoreCase))
-				{
-					return new Converted<bool>(true);
-				}
-				else if (v.Equals("n", StringComparison.OrdinalIgnoreCase) || v.Equals("no", StringComparison.OrdinalIgnoreCase) || v.Equals("false", StringComparison.OrdinalIgnoreCase))
-				{
-					return new Converted<bool>(false);
-				}
-			}
-			return new Converted<bool>(false, $@"""{s}"" was not y, yes, true, or n, no, false");
-		}
-		/// <summary>
-		/// Converts the provided string to a nullable bool. Identical to ToBoolYesNo, but can be used with Optional parameters.
-		/// </summary>
-		/// <param name="s">The string to convert</param>
-		public static Converted<bool?> ToNullableBoolYesNo(string s)
-		{
-			if (s != null)
-			{
-				string v = s.Trim();
-				if (v.Equals("y", StringComparison.OrdinalIgnoreCase) || v.Equals("yes", StringComparison.OrdinalIgnoreCase) || v.Equals("true", StringComparison.OrdinalIgnoreCase))
-				{
-					return new Converted<bool?>(true);
-				}
-				else if (v.Equals("n", StringComparison.OrdinalIgnoreCase) || v.Equals("no", StringComparison.OrdinalIgnoreCase) || v.Equals("false", StringComparison.OrdinalIgnoreCase))
-				{
-					return new Converted<bool?>(false);
-				}
-			}
-			return new Converted<bool?>(false, $@"""{s}"" was not y, yes, true, or n, no, false");
-		}
 		/// <summary>
 		/// Converts the provided string to an int.
 		/// Uses int.TryParse()
 		/// </summary>
 		/// <param name="s">The string to convert</param>
-		public static Converted<int> ToInt(string s)
+		public static Maybe<int, string> ToInt(string s)
 		{
 			if (int.TryParse(s, out int v))
 			{
-				return new Converted<int>(v);
+				return v;
 			}
 			else
 			{
-				return new Converted<int>(0, $@"""{s}"" was not an integer");
+				return s + " was not an integer";
 			}
 		}
 		/// <summary>
 		/// Converts the provided string to a nullable int. Identical to ToInt, but can be used with Optional parameters.
 		/// </summary>
 		/// <param name="s">The string to convert</param>
-		public static Converted<int?> ToNullableInt(string s)
+		public static Maybe<int?, string> ToNullableInt(string s)
 		{
 			if (int.TryParse(s, out int v))
 			{
-				return new Converted<int?>(v);
+				return v;
 			}
 			else
 			{
-				return new Converted<int?>(0, $@"""{s}"" was not an integer");
+				return s + " was not an integer";
 			}
 		}
 		/// <summary>
@@ -117,30 +40,30 @@ namespace CommandLineFluent.Conversion
 		/// Uses uint.TryParse()
 		/// </summary>
 		/// <param name="s">The string to convert</param>
-		public static Converted<uint> ToUInt(string s)
+		public static Maybe<uint, string> ToUInt(string s)
 		{
 			if (uint.TryParse(s, out uint v))
 			{
-				return new Converted<uint>(v);
+				return v;
 			}
 			else
 			{
-				return new Converted<uint>(0, $@"""{s}"" was not a positive integer");
+				return s + " was not a positive integer";
 			}
 		}
 		/// <summary>
 		/// Converts the provided string to a nullable uint. Identical to ToUInt, but can be used with Optional parameters.
 		/// </summary>
 		/// <param name="s">The string to convert</param>
-		public static Converted<uint?> ToNullableUInt(string s)
+		public static Maybe<uint?, string> ToNullableUInt(string s)
 		{
 			if (uint.TryParse(s, out uint v))
 			{
-				return new Converted<uint?>(v);
+				return v;
 			}
 			else
 			{
-				return new Converted<uint?>(0, $@"""{s}"" was not a positive integer");
+				return s + " was not a positive integer";
 			}
 		}
 		/// <summary>
@@ -148,30 +71,30 @@ namespace CommandLineFluent.Conversion
 		/// Uses long.TryParse()
 		/// </summary>
 		/// <param name="s">The string to convert</param>
-		public static Converted<long> ToLong(string s)
+		public static Maybe<long, string> ToLong(string s)
 		{
 			if (long.TryParse(s, out long v))
 			{
-				return new Converted<long>(v);
+				return v;
 			}
 			else
 			{
-				return new Converted<long>(0, $@"""{s}"" was not an integer");
+				return s + " was not an integer";
 			}
 		}
 		/// <summary>
 		/// Converts the provided string to a nullable long. Identical to ToLong, but can be used with Optional parameters.
 		/// </summary>
 		/// <param name="s">The string to convert</param>
-		public static Converted<long?> ToNullableLong(string s)
+		public static Maybe<long?, string> ToNullableLong(string s)
 		{
 			if (long.TryParse(s, out long v))
 			{
-				return new Converted<long?>(v);
+				return v;
 			}
 			else
 			{
-				return new Converted<long?>(0, $@"""{s}"" was not an integer");
+				return s + " was not an integer";
 			}
 		}
 		/// <summary>
@@ -179,30 +102,30 @@ namespace CommandLineFluent.Conversion
 		/// Uses ulong.TryParse()
 		/// </summary>
 		/// <param name="s">The string to convert</param>
-		public static Converted<ulong> ToULong(string s)
+		public static Maybe<ulong, string> ToULong(string s)
 		{
 			if (ulong.TryParse(s, out ulong v))
 			{
-				return new Converted<ulong>(v);
+				return v;
 			}
 			else
 			{
-				return new Converted<ulong>(0, $@"""{s}"" was not a positive integer");
+				return s + " was not a positive integer";
 			}
 		}
 		/// <summary>
 		/// Converts the provided string to a nullable ulong. Identical to ToULong, but can be used with Optional parameters.
 		/// </summary>
 		/// <param name="s">The string to convert</param>
-		public static Converted<ulong?> ToNullableULong(string s)
+		public static Maybe<ulong?, string> ToNullableULong(string s)
 		{
 			if (ulong.TryParse(s, out ulong v))
 			{
-				return new Converted<ulong?>(v);
+				return v;
 			}
 			else
 			{
-				return new Converted<ulong?>(0, $@"""{s}"" was not a positive integer");
+				return s + " was not a positive integer";
 			}
 		}
 		/// <summary>
@@ -210,30 +133,30 @@ namespace CommandLineFluent.Conversion
 		/// Uses double.TryParse()
 		/// </summary>
 		/// <param name="s">The string to convert</param>
-		public static Converted<double> ToDouble(string s)
+		public static Maybe<double, string> ToDouble(string s)
 		{
 			if (double.TryParse(s, out double v))
 			{
-				return new Converted<double>(v);
+				return v;
 			}
 			else
 			{
-				return new Converted<double>(0, $@"""{s}"" was not a floating-point number");
+				return s + " was not a floating-point number";
 			}
 		}
 		/// <summary>
 		/// Converts the provided string to a nullable double. Identical to ToDouble, but can be used with Optional parameters.
 		/// </summary>
 		/// <param name="s">The string to convert</param>
-		public static Converted<double?> ToNullableDouble(string s)
+		public static Maybe<double?, string> ToNullableDouble(string s)
 		{
 			if (double.TryParse(s, out double v))
 			{
-				return new Converted<double?>(v);
+				return v;
 			}
 			else
 			{
-				return new Converted<double?>(0, $@"""{s}"" was not a floating-point number");
+				return s + " was not a floating-point number";
 			}
 		}
 		/// <summary>
@@ -241,30 +164,30 @@ namespace CommandLineFluent.Conversion
 		/// Uses decimal.TryParse()
 		/// </summary>
 		/// <param name="s">The string to convert</param>
-		public static Converted<decimal> ToDecimal(string s)
+		public static Maybe<decimal, string> ToDecimal(string s)
 		{
 			if (decimal.TryParse(s, out decimal v))
 			{
-				return new Converted<decimal>(v);
+				return v;
 			}
 			else
 			{
-				return new Converted<decimal>(0, $@"""{s}"" was not a decimal number");
+				return s + " was not a decimal number";
 			}
 		}
 		/// <summary>
 		/// Converts the provided string to a nullable decimal. Identical to ToDecimal, but can be used with Optional parameters.
 		/// </summary>
 		/// <param name="s">The string to convert</param>
-		public static Converted<decimal?> ToNullableDecimal(string s)
+		public static Maybe<decimal?, string> ToNullableDecimal(string s)
 		{
 			if (decimal.TryParse(s, out decimal v))
 			{
-				return new Converted<decimal?>(v);
+				return v;
 			}
 			else
 			{
-				return new Converted<decimal?>(0, $@"""{s}"" was not a decimal number");
+				return s + " was not a decimal number";
 			}
 		}
 		/// <summary>
@@ -272,44 +195,44 @@ namespace CommandLineFluent.Conversion
 		/// Uses DateTime.TryParse()
 		/// </summary>
 		/// <param name="s">The string to convert</param>
-		public static Converted<DateTime> ToDate(string s)
+		public static Maybe<DateTime, string> ToDate(string s)
 		{
 			if (DateTime.TryParse(s, out DateTime v))
 			{
 				if (v.TimeOfDay.Ticks == 0)
 				{
-					return new Converted<DateTime>(v);
+					return v;
 				}
 				else
 				{
-					return new Converted<DateTime>(DateTime.MinValue, $@"""{s}"" was not a date (It should not have a time of day specified)");
+					return s + " was not a date (It should not have a time of day specified)";
 				}
 			}
 			else
 			{
-				return new Converted<DateTime>(DateTime.MinValue, $@"""{s}"" was not a date");
+				return s + " was not a date";
 			}
 		}
 		/// <summary>
 		/// Converts the provided string to a nullable DateTime. Identical to ToDate, but can be used with Optional parameters.
 		/// </summary>
 		/// <param name="s">The string to convert</param>
-		public static Converted<DateTime?> ToNullableDate(string s)
+		public static Maybe<DateTime?, string> ToNullableDate(string s)
 		{
 			if (DateTime.TryParse(s, out DateTime v))
 			{
 				if (v.TimeOfDay.Ticks == 0)
 				{
-					return new Converted<DateTime?>(v);
+					return v;
 				}
 				else
 				{
-					return new Converted<DateTime?>(DateTime.MinValue, $@"""{s}"" was not a date (It should not have a time of day specified)");
+					return s + " was not a date (It should not have a time of day specified)";
 				}
 			}
 			else
 			{
-				return new Converted<DateTime?>(DateTime.MinValue, $@"""{s}"" was not a date");
+				return s + " was not a date";
 			}
 		}
 		/// <summary>
@@ -317,30 +240,30 @@ namespace CommandLineFluent.Conversion
 		/// Uses DateTime.TryParse()
 		/// </summary>
 		/// <param name="s">The string to convert</param>
-		public static Converted<DateTime> ToDateTime(string s)
+		public static Maybe<DateTime, string> ToDateTime(string s)
 		{
 			if (DateTime.TryParse(s, out DateTime v))
 			{
-				return new Converted<DateTime>(v);
+				return v;
 			}
 			else
 			{
-				return new Converted<DateTime>(DateTime.MinValue, $@"""{s}"" was not a date and time");
+				return s + " was not a date and time";
 			}
 		}
 		/// <summary>
 		/// Converts the provided string to a nullable DateTime. Identical to ToDateTime, but can be used with Optional parameters.
 		/// </summary>
 		/// <param name="s">The string to convert</param>
-		public static Converted<DateTime?> ToNullableDateTime(string s)
+		public static Maybe<DateTime?, string> ToNullableDateTime(string s)
 		{
 			if (DateTime.TryParse(s, out DateTime v))
 			{
-				return new Converted<DateTime?>(v);
+				return v;
 			}
 			else
 			{
-				return new Converted<DateTime?>(DateTime.MinValue, $@"""{s}"" was not a date and time");
+				return s + " was not a date and time";
 			}
 		}
 		/// <summary>
@@ -349,15 +272,15 @@ namespace CommandLineFluent.Conversion
 		/// </summary>
 		/// <typeparam name="T">The type of the enum to parse</typeparam>
 		/// <param name="s">The string to convert</param>
-		public static Converted<T> ToEnum<T>(string s) where T : struct, Enum
+		public static Maybe<T, string> ToEnum<T>(string s) where T : struct, Enum
 		{
 			if (Enum.TryParse(s, out T v))
 			{
-				return new Converted<T>(v);
+				return v;
 			}
 			else
 			{
-				return new Converted<T>(default, $@"""{s}"" should be one of: {string.Join(", ", Enum.GetNames(typeof(T)))}");
+				return string.Concat(s, " should be one of: ", string.Join(", ", Enum.GetNames(typeof(T))));
 			}
 		}
 		/// <summary>
@@ -366,9 +289,9 @@ namespace CommandLineFluent.Conversion
 		/// </summary>
 		/// <param name="s">The string to split</param>
 		/// <param name="separator">The separators to use</param>
-		public static Converted<string[]> Split(string s, params char[] separator)
+		public static Maybe<string[], string> Split(string s, params char[] separator)
 		{
-			return new Converted<string[]>(s.Split(separator));
+			return s.Split(separator);
 		}
 		/// <summary>
 		/// Splits the string into multiple strings based on separators.
@@ -377,9 +300,9 @@ namespace CommandLineFluent.Conversion
 		/// <param name="s">The string to split</param>
 		/// <param name="separator">The separators to use</param>
 		/// <param name="count">The maximum number of substrings to return</param>
-		public static Converted<string[]> Split(string s, char[] separator, int count)
+		public static Maybe<string[], string> Split(string s, char[] separator, int count)
 		{
-			return new Converted<string[]>(s.Split(separator, count));
+			return s.Split(separator, count);
 		}
 		/// <summary>
 		/// Splits the string into multiple strings based on separators.
@@ -389,9 +312,9 @@ namespace CommandLineFluent.Conversion
 		/// <param name="separator">The separators to use</param>
 		/// <param name="options">System.StringSplitOptions.RemoveEmptyEntries to omit empty array elements from the array returned; or System.StringSplitOptions.None to include empty array
 		/// elements in the array returned.</param>
-		public static Converted<string[]> Split(string s, char[] separator, StringSplitOptions options)
+		public static Maybe<string[], string> Split(string s, char[] separator, StringSplitOptions options)
 		{
-			return new Converted<string[]>(s.Split(separator, options));
+			return s.Split(separator, options);
 		}
 		/// <summary>
 		/// Splits the string into multiple strings based on separators.
@@ -401,22 +324,9 @@ namespace CommandLineFluent.Conversion
 		/// <param name="separator">The separators to use</param>
 		/// <param name="options">System.StringSplitOptions.RemoveEmptyEntries to omit empty array elements from the array returned; or System.StringSplitOptions.None to include empty array
 		/// elements in the array returned.</param>
-		public static Converted<string[]> Split(string s, string[] separator, StringSplitOptions options)
+		public static Maybe<string[], string> Split(string s, string[] separator, StringSplitOptions options)
 		{
-			return new Converted<string[]>(s.Split(separator, options));
-		}
-		/// <summary>
-		/// Splits the string into multiple strings based on separators.
-		/// Uses s.Split()
-		/// </summary>
-		/// <param name="s">The string to split</param>
-		/// <param name="separator">The separators to use</param>
-		/// <param name="count">The maximum number of substrings to return</param>
-		/// <param name="options">System.StringSplitOptions.RemoveEmptyEntries to omit empty array elements from the array returned; or System.StringSplitOptions.None to include empty array
-		/// elements in the array returned.</param>
-		public static Converted<string[]> Split(string s, char[] separator, int count, StringSplitOptions options)
-		{
-			return new Converted<string[]>(s.Split(separator, count, options));
+			return s.Split(separator, options);
 		}
 		/// <summary>
 		/// Splits the string into multiple strings based on separators.
@@ -427,9 +337,22 @@ namespace CommandLineFluent.Conversion
 		/// <param name="count">The maximum number of substrings to return</param>
 		/// <param name="options">System.StringSplitOptions.RemoveEmptyEntries to omit empty array elements from the array returned; or System.StringSplitOptions.None to include empty array
 		/// elements in the array returned.</param>
-		public static Converted<string[]> Split(string s, string[] separator, int count, StringSplitOptions options)
+		public static Maybe<string[], string> Split(string s, char[] separator, int count, StringSplitOptions options)
 		{
-			return new Converted<string[]>(s.Split(separator, count, options));
+			return s.Split(separator, count, options);
+		}
+		/// <summary>
+		/// Splits the string into multiple strings based on separators.
+		/// Uses s.Split()
+		/// </summary>
+		/// <param name="s">The string to split</param>
+		/// <param name="separator">The separators to use</param>
+		/// <param name="count">The maximum number of substrings to return</param>
+		/// <param name="options">System.StringSplitOptions.RemoveEmptyEntries to omit empty array elements from the array returned; or System.StringSplitOptions.None to include empty array
+		/// elements in the array returned.</param>
+		public static Maybe<string[], string> Split(string s, string[] separator, int count, StringSplitOptions options)
+		{
+			return s.Split(separator, count, options);
 		}
 	}
 }

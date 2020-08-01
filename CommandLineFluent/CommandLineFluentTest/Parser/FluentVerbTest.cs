@@ -22,11 +22,11 @@ namespace CommandLineFluentTest.Parser
 					Assert.Equal("hlep", verb.HelpText);
 					Assert.Equal("descr", verb.Description);
 
-					FluentOption<Verb1, string> opt = verb.AddOption("o", "option")
+					Option<Verb1, string> opt = verb.AddOption("o", "option")
 						.WithHelpText("help")
 						.WithName("name")
 						.IsRequired();
-					Assert.Equal(opt, verb.FluentOptions.First());
+					Assert.Equal(opt, verb.Options.First());
 					Assert.Equal("-o", opt.ShortName);
 					Assert.Equal("--option", opt.LongName);
 					Assert.Equal("help", opt.HelpText);
@@ -48,7 +48,7 @@ namespace CommandLineFluentTest.Parser
 
 					FluentSwitch<Verb1, bool> sw = verb.AddSwitch("s", "switch")
 						.WithHelpText("help");
-					Assert.Equal(sw, verb.FluentSwitches.First());
+					Assert.Equal(sw, verb.Switches.First());
 					Assert.Equal("help", sw.HelpText);
 					sw.WithDefaultValue(true);
 					Assert.True(sw.DefaultValue);
@@ -69,7 +69,7 @@ namespace CommandLineFluentTest.Parser
 						.WithHelpText("help")
 						.IsRequired();
 
-					Assert.Equal(val, verb.FluentManyValues);
+					Assert.Equal(val, verb.MultiValue);
 					Assert.Equal("help", val.HelpText);
 					Assert.Equal("name", val.Name);
 					Assert.True(val.Required);
@@ -79,7 +79,7 @@ namespace CommandLineFluentTest.Parser
 		[Fact]
 		public void AddingDuplicateShortLongNames()
 		{
-			Assert.Throws<FluentParserValidationException>(() =>
+			Assert.Throws<CliParserBuilderException>(() =>
 			{
 				FluentParser fp = new FluentParserBuilder()
 					.WithoutVerbs<Verb1>(verb =>

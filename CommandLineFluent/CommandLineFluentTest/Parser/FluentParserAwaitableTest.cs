@@ -6,6 +6,7 @@ namespace CommandLineFluentTest.Parser
 {
 	public class FluentParserAwaitableTest
 	{
+		private bool taskStarted;
 		private bool taskRun;
 		[Fact]
 		public async Task InvokeAwaitable()
@@ -21,8 +22,10 @@ namespace CommandLineFluentTest.Parser
 			FluentParserResultAwaitable fpra = fp.ParseAwaitable(new string[] { "MyValue" })
 				.OnSuccess<Verb1>(Verb1Async);
 			Assert.False(taskRun);
-			Task x = fpra.Invoke();
-			await x;
+			Task t = fpra.Invoke();
+			await Task.Delay(500);
+			Assert.True(taskStarted);
+			await t;
 			Assert.True(taskRun);
 		}
 		[Fact]
@@ -53,10 +56,13 @@ namespace CommandLineFluentTest.Parser
 						.ForProperty(o => o.Value);
 				}).Build();
 
-			FluentParserResultAwaitable fpra = fp.ParseAwaitable(new string[] { })
+			FluentParserResultAwaitable fpra = fp.ParseAwaitable(System.Array.Empty<string>())
 				.OnSuccess<Verb1>(Verb1Async);
 			Assert.False(taskRun);
-			await fpra.Invoke();
+			Task t = fpra.Invoke();
+			await Task.Delay(500);
+			Assert.False(taskStarted);
+			await t;
 			Assert.False(taskRun);
 		}
 		[Fact]
@@ -70,7 +76,7 @@ namespace CommandLineFluentTest.Parser
 						.ForProperty(o => o.Value);
 				}).Build();
 
-			FluentParserResultAwaitable fpra = fp.ParseAwaitable(new string[] { })
+			FluentParserResultAwaitable fpra = fp.ParseAwaitable(System.Array.Empty<string>())
 				.OnSuccess<Verb1>(Verb1Async);
 			Assert.False(taskRun);
 			await fpra.InvokeAsync();
@@ -87,7 +93,7 @@ namespace CommandLineFluentTest.Parser
 						.ForProperty(o => o.Value);
 				}).Build();
 
-			FluentParserResultAwaitable fpra = fp.ParseAwaitable(new string[] { })
+			FluentParserResultAwaitable fpra = fp.ParseAwaitable(System.Array.Empty<string>())
 				.StopOnFailure()
 				?.OnSuccess<Verb1>(Verb1Async);
 			Assert.False(taskRun);
@@ -99,7 +105,8 @@ namespace CommandLineFluentTest.Parser
 		}
 		private async Task Verb1Async(Verb1 arg)
 		{
-			await Task.Delay(1000);
+			taskStarted = true;
+			await Task.Delay(3000);
 			taskRun = true;
 		}
 	}

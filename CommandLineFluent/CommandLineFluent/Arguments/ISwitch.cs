@@ -3,7 +3,7 @@
 	/// <summary>
 	/// A switch toggled on or off, supplied like -s
 	/// </summary>
-	public interface IFluentSwitch : IFluentArgument
+	public interface ISwitch<TClass> : IArgument<TClass>
 	{
 		/// <summary>
 		/// The Short Name for this FluentSwitch

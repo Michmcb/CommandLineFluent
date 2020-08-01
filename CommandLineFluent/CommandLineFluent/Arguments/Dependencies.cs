@@ -10,14 +10,14 @@ namespace CommandLineFluent.Arguments
 	/// </summary>
 	/// <typeparam name="T">The class of the property which this FluentRelationship is for</typeparam>
 	/// <typeparam name="C">The type of the property</typeparam>
-	public class FluentDependencies<T, C> where T : new()
+	public class Dependencies<T, C> where T : new()
 	{
 		private readonly List<IDependencyRule<T>> rules;
 		/// <summary>
 		/// The rules which make up this relationship
 		/// </summary>
 		public IReadOnlyCollection<IDependencyRule<T>> Rules => rules;
-		internal FluentDependencies()
+		internal Dependencies()
 		{
 			rules = new List<IDependencyRule<T>>();
 		}
@@ -65,7 +65,7 @@ namespace CommandLineFluent.Arguments
 		/// <param name="obj">The object to check</param>
 		/// <param name="wasValueProvided">Whether or not the FluentArgument received a value from parsing</param>
 		/// <param name="fluentArgumentType">The type of argument, used to return the correct error code</param>
-		internal Error EvaluateRelationship(T obj, bool wasValueProvided, FluentArgumentType fluentArgumentType)
+		internal Error EvaluateRelationship(T obj, bool wasValueProvided, ArgumentType fluentArgumentType)
 		{
 			foreach (IDependencyRule<T> rule in rules)
 			{
@@ -74,7 +74,7 @@ namespace CommandLineFluent.Arguments
 					ErrorCode errorCode = 0;
 					switch (fluentArgumentType)
 					{
-						case FluentArgumentType.Option:
+						case ArgumentType.Option:
 							switch (rule.Requiredness)
 							{
 								case Requiredness.Required:
@@ -85,7 +85,7 @@ namespace CommandLineFluent.Arguments
 									break;
 							}
 							break;
-						case FluentArgumentType.Switch:
+						case ArgumentType.Switch:
 							switch (rule.Requiredness)
 							{
 								case Requiredness.Required:
@@ -96,7 +96,7 @@ namespace CommandLineFluent.Arguments
 									break;
 							}
 							break;
-						case FluentArgumentType.Value:
+						case ArgumentType.Value:
 							switch (rule.Requiredness)
 							{
 								case Requiredness.Required:
@@ -107,7 +107,7 @@ namespace CommandLineFluent.Arguments
 									break;
 							}
 							break;
-						case FluentArgumentType.ManyValues:
+						case ArgumentType.MultiValue:
 							switch (rule.Requiredness)
 							{
 								case Requiredness.Required:

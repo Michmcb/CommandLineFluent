@@ -5,7 +5,7 @@ namespace CommandLineFluent
 	/// <summary>
 	/// Represents an error which was encountered when parsing the command line arguments provided
 	/// </summary>
-	public class Error
+	public sealed class Error
 	{
 		/// <summary>
 		/// A human-readable error message
@@ -36,13 +36,6 @@ namespace CommandLineFluent
 			ShouldBeShownToUser = shouldBeShownToUser;
 			ErrorCode = errorCode;
 			Exception = exception;
-		}
-		/// <summary>
-		/// Converts this Error to a string. Contains ErrorCode, Message, and Exception.ToString()
-		/// </summary>
-		public override string ToString()
-		{
-			return $"{ErrorCode}: {Message} ({Exception.ToString()})";
 		}
 	}
 }

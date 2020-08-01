@@ -1,10 +1,10 @@
 ﻿namespace CommandLineFluent.Arguments
 {
-	internal enum FluentArgumentType
+	public enum ArgumentType
 	{
 		Option,
 		Switch,
 		Value,
-		ManyValues
+		MultiValue
 	}
 }
