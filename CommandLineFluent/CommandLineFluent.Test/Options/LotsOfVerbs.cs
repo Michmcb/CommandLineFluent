@@ -1,4 +1,4 @@
-﻿namespace CommandLineFluentTest
+﻿namespace CommandLineFluent.Test.Options
 {
 	public abstract class Verb
 	{

@@ -9,12 +9,12 @@ namespace CommandLineFluent
 		/// <summary>
 		/// Creates a new instance of BuildParserException
 		/// </summary>
-		public CliParserBuilderException() : base() { }
+		public CliParserBuilderException() : base() { Errors = Array.Empty<Error>(); }
 		/// <summary>
 		/// Creates a new instance of BuildParserException
 		/// </summary>
 		/// <param name="message">The message that describes the error.</param>
-		public CliParserBuilderException(string message) : base(message) { Errors = new List<Error>(); }
+		public CliParserBuilderException(string message) : base(message) { Errors = Array.Empty<Error>(); }
 		/// <summary>
 		/// Creates a new instance of BuildParserException
 		/// </summary>
@@ -26,7 +26,7 @@ namespace CommandLineFluent
 		/// </summary>
 		/// <param name="message">The message that describes the error.</param>
 		/// <param name="innerException">The exception that is the cause of the current exception</param>
-		public CliParserBuilderException(string message, Exception innerException) : base(message, innerException) { Errors = new List<Error>(); }
+		public CliParserBuilderException(string message, Exception innerException) : base(message, innerException) { Errors = Array.Empty<Error>(); }
 		/// <summary>
 		/// Creates a new instance of BuildParserException
 		/// </summary>

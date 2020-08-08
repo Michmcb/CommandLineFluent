@@ -1,6 +1,5 @@
 ﻿namespace CommandLineFluent
 {
-	using System;
 	using System.Collections.Generic;
 
 	/// <summary>
@@ -9,14 +8,6 @@
 	/// </summary>
 	public interface IVerb
 	{
-		/// <summary>
-		/// Writes help text to the provided console
-		/// </summary>
-		Action<IConsole> WriteHelpText { get; }
-		/// <summary>
-		/// Writes usage text to the provided console
-		/// </summary>
-		Action<IConsole> WriteUsageText { get; }
 		/// <summary>
 		/// The name used to invoke the verb. This must be unique.
 		/// </summary>

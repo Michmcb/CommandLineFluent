@@ -3,16 +3,16 @@
 	/// <summary>
 	/// An option with one value, supplied like -t Value
 	/// </summary>
-	public interface IOption<TClass> : IArgument<TClass>
+	public interface IOption<TClass> : ISingleArgument<TClass>
 	{
 		/// <summary>
-		/// The Short Name for this FluentOption
+		/// The Short Name for this
 		/// </summary>
-		string ShortName { get; }
+		string? ShortName { get; }
 		/// <summary>
-		/// The Long Name for this FluentOption
+		/// The Long Name for this
 		/// </summary>
-		string LongName { get; }
+		string? LongName { get; }
 		/// <summary>
 		/// The short and long name joined with a |
 		/// </summary>

@@ -164,9 +164,9 @@ namespace CommandLineFluent.Arguments
 		{
 			if (Predicate == null)
 			{
-				return new Error(ErrorCode.ProgrammerError, false, $@"A rule that is {Requiredness} for the property {TargetProperty.Name} has no predicate. Probably missing a When, IsEqualTo, or IsNull call.");
+				return new Error(ErrorCode.ProgrammerError, $@"A rule that is {Requiredness} for the property {TargetProperty.Name} has no predicate. Probably missing a When, IsEqualTo, or IsNull call.");
 			}
-			return null;
+			return default;
 		}
 		private bool PredicateEquals(V val)
 		{

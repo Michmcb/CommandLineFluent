@@ -1,23 +1,21 @@
 ﻿namespace CommandLineFluent
 {
+	using System;
 	using System.Collections.Generic;
-	public sealed class Tokenizer
+	public sealed class QuotedStringTokenizer : ITokenizer
 	{
-		public Tokenizer()
-		{
-
-		}
+		public QuotedStringTokenizer() { }
 		/// <summary>
 		/// Turns the string into tokens. Delimited based on spaces, "double quotes", or 'single quotes'.
 		/// If you don't terminate the last pair of quotes ("like this), then the last token will be to the end of the string, including any whitespace or newlines
 		/// </summary>
 		/// <param name="line">The string to split into tokens</param>
-		public ICollection<string> TokenizeQuotedStrings(string line)
+		public ICollection<string> Tokenize(string line)
 		{
 			// Empty strings, no tokens at all
 			if (string.IsNullOrWhiteSpace(line))
 			{
-				return new List<string>();
+				return Array.Empty<string>();
 			}
 
 			int i = 0;

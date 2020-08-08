@@ -4,35 +4,40 @@
 	using System.Collections.Generic;
 	using System.Threading.Tasks;
 
-	public sealed class ParseResult<TClass> : IParseResult
+	public sealed class ParseResult<TClass> : IParseResult where TClass : class, new()
 	{
-		private readonly Action<TClass> invoke;
-		private readonly Func<TClass, Task> invokeAsync;
+		// TODO maybe change this so it's more like the Maybe class, and can enforce that you do the correct thing
 		public ParseResult(IReadOnlyCollection<Error> errors)
 		{
-			Object = default;
+			ParsedObject = null;
 			Errors = errors;
-			// TODO write exception messages
-			invoke = (x) => throw new CliParserException();
-			invokeAsync = (x) => throw new CliParserException();
 		}
-		public ParseResult(TClass opt, Action<TClass> invoke, Func<TClass, Task> invokeAsync)
+		public ParseResult(Verb<TClass> parsedVerb , TClass opt)
 		{
-			Object = opt;
+			TypedParsedVerb = parsedVerb;
+			ParsedObject = opt;
 			Errors = Array.Empty<Error>();
-			this.invoke = invoke;
-			this.invokeAsync = invokeAsync;
 		}
-		public TClass Object { get; }
+		public Verb<TClass>? TypedParsedVerb { get; }
+		public IVerb? ParsedVerb => TypedParsedVerb;
+		public TClass? ParsedObject { get; }
 		public IReadOnlyCollection<Error> Errors { get; }
 		public bool Success => Errors.Count == 0;
 		public void Invoke()
 		{
-			invoke(Object);
+			if (!Success)
+			{
+				throw new InvalidOperationException("Cannot invoke, parsing failed");
+			}
+			TypedParsedVerb!.Invoke(ParsedObject!);
 		}
 		public async Task InvokeAsync()
 		{
-			await invokeAsync(Object);
+			if (!Success)
+			{
+				throw new InvalidOperationException("Cannot invoke, parsing failed");
+			}
+			await TypedParsedVerb!.InvokeAsync(ParsedObject!);
 		}
 	}
 }

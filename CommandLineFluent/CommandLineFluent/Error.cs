@@ -1,41 +1,31 @@
-﻿using System;
-
-namespace CommandLineFluent
+﻿namespace CommandLineFluent
 {
 	/// <summary>
 	/// Represents an error which was encountered when parsing the command line arguments provided
 	/// </summary>
-	public sealed class Error
+	public readonly struct Error
 	{
 		/// <summary>
 		/// A human-readable error message
 		/// </summary>
 		public string Message { get; }
 		/// <summary>
-		/// Whether or not this Error is relevant to the user and should be shown to them
-		/// </summary>
-		public bool ShouldBeShownToUser { get; }
-		/// <summary>
 		/// What exactly went wrong
 		/// </summary>
 		public ErrorCode ErrorCode { get; }
 		/// <summary>
-		/// Any exceptions thrown when parsing the value
-		/// </summary>
-		public Exception Exception { get; }
-		/// <summary>
 		/// Creates a new instance of Error
 		/// </summary>
 		/// <param name="errorCode">The error code</param>
-		/// <param name="shouldBeShownToUser">Whether or not this error should be displayed to the user</param>
 		/// <param name="message">The message for this error</param>
-		/// <param name="exception">The Exception that caused this error</param>
-		public Error(ErrorCode errorCode, bool shouldBeShownToUser, string message = null, Exception exception = null)
+		public Error(ErrorCode errorCode, string message)
 		{
 			Message = message;
-			ShouldBeShownToUser = shouldBeShownToUser;
 			ErrorCode = errorCode;
-			Exception = exception;
+		}
+		public override string ToString()
+		{
+			return string.Concat(ErrorCode.ToString(), " ", Message);
 		}
 	}
 }

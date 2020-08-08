@@ -2,9 +2,9 @@
 {
 	public sealed class CliParserConfig
 	{
-		public string DefaultShortPrefix { get; internal set; }
-		public string DefaultLongPrefix { get; internal set; }
-		public string ShortHelpSwitch { get; internal set; }
-		public string LongHelpSwitch { get; internal set; }
+		public string DefaultShortPrefix { get; set; } = "-";
+		public string DefaultLongPrefix { get; set; } = "--";
+		public string ShortHelpSwitch { get; set; } = "-?";
+		public string LongHelpSwitch { get; set; } = "--help";
 	}
 }

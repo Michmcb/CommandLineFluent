@@ -1,5 +1,4 @@
-﻿
-namespace CommandLineFluent.Arguments
+﻿namespace CommandLineFluent.Arguments
 {
 	using System;
 	using System.Linq.Expressions;

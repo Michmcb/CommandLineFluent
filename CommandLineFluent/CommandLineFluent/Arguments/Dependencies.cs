@@ -53,7 +53,7 @@ namespace CommandLineFluent.Arguments
 			foreach (IDependencyRule<T> rule in rules)
 			{
 				Error err = rule.Validate();
-				if (err != null)
+				if (err.ErrorCode != ErrorCode.Ok)
 				{
 					yield return err;
 				}
@@ -120,10 +120,10 @@ namespace CommandLineFluent.Arguments
 							break;
 					}
 
-					return new Error(errorCode, true, rule.ErrorMessage);
+					return new Error(errorCode, rule.ErrorMessage);
 				}
 			}
-			return null;
+			return default;
 		}
 	}
 }

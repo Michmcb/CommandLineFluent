@@ -9,7 +9,7 @@
 		/// Uses int.TryParse()
 		/// </summary>
 		/// <param name="s">The string to convert</param>
-		public static Maybe<int, string> ToInt(string s)
+		public static Converted<int> ToInt(string s)
 		{
 			if (int.TryParse(s, out int v))
 			{
@@ -24,7 +24,7 @@
 		/// Converts the provided string to a nullable int. Identical to ToInt, but can be used with Optional parameters.
 		/// </summary>
 		/// <param name="s">The string to convert</param>
-		public static Maybe<int?, string> ToNullableInt(string s)
+		public static Converted<int?> ToNullableInt(string s)
 		{
 			if (int.TryParse(s, out int v))
 			{
@@ -40,7 +40,7 @@
 		/// Uses uint.TryParse()
 		/// </summary>
 		/// <param name="s">The string to convert</param>
-		public static Maybe<uint, string> ToUInt(string s)
+		public static Converted<uint> ToUInt(string s)
 		{
 			if (uint.TryParse(s, out uint v))
 			{
@@ -55,7 +55,7 @@
 		/// Converts the provided string to a nullable uint. Identical to ToUInt, but can be used with Optional parameters.
 		/// </summary>
 		/// <param name="s">The string to convert</param>
-		public static Maybe<uint?, string> ToNullableUInt(string s)
+		public static Converted<uint?> ToNullableUInt(string s)
 		{
 			if (uint.TryParse(s, out uint v))
 			{
@@ -71,7 +71,7 @@
 		/// Uses long.TryParse()
 		/// </summary>
 		/// <param name="s">The string to convert</param>
-		public static Maybe<long, string> ToLong(string s)
+		public static Converted<long> ToLong(string s)
 		{
 			if (long.TryParse(s, out long v))
 			{
@@ -86,7 +86,7 @@
 		/// Converts the provided string to a nullable long. Identical to ToLong, but can be used with Optional parameters.
 		/// </summary>
 		/// <param name="s">The string to convert</param>
-		public static Maybe<long?, string> ToNullableLong(string s)
+		public static Converted<long?> ToNullableLong(string s)
 		{
 			if (long.TryParse(s, out long v))
 			{
@@ -102,7 +102,7 @@
 		/// Uses ulong.TryParse()
 		/// </summary>
 		/// <param name="s">The string to convert</param>
-		public static Maybe<ulong, string> ToULong(string s)
+		public static Converted<ulong> ToULong(string s)
 		{
 			if (ulong.TryParse(s, out ulong v))
 			{
@@ -117,7 +117,7 @@
 		/// Converts the provided string to a nullable ulong. Identical to ToULong, but can be used with Optional parameters.
 		/// </summary>
 		/// <param name="s">The string to convert</param>
-		public static Maybe<ulong?, string> ToNullableULong(string s)
+		public static Converted<ulong?> ToNullableULong(string s)
 		{
 			if (ulong.TryParse(s, out ulong v))
 			{
@@ -133,7 +133,7 @@
 		/// Uses double.TryParse()
 		/// </summary>
 		/// <param name="s">The string to convert</param>
-		public static Maybe<double, string> ToDouble(string s)
+		public static Converted<double> ToDouble(string s)
 		{
 			if (double.TryParse(s, out double v))
 			{
@@ -148,7 +148,7 @@
 		/// Converts the provided string to a nullable double. Identical to ToDouble, but can be used with Optional parameters.
 		/// </summary>
 		/// <param name="s">The string to convert</param>
-		public static Maybe<double?, string> ToNullableDouble(string s)
+		public static Converted<double?> ToNullableDouble(string s)
 		{
 			if (double.TryParse(s, out double v))
 			{
@@ -164,7 +164,7 @@
 		/// Uses decimal.TryParse()
 		/// </summary>
 		/// <param name="s">The string to convert</param>
-		public static Maybe<decimal, string> ToDecimal(string s)
+		public static Converted<decimal> ToDecimal(string s)
 		{
 			if (decimal.TryParse(s, out decimal v))
 			{
@@ -179,7 +179,7 @@
 		/// Converts the provided string to a nullable decimal. Identical to ToDecimal, but can be used with Optional parameters.
 		/// </summary>
 		/// <param name="s">The string to convert</param>
-		public static Maybe<decimal?, string> ToNullableDecimal(string s)
+		public static Converted<decimal?> ToNullableDecimal(string s)
 		{
 			if (decimal.TryParse(s, out decimal v))
 			{
@@ -195,7 +195,7 @@
 		/// Uses DateTime.TryParse()
 		/// </summary>
 		/// <param name="s">The string to convert</param>
-		public static Maybe<DateTime, string> ToDate(string s)
+		public static Converted<DateTime> ToDate(string s)
 		{
 			if (DateTime.TryParse(s, out DateTime v))
 			{
@@ -217,7 +217,7 @@
 		/// Converts the provided string to a nullable DateTime. Identical to ToDate, but can be used with Optional parameters.
 		/// </summary>
 		/// <param name="s">The string to convert</param>
-		public static Maybe<DateTime?, string> ToNullableDate(string s)
+		public static Converted<DateTime?> ToNullableDate(string s)
 		{
 			if (DateTime.TryParse(s, out DateTime v))
 			{
@@ -240,7 +240,7 @@
 		/// Uses DateTime.TryParse()
 		/// </summary>
 		/// <param name="s">The string to convert</param>
-		public static Maybe<DateTime, string> ToDateTime(string s)
+		public static Converted<DateTime> ToDateTime(string s)
 		{
 			if (DateTime.TryParse(s, out DateTime v))
 			{
@@ -255,7 +255,7 @@
 		/// Converts the provided string to a nullable DateTime. Identical to ToDateTime, but can be used with Optional parameters.
 		/// </summary>
 		/// <param name="s">The string to convert</param>
-		public static Maybe<DateTime?, string> ToNullableDateTime(string s)
+		public static Converted<DateTime?> ToNullableDateTime(string s)
 		{
 			if (DateTime.TryParse(s, out DateTime v))
 			{
@@ -272,7 +272,7 @@
 		/// </summary>
 		/// <typeparam name="T">The type of the enum to parse</typeparam>
 		/// <param name="s">The string to convert</param>
-		public static Maybe<T, string> ToEnum<T>(string s) where T : struct, Enum
+		public static Converted<T> ToEnum<T>(string s) where T : struct, Enum
 		{
 			if (Enum.TryParse(s, out T v))
 			{
@@ -289,7 +289,7 @@
 		/// </summary>
 		/// <param name="s">The string to split</param>
 		/// <param name="separator">The separators to use</param>
-		public static Maybe<string[], string> Split(string s, params char[] separator)
+		public static Converted<string[]> Split(string s, params char[] separator)
 		{
 			return s.Split(separator);
 		}
@@ -300,7 +300,7 @@
 		/// <param name="s">The string to split</param>
 		/// <param name="separator">The separators to use</param>
 		/// <param name="count">The maximum number of substrings to return</param>
-		public static Maybe<string[], string> Split(string s, char[] separator, int count)
+		public static Converted<string[]> Split(string s, char[] separator, int count)
 		{
 			return s.Split(separator, count);
 		}
@@ -312,7 +312,7 @@
 		/// <param name="separator">The separators to use</param>
 		/// <param name="options">System.StringSplitOptions.RemoveEmptyEntries to omit empty array elements from the array returned; or System.StringSplitOptions.None to include empty array
 		/// elements in the array returned.</param>
-		public static Maybe<string[], string> Split(string s, char[] separator, StringSplitOptions options)
+		public static Converted<string[]> Split(string s, char[] separator, StringSplitOptions options)
 		{
 			return s.Split(separator, options);
 		}
@@ -324,7 +324,7 @@
 		/// <param name="separator">The separators to use</param>
 		/// <param name="options">System.StringSplitOptions.RemoveEmptyEntries to omit empty array elements from the array returned; or System.StringSplitOptions.None to include empty array
 		/// elements in the array returned.</param>
-		public static Maybe<string[], string> Split(string s, string[] separator, StringSplitOptions options)
+		public static Converted<string[]> Split(string s, string[] separator, StringSplitOptions options)
 		{
 			return s.Split(separator, options);
 		}
@@ -337,7 +337,7 @@
 		/// <param name="count">The maximum number of substrings to return</param>
 		/// <param name="options">System.StringSplitOptions.RemoveEmptyEntries to omit empty array elements from the array returned; or System.StringSplitOptions.None to include empty array
 		/// elements in the array returned.</param>
-		public static Maybe<string[], string> Split(string s, char[] separator, int count, StringSplitOptions options)
+		public static Converted<string[]> Split(string s, char[] separator, int count, StringSplitOptions options)
 		{
 			return s.Split(separator, count, options);
 		}
@@ -350,7 +350,7 @@
 		/// <param name="count">The maximum number of substrings to return</param>
 		/// <param name="options">System.StringSplitOptions.RemoveEmptyEntries to omit empty array elements from the array returned; or System.StringSplitOptions.None to include empty array
 		/// elements in the array returned.</param>
-		public static Maybe<string[], string> Split(string s, string[] separator, int count, StringSplitOptions options)
+		public static Converted<string[]> Split(string s, string[] separator, int count, StringSplitOptions options)
 		{
 			return s.Split(separator, count, options);
 		}

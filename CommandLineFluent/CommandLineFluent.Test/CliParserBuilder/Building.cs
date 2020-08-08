@@ -1,69 +1,62 @@
-﻿using CommandLineFluent;
-using CommandLineFluent.Arguments;
-using System;
-using System.Linq;
-using Xunit;
-
-namespace CommandLineFluentTest.Parser
+﻿namespace CommandLineFluent.Test.CliParserBuilder
 {
-	public class FluentVerbTest
+	using CommandLineFluent;
+	using CommandLineFluent.Arguments;
+	using CommandLineFluent.Test.Options;
+	using System;
+	using System.Linq;
+	using Xunit;
+
+	public sealed class Building
 	{
 		[Fact]
 		public void AddingOptionsValuesSwitches()
 		{
-			FluentParserBuilder fpb = new FluentParserBuilder().Configure(config =>
+			CliParserBuilder fpb = new CliParserBuilder()
+				.AddVerb<Verb1>("default", verb =>
 				{
-					config.UseDefaultPrefixes("-", "--");
-				})
-				.WithoutVerbs<Verb1>(verb =>
-				{
-					verb.WithHelpText("hlep");
-					verb.WithDescription("descr");
-					Assert.Equal("hlep", verb.HelpText);
-					Assert.Equal("descr", verb.Description);
-
 					Option<Verb1, string> opt = verb.AddOption("o", "option")
 						.WithHelpText("help")
 						.WithName("name")
 						.IsRequired();
-					Assert.Equal(opt, verb.Options.First());
+					Assert.Equal(opt, verb.AllOptions.First());
 					Assert.Equal("-o", opt.ShortName);
 					Assert.Equal("--option", opt.LongName);
 					Assert.Equal("help", opt.HelpText);
 					Assert.Equal("name", opt.Name);
-					Assert.True(opt.Required);
-					// Not allowed to set it more than once
-					Assert.Throws<InvalidOperationException>(() => opt.IsOptional("test"));
+					Assert.Equal(ArgumentRequired.Required, opt.ArgumentRequired);
+					opt.IsOptional("test");
+					Assert.Equal(ArgumentRequired.Optional, opt.ArgumentRequired);
+					Assert.Equal("test", opt.DefaultValue);
 
-					FluentValue<Verb1, string> val = verb.AddValue()
+					Value<Verb1, string> val = verb.AddValue()
 						.WithHelpText("help")
 						.WithName("name")
 						.IsRequired();
-					Assert.Equal(val, verb.FluentValues.First());
+					Assert.Equal(val, verb.AllValues.First());
 					Assert.Equal("help", val.HelpText);
 					Assert.Equal("name", val.Name);
-					Assert.True(val.Required);
-					// Not allowed to set it more than once
-					Assert.Throws<InvalidOperationException>(() => val.IsOptional("test"));
+					Assert.Equal(ArgumentRequired.Required, val.ArgumentRequired);
+					val.IsOptional("test");
+					Assert.Equal(ArgumentRequired.Optional, opt.ArgumentRequired);
+					Assert.Equal("test", opt.DefaultValue);
 
-					FluentSwitch<Verb1, bool> sw = verb.AddSwitch("s", "switch")
-						.WithHelpText("help");
-					Assert.Equal(sw, verb.Switches.First());
+					Switch<Verb1, bool> sw = verb.AddSwitch("s", "switch")
+						.WithHelpText("help")
+						.IsOptional(true);
+					Assert.Equal(sw, verb.AllSwitches.First());
 					Assert.Equal("help", sw.HelpText);
-					sw.WithDefaultValue(true);
+					Assert.Equal(ArgumentRequired.Optional, sw.ArgumentRequired);
 					Assert.True(sw.DefaultValue);
 				});
 		}
 		[Fact]
 		public void AddingManyValues()
 		{
-			FluentParser fp = new FluentParserBuilder().Configure(config =>
+			CliParser fp = new CliParserBuilder()
+				.AddVerb<ManyValuesVerb>("default", verb =>
 				{
-					config.UseDefaultPrefixes("-", "--");
-				})
-				.WithoutVerbs<ManyValuesVerb>(verb =>
-				{
-					FluentManyValues<ManyValuesVerb, string[]> val = verb.AddManyValues()
+					var val = verb.AddMultiValue()
 						.ForProperty(o => o.ManyValues)
 						.WithName("name")
 						.WithHelpText("help")
@@ -72,8 +65,7 @@ namespace CommandLineFluentTest.Parser
 					Assert.Equal(val, verb.MultiValue);
 					Assert.Equal("help", val.HelpText);
 					Assert.Equal("name", val.Name);
-					Assert.True(val.Required);
-					Assert.Throws<InvalidOperationException>(() => val.IsOptional(new string[] { "test" }));
+					Assert.Equal(ArgumentRequired.Required, val.ArgumentRequired);
 				}).Build();
 		}
 		[Fact]
@@ -81,8 +73,8 @@ namespace CommandLineFluentTest.Parser
 		{
 			Assert.Throws<CliParserBuilderException>(() =>
 			{
-				FluentParser fp = new FluentParserBuilder()
-					.WithoutVerbs<Verb1>(verb =>
+				CliParser fp = new CliParserBuilder()
+					.AddVerb<Verb1>("default", verb =>
 					{
 						verb.AddOption("-o", "--o");
 						Assert.Throws<ArgumentException>(() => verb.AddOption("-o", "--o"));
@@ -93,8 +85,8 @@ namespace CommandLineFluentTest.Parser
 		[Fact]
 		public void AddingNullOrWhitespaceShortLongNames()
 		{
-			FluentParser fp = new FluentParserBuilder()
-				.WithoutVerbs<Verb1>(verb =>
+			CliParser fp = new CliParserBuilder()
+				.AddVerb<Verb1>("default", verb =>
 				{
 					Assert.Throws<ArgumentException>(() => verb.AddOption(null, null));
 					Assert.Throws<ArgumentException>(() => verb.AddOption("", null));

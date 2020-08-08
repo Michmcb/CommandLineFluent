@@ -2,26 +2,51 @@
 {
 	using System;
 	using System.Collections.Generic;
-
+	using System.Linq;
 	public sealed class CliParser
 	{
 		private readonly IConsole console;
+		private readonly ITokenizer tokenizer;
+		private readonly IHelpFormatter helpFormatter;
 		private Dictionary<string, IVerb> verbs;
 		private CliParserConfig config;
-		internal CliParser(IConsole console, Dictionary<string, IVerb> verbs, CliParserConfig config)
+		internal CliParser(IConsole console, ITokenizer tokenizer, IHelpFormatter helpFormatter, Dictionary<string, IVerb> verbs, CliParserConfig config)
 		{
 			this.console = console;
+			this.tokenizer = tokenizer;
+			this.helpFormatter = helpFormatter;
 			this.verbs = verbs;
 			this.config = config;
 		}
-		// TODO implement the parser
 		public IParseResult Parse(string args)
 		{
-			return default;
+			if (args == null)
+			{
+				throw new ArgumentNullException(nameof(args));
+			}
+			return Parse(tokenizer.Tokenize(args));
 		}
 		public IParseResult Parse(IEnumerable<string> args)
 		{
-			return default;
+			if (args == null)
+			{
+				throw new ArgumentNullException(nameof(args));
+			}
+			string? firstArg = args.FirstOrDefault();
+			if (firstArg != null)
+			{
+				if (verbs.TryGetValue(firstArg, out IVerb? verb))
+				{
+					return verb.Parse(args.Skip(1));
+				}
+				// If the verb isn't found, it might be just the help switch
+				else if (firstArg.Equals(config.ShortHelpSwitch, StringComparison.OrdinalIgnoreCase) || firstArg.Equals(config.LongHelpSwitch, StringComparison.OrdinalIgnoreCase))
+				{
+					return new EmptyParseResult(new Error(ErrorCode.HelpRequested, ""));
+				}
+				return new EmptyParseResult(new Error(ErrorCode.InvalidVerb, "The verb provided was not valid: " + firstArg));
+			}
+			return new EmptyParseResult(new Error(ErrorCode.NoVerbFound, "No input"));
 		}
 		/// <summary>
 		/// Writes the provided Errors.

@@ -16,7 +16,7 @@
 		/// <summary>
 		/// Many required values were specified but the user did not provide at least 1
 		/// </summary>
-		MissingRequiredValues,
+		MissingRequiredMultiValue,
 		/// <summary>
 		/// A required option was specified but the user did not provide it
 		/// </summary>
@@ -72,7 +72,7 @@
 		/// <summary>
 		/// The values that the user provided for many values failed conversion
 		/// </summary>
-		ValuesFailedConversion,
+		MultiValueFailedConversion,
 		/// <summary>
 		/// The switch that the user specified failed conversion
 		/// </summary>
