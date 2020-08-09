@@ -2,7 +2,6 @@
 {
 	using CommandLineFluent;
 	using CommandLineFluent.Test.Options;
-	using System;
 	using System.Threading.Tasks;
 	using Xunit;
 
@@ -23,8 +22,8 @@
 		[Fact]
 		public async Task InvokeWorksFine()
 		{
-			ParseResult<InvokedTracker> ipr = Assert.IsType<ParseResult<InvokedTracker>>(parser.Parse("Invoke1"));
-
+			Maybe<IParseResult, System.Collections.Generic.IReadOnlyCollection<Error>> r = parser.Parse("Invoke1");
+			ParseResult<InvokedTracker> ipr = Assert.IsType<ParseResult<InvokedTracker>>(r.ValueOr(null));
 			ipr.Invoke();
 			Assert.True(ipr.ParsedObject.DidIGetInvoked);
 			ipr.ParsedObject.DidIGetInvoked = false;
@@ -32,12 +31,11 @@
 			Assert.True(ipr.ParsedObject.DidIGetInvoked);
 		}
 		[Fact]
-		public async Task FailureCallsNothing()
+		public void FailureGivesNothing()
 		{
-			var ipr = Assert.IsType<EmptyParseResult>(parser.Parse("Nothing"));
-			Assert.False(ipr.Success);
-			Assert.Throws<InvalidOperationException>(() => ipr.Invoke());
-			await Assert.ThrowsAsync<InvalidOperationException>(() => ipr.InvokeAsync());
+			Maybe<IParseResult, System.Collections.Generic.IReadOnlyCollection<Error>> r = parser.Parse("Nothing");
+			Assert.False(r.Ok);
+			Assert.Null(r.ValueOr(null));
 		}
 		private static void SetInvoked(InvokedTracker opt)
 		{

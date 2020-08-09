@@ -8,40 +8,40 @@ namespace CommandLineFluent.Arguments
 	/// Defines a relationship between a FluentArgument and a property of the target object.
 	/// It allows you to specify that certain FluentArguments are only required under certain circumstances.
 	/// </summary>
-	/// <typeparam name="T">The class of the property which this FluentRelationship is for</typeparam>
-	/// <typeparam name="C">The type of the property</typeparam>
-	public class Dependencies<T, C> where T : new()
+	/// <typeparam name="TClass">The class of the property which this FluentRelationship is for</typeparam>
+	/// <typeparam name="TProp">The type of the property</typeparam>
+	public sealed class Dependencies<TClass, TProp> where TClass : new()
 	{
-		private readonly List<IDependencyRule<T>> rules;
+		private readonly List<IDependencyRule<TClass>> rules;
 		/// <summary>
 		/// The rules which make up this relationship
 		/// </summary>
-		public IReadOnlyCollection<IDependencyRule<T>> Rules => rules;
+		public IReadOnlyCollection<IDependencyRule<TClass>> Rules => rules;
 		internal Dependencies()
 		{
-			rules = new List<IDependencyRule<T>>();
+			rules = new List<IDependencyRule<TClass>>();
 		}
 		/// <summary>
-		/// Specifies that a property of type <typeparamref name="V"/> of an object of type <typeparamref name="T"/>
+		/// Specifies that a property of type <typeparamref name="TOtherProp"/> of an object of type <typeparamref name="TClass"/>
 		/// is required to be provided under specific circumstances.
 		/// </summary>
-		/// <typeparam name="V">The type of the property</typeparam>
+		/// <typeparam name="TOtherProp">The type of the property</typeparam>
 		/// <param name="expression">The property that is required</param>
-		public DependencyRule<T, V> RequiredIf<V>(Expression<Func<T, V>> expression)
+		public DependencyRule<TClass, TOtherProp> RequiredIf<TOtherProp>(Expression<Func<TClass, TOtherProp>> expression)
 		{
-			DependencyRule<T, V> rule = new DependencyRule<T, V>(expression, Requiredness.Required);
+			DependencyRule<TClass, TOtherProp> rule = new DependencyRule<TClass, TOtherProp>(ArgUtils.PropertyInfoFromExpression(expression), Requiredness.Required);
 			rules.Add(rule);
 			return rule;
 		}
 		/// <summary>
-		/// Specifies that a property of type <typeparamref name="V"/> of an object of type <typeparamref name="T"/>
+		/// Specifies that a property of type <typeparamref name="TOtherProp"/> of an object of type <typeparamref name="TClass"/>
 		/// is required to NOT be provided under specific circumstances.
 		/// </summary>
-		/// <typeparam name="V">The type of the property</typeparam>
+		/// <typeparam name="TOtherProp">The type of the property</typeparam>
 		/// <param name="expression">The property that is required</param>
-		public DependencyRule<T, V> MustNotAppearIf<V>(Expression<Func<T, V>> expression)
+		public DependencyRule<TClass, TOtherProp> MustNotAppearIf<TOtherProp>(Expression<Func<TClass, TOtherProp>> expression)
 		{
-			DependencyRule<T, V> rule = new DependencyRule<T, V>(expression, Requiredness.MustNotAppear);
+			DependencyRule<TClass, TOtherProp> rule = new DependencyRule<TClass, TOtherProp>(ArgUtils.PropertyInfoFromExpression(expression), Requiredness.MustNotAppear);
 			rules.Add(rule);
 			return rule;
 		}
@@ -50,7 +50,7 @@ namespace CommandLineFluent.Arguments
 		/// </summary>
 		public IEnumerable<Error> Validate()
 		{
-			foreach (IDependencyRule<T> rule in rules)
+			foreach (IDependencyRule<TClass> rule in rules)
 			{
 				Error err = rule.Validate();
 				if (err.ErrorCode != ErrorCode.Ok)
@@ -65,9 +65,9 @@ namespace CommandLineFluent.Arguments
 		/// <param name="obj">The object to check</param>
 		/// <param name="wasValueProvided">Whether or not the FluentArgument received a value from parsing</param>
 		/// <param name="fluentArgumentType">The type of argument, used to return the correct error code</param>
-		internal Error EvaluateRelationship(T obj, bool wasValueProvided, ArgumentType fluentArgumentType)
+		internal Error EvaluateRelationship(TClass obj, bool wasValueProvided, ArgumentType fluentArgumentType)
 		{
-			foreach (IDependencyRule<T> rule in rules)
+			foreach (IDependencyRule<TClass> rule in rules)
 			{
 				if (!rule.DoesSatifyRule(obj, wasValueProvided))
 				{

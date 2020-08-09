@@ -1,16 +1,13 @@
 ﻿namespace CommandLineFluent
 {
 	using CommandLineFluent.Arguments;
+	using CommandLineFluent.Arguments.Config;
 	using System;
 	using System.Collections.Generic;
-	using System.Net;
 	using System.Threading.Tasks;
 
 	public sealed class Verb<TClass> : IVerb where TClass : class, new()
 	{
-		/*
-		TODO We can have simple Lists of all the switches/options, and a dictionary each that refers to them by shortname and by longname.
-		*/
 		private readonly CliParserConfig config;
 		private readonly List<IValue<TClass>> allValues;
 		private readonly List<ISwitch<TClass>> allSwitches;
@@ -31,21 +28,31 @@
 			allSwitchesByLongName = new Dictionary<string, ISwitch<TClass>>();
 			allOptionsByLongName = new Dictionary<string, IOption<TClass>>();
 			HelpText = "";
+			Invoke = x => throw new CliParserBuilderException(string.Concat("Invoke for verb", Name, " has not been configured"));
+			InvokeAsync = x => throw new CliParserBuilderException(string.Concat("InvokeAsync for verb", Name, " has not been configured"));
 		}
 		public IMultiValue<TClass>? MultiValue { get; private set; }
 		public IReadOnlyCollection<ISwitch<TClass>> AllSwitches => allSwitches;
 		public IReadOnlyCollection<IOption<TClass>> AllOptions => allOptions;
 		public IReadOnlyList<IValue<TClass>> AllValues => allValues;
-		public Action<TClass>? Invoke { get; set; }
-		public Func<TClass, Task>? InvokeAsync { get; set; }
+		public Action<TClass> Invoke { get; set; }
+		public Func<TClass, Task> InvokeAsync { get; set; }
 		public string Name { get; }
 		public string HelpText { get; set; }
-		public Option<TClass, string> AddOption(string? shortName, string? longName)
+		public void WriteHelpTo(IMessageFormatter helpFormatter, IConsole console)
 		{
-			return AddOption<string>(shortName, longName);
+			helpFormatter.WriteSpecificHelp(console, this, config);
 		}
-		public Option<TClass, TProp> AddOption<TProp>(string? shortName, string? longName)
+		public Option<TClass, string> AddOption(string? shortName, string? longName, Action<OptionConfig<TClass, string>> optionConfig)
 		{
+			return AddOption<string>(shortName, longName, optionConfig);
+		}
+		public Option<TClass, TProp> AddOption<TProp>(string? shortName, string? longName, Action<OptionConfig<TClass, TProp>> optionConfig)
+		{
+			if (optionConfig == null)
+			{
+				throw new ArgumentNullException(nameof(optionConfig), "optionConfig cannot be null");
+			}
 			if (shortName == null && longName == null)
 			{
 				throw new ArgumentException(string.Concat("Short Name and Long Name for a new option for verb ", Name, " cannot both be null"));
@@ -58,18 +65,24 @@
 			{
 				throw new ArgumentException("Long name cannot be an empty string or only whitespace", nameof(longName));
 			}
-			ApplyDefaultPrefix(ref shortName, ref longName);
-			Option<TClass, TProp> thing = new Option<TClass, TProp>(shortName, longName);
-			AddToDictionary(shortName, longName, "option", thing, allOptionsByShortName, allOptionsByLongName);
+			ApplyDefaultPrefixAndCheck(ref shortName, ref longName, "option", allOptionsByShortName, allOptionsByLongName);
+			OptionConfig<TClass, TProp> c = new OptionConfig<TClass, TProp>(shortName, longName);
+			optionConfig(c);
+			Option<TClass, TProp> thing = c.Build();
+			AddToDictionary(shortName, longName, thing, allOptionsByShortName, allOptionsByLongName);
 			allOptions.Add(thing);
 			return thing;
 		}
-		public Switch<TClass, bool> AddSwitch(string? shortName, string? longName)
+		public Switch<TClass, bool> AddSwitch(string? shortName, string? longName, Action<SwitchConfig<TClass, bool>> switchConfig)
 		{
-			return AddSwitch<bool>(shortName, longName);
+			return AddSwitch<bool>(shortName, longName, switchConfig);
 		}
-		public Switch<TClass, TProp> AddSwitch<TProp>(string? shortName, string? longName)
+		public Switch<TClass, TProp> AddSwitch<TProp>(string? shortName, string? longName, Action<SwitchConfig<TClass, TProp>> switchConfig)
 		{
+			if (switchConfig == null)
+			{
+				throw new ArgumentNullException(nameof(switchConfig), "switchConfig cannot be null");
+			}
 			if (shortName == null && longName == null)
 			{
 				throw new ArgumentException(string.Concat("Short Name and Long Name for a new switch for verb ", Name, " cannot both be null"));
@@ -82,37 +95,55 @@
 			{
 				throw new ArgumentException("Short name cannot be an empty string", nameof(longName));
 			}
-			ApplyDefaultPrefix(ref shortName, ref longName);
-			Switch<TClass, TProp> thing = new Switch<TClass, TProp>(shortName, longName);
-			AddToDictionary(shortName, longName, "switch", thing, allSwitchesByShortName, allSwitchesByLongName);
+			ApplyDefaultPrefixAndCheck(ref shortName, ref longName, "switch", allSwitchesByShortName, allSwitchesByLongName);
+			SwitchConfig<TClass, TProp> c = new SwitchConfig<TClass, TProp>(shortName, longName);
+			switchConfig(c);
+			Switch<TClass, TProp> thing = c.Build();
+			AddToDictionary(shortName, longName, thing, allSwitchesByShortName, allSwitchesByLongName);
 			allSwitches.Add(thing);
 			return thing;
 		}
-		public Value<TClass, string> AddValue()
+		public Value<TClass, string> AddValue(Action<ValueConfig<TClass, string>> valueConfig)
 		{
-			return AddValue<string>();
+			return AddValue<string>(valueConfig);
 		}
-		public Value<TClass, TProp> AddValue<TProp>()
+		public Value<TClass, TProp> AddValue<TProp>(Action<ValueConfig<TClass, TProp>> valueConfig)
 		{
-			Value<TClass, TProp> thing = new Value<TClass, TProp>();
+			if (valueConfig == null)
+			{
+				throw new ArgumentNullException(nameof(valueConfig), "valueConfig cannot be null");
+			}
+			ValueConfig<TClass, TProp> c = new ValueConfig<TClass, TProp>();
+			valueConfig(c);
+			Value<TClass, TProp> thing = c.Build();
 			allValues.Add(thing);
 			return thing;
 		}
-		public MultiValue<TClass, ICollection<string>> AddMultiValue()
+		public MultiValue<TClass, ICollection<string>> AddMultiValue(Action<MultiValueConfig<TClass, ICollection<string>>> multivalueConfig)
 		{
-			return AddMultiValue<ICollection<string>>();
+			return AddMultiValue<ICollection<string>>(multivalueConfig);
 		}
-		public MultiValue<TClass, TProp> AddMultiValue<TProp>()
+		public MultiValue<TClass, IReadOnlyCollection<string>> AddMultiValue(Action<MultiValueConfig<TClass, IReadOnlyCollection<string>>> multivalueConfig)
 		{
+			return AddMultiValue<IReadOnlyCollection<string>>(multivalueConfig);
+		}
+		public MultiValue<TClass, TProp> AddMultiValue<TProp>(Action<MultiValueConfig<TClass, TProp>> multivalueConfig)
+		{
+			if (multivalueConfig == null)
+			{
+				throw new ArgumentNullException(nameof(multivalueConfig), "multivalueConfig cannot be null");
+			}
 			if (MultiValue != null)
 			{
 				throw new CliParserBuilderException("MultiValue has already been added; you cannot add more than one MultiValue");
 			}
-			MultiValue<TClass, TProp> thing = new MultiValue<TClass, TProp>();
+			MultiValueConfig<TClass, TProp> c = new MultiValueConfig<TClass, TProp>();
+			multivalueConfig(c);
+			MultiValue<TClass, TProp> thing = c.Build();
 			MultiValue = thing;
 			return thing;
 		}
-		public IParseResult Parse(IEnumerable<string> args)
+		public Maybe<IParseResult, IReadOnlyCollection<Error>> Parse(IEnumerable<string> args)
 		{
 			TClass parsedClass = new TClass();
 			List<Error> errors = new List<Error>();
@@ -130,7 +161,7 @@
 					if (arg == config.ShortHelpSwitch || arg == config.LongHelpSwitch)
 					{
 						errors.Add(new Error(ErrorCode.HelpRequested, string.Empty));
-						return new ParseResult<TClass>(errors);
+						return errors;
 					}
 
 					if (allOptionsByShortName.TryGetValue(arg, out IOption<TClass>? oval) || allOptionsByLongName.TryGetValue(arg, out oval))
@@ -234,7 +265,7 @@
 			// Make sure all of the stuff we've set so far is good, if not bail out
 			if (errors.Count > 0)
 			{
-				return new ParseResult<TClass>(errors);
+				return errors;
 			}
 
 			// Evaluate dependencies; we know we got the value if it doesn't appear in our lists of remaining stuff
@@ -274,52 +305,18 @@
 			}
 			if (errors.Count > 0)
 			{
-				return new ParseResult<TClass>(errors);
+				return errors;
 			}
 			return new ParseResult<TClass>(this, parsedClass);
 		}
-		public ICollection<Error> Validate()
-		{
-			List<Error> errors = new List<Error>();
-			foreach (IOption<TClass> value in allOptions)
-			{
-				errors.AddRange(value.Validate());
-			}
-			foreach (ISwitch<TClass> value in allSwitches)
-			{
-				errors.AddRange(value.Validate());
-			}
-			foreach (IValue<TClass> value in allValues)
-			{
-				errors.AddRange(value.Validate());
-			}
-			if (MultiValue != null)
-			{
-				errors.AddRange(MultiValue.Validate());
-			}
-			return errors;
-		}
-		private void ApplyDefaultPrefix(ref string? shortName, ref string? longName)
-		{
-			if (shortName != null && !shortName.StartsWith(config.DefaultShortPrefix))
-			{
-				shortName = config.DefaultShortPrefix + shortName;
-			}
-			if (longName != null && !longName.StartsWith(config.DefaultLongPrefix))
-			{
-				longName = config.DefaultLongPrefix + longName;
-			}
-		}
-		/// <summary>
-		/// Makes sure that at least one of shortName and longName is not null, that they are not empty or whitespace, 
-		/// applies any prefixes required, and adds them to our map to ensure they're unique.
-		/// </summary>
-		/// <param name="shortName">The short name</param>
-		/// <param name="longName">The long name</param>
-		private void AddToDictionary<T>(string? shortName, string? longName, string type, T obj, Dictionary<string, T> shortNames, Dictionary<string, T> longNames)
+		private void ApplyDefaultPrefixAndCheck<T>(ref string? shortName, ref string? longName, string type, Dictionary<string, T> shortNames, Dictionary<string, T> longNames)
 		{
 			if (shortName != null)
 			{
+				if (!shortName.StartsWith(config.DefaultShortPrefix))
+				{
+					shortName = config.DefaultShortPrefix + shortName;
+				}
 				if (string.IsNullOrWhiteSpace(shortName))
 				{
 					throw new ArgumentException($"Short Name for {type} for verb {Name} was empty or entirely whitespace");
@@ -335,6 +332,10 @@
 			}
 			if (longName != null)
 			{
+				if (!longName.StartsWith(config.DefaultLongPrefix))
+				{
+					longName = config.DefaultLongPrefix + longName;
+				}
 				if (string.IsNullOrWhiteSpace(longName))
 				{
 					throw new ArgumentException($"Short Name for {type} for verb {Name} was empty or entirely whitespace");
@@ -347,9 +348,14 @@
 				{
 					throw new ArgumentException($"The long name {longName} for {type} for verb {Name} has already been used");
 				}
+			}
+		}
+		private void AddToDictionary<T>(string? shortName, string? longName, T obj, Dictionary<string, T> shortNames, Dictionary<string, T> longNames)
+		{
+			if (longName != null)
+			{
 				longNames.Add(longName, obj);
 			}
-			// Add the short name down here; if we add shortName earlier, we might throw an exception and mess up the dictionaries
 			if (shortName != null)
 			{
 				shortNames.Add(shortName, obj);

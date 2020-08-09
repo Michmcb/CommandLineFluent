@@ -4,7 +4,7 @@
 	{
 		public string RequiredValue { get; set; }
 		public int ConvertedValue { get; set; }
-		public string OptionalValue { get; set; }
+		public string? OptionalValue { get; set; }
 		public bool Switch1 { get; set; }
 		public bool DefaultValueSwitch { get; set; }
 		public string ConvertedSwitch { get; set; }

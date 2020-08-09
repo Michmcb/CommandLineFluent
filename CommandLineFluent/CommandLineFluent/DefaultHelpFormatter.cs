@@ -1,6 +1,6 @@
 ﻿namespace CommandLineFluent
 {
-	internal class DefaultHelpFormatter : IHelpFormatter
+	internal class DefaultHelpFormatter : IMessageFormatter
 	{
 		// TODO implement default help formatter
 	}

@@ -7,10 +7,10 @@
 	{
 		private readonly IConsole console;
 		private readonly ITokenizer tokenizer;
-		private readonly IHelpFormatter helpFormatter;
+		private readonly IMessageFormatter helpFormatter;
 		private Dictionary<string, IVerb> verbs;
 		private CliParserConfig config;
-		internal CliParser(IConsole console, ITokenizer tokenizer, IHelpFormatter helpFormatter, Dictionary<string, IVerb> verbs, CliParserConfig config)
+		internal CliParser(IConsole console, ITokenizer tokenizer, IMessageFormatter helpFormatter, Dictionary<string, IVerb> verbs, CliParserConfig config)
 		{
 			this.console = console;
 			this.tokenizer = tokenizer;
@@ -18,7 +18,7 @@
 			this.verbs = verbs;
 			this.config = config;
 		}
-		public IParseResult Parse(string args)
+		public Maybe<IParseResult, IReadOnlyCollection<Error>> Parse(string args)
 		{
 			if (args == null)
 			{
@@ -26,7 +26,7 @@
 			}
 			return Parse(tokenizer.Tokenize(args));
 		}
-		public IParseResult Parse(IEnumerable<string> args)
+		public Maybe<IParseResult, IReadOnlyCollection<Error>> Parse(IEnumerable<string> args)
 		{
 			if (args == null)
 			{
@@ -42,11 +42,11 @@
 				// If the verb isn't found, it might be just the help switch
 				else if (firstArg.Equals(config.ShortHelpSwitch, StringComparison.OrdinalIgnoreCase) || firstArg.Equals(config.LongHelpSwitch, StringComparison.OrdinalIgnoreCase))
 				{
-					return new EmptyParseResult(new Error(ErrorCode.HelpRequested, ""));
+					return new Error[] { new Error(ErrorCode.HelpRequested, "") };
 				}
-				return new EmptyParseResult(new Error(ErrorCode.InvalidVerb, "The verb provided was not valid: " + firstArg));
+				return new Error[] { new Error(ErrorCode.InvalidVerb, "The verb provided was not valid: " + firstArg) };
 			}
-			return new EmptyParseResult(new Error(ErrorCode.NoVerbFound, "No input"));
+			return new Error[] { new Error(ErrorCode.NoVerbFound, "No input") };
 		}
 		/// <summary>
 		/// Writes the provided Errors.
@@ -63,9 +63,9 @@
 		/// Same thing for Help Text.
 		/// Does nothing if Config.WriteText is null.
 		/// </summary>
-		public void WriteOverallUsageAndHelp()
+		public void WriteOverallHelp()
 		{
-			throw new NotImplementedException("");
+			helpFormatter.WriteOverallHelp(console, verbs.Values, config);
 		}
 		/// <summary>
 		/// Writes the Usage Text, and then the Help Text for the specified verb. Order of priority is:
@@ -74,9 +74,9 @@
 		/// Does nothing if Config.WriteText is null.
 		/// </summary>
 		/// <param name="verb">The verb to write detailed usage/help for</param>
-		public void WriteUsageAndHelp(IVerb verb)
+		public void WriteHelp(IVerb verb)
 		{
-			throw new NotImplementedException("");
+			verb.WriteHelpTo(helpFormatter, console);
 		}
 	}
 }

@@ -7,9 +7,9 @@ namespace CommandLineFluent.Arguments
 	/// <summary>
 	/// Defines a single rule of a FluentRelationship.
 	/// </summary>
-	/// <typeparam name="T">The class</typeparam>
-	/// <typeparam name="V">The value</typeparam>
-	public class DependencyRule<T, V> : IDependencyRule<T> where T : new()
+	/// <typeparam name="TClass">The class</typeparam>
+	/// <typeparam name="TVal">The value</typeparam>
+	public sealed class DependencyRule<TClass, TVal> : IDependencyRule<TClass> where TClass : new()
 	{
 		/// <summary>
 		/// Does this rule say it's required, or must NOT appear
@@ -22,11 +22,11 @@ namespace CommandLineFluent.Arguments
 		/// <summary>
 		/// If IsEqualTo is used, this is the value this target property's value is compared to
 		/// </summary>
-		public V Value { get; private set; }
+		public TVal Value { get; private set; }
 		/// <summary>
 		/// The predicate used for this rule
 		/// </summary>
-		public Func<V, bool> Predicate { get; private set; }
+		public Func<TVal, bool> Predicate { get; private set; }
 		/// <summary>
 		/// This rule applies when the predicate returns this value
 		/// </summary>
@@ -35,10 +35,9 @@ namespace CommandLineFluent.Arguments
 		/// The error message when this rule is violated
 		/// </summary>
 		public string ErrorMessage { get; private set; }
-
-		internal DependencyRule(Expression<Func<T, V>> expression, Requiredness required)
+		internal DependencyRule(PropertyInfo targetProperty, Requiredness required)
 		{
-			TargetProperty = ArgUtils.PropertyInfoFromExpression(expression);
+			TargetProperty = targetProperty;
 			Requiredness = required;
 			Predicate = null;
 		}
@@ -56,7 +55,7 @@ namespace CommandLineFluent.Arguments
 		/// Configures the dependency rule to apply when the property specified prior is equal to the provided value
 		/// </summary>
 		/// <param name="value">The value to which the property value has to equal for the rule to apply</param>
-		public DependencyRule<T, V> IsEqualTo(V value)
+		public DependencyRule<TClass, TVal> IsEqualTo(TVal value)
 		{
 			ThrowIfPredicateNotNull();
 			Value = value;
@@ -68,7 +67,7 @@ namespace CommandLineFluent.Arguments
 		/// Configures the dependency rule to apply when the property specified prior is not equal to the provided value
 		/// </summary>
 		/// <param name="value">The value to which the property value must not equal for the rule to apply</param>
-		public DependencyRule<T, V> IsNotEqualTo(V value)
+		public DependencyRule<TClass, TVal> IsNotEqualTo(TVal value)
 		{
 			ThrowIfPredicateNotNull();
 			Value = value;
@@ -80,7 +79,7 @@ namespace CommandLineFluent.Arguments
 		/// Configures the dependency rule to apply when the provided predicate evaluates to true
 		/// </summary>
 		/// <param name="predicate">The predicate which determines whether or not this rule applies</param>
-		public DependencyRule<T, V> When(Func<V, bool> predicate)
+		public DependencyRule<TClass, TVal> When(Func<TVal, bool> predicate)
 		{
 			ThrowIfPredicateNotNull();
 			Predicate = predicate;
@@ -91,7 +90,7 @@ namespace CommandLineFluent.Arguments
 		/// Configures the dependency rule to apply when the provided predicate evaluates to false
 		/// </summary>
 		/// <param name="predicate">The predicate which determines whether or not this rule applies</param>
-		public DependencyRule<T, V> WhenNot(Func<V, bool> predicate)
+		public DependencyRule<TClass, TVal> WhenNot(Func<TVal, bool> predicate)
 		{
 			ThrowIfPredicateNotNull();
 			Predicate = predicate;
@@ -101,7 +100,7 @@ namespace CommandLineFluent.Arguments
 		/// <summary>
 		/// Configures the dependency rule to apply when the property specified prior is null
 		/// </summary>
-		public DependencyRule<T, V> IsNull()
+		public DependencyRule<TClass, TVal> IsNull()
 		{
 			ThrowIfPredicateNotNull();
 			Predicate = PredicateNull;
@@ -111,7 +110,7 @@ namespace CommandLineFluent.Arguments
 		/// <summary>
 		/// Configures the dependency rule to apply when the property specified prior is not null
 		/// </summary>
-		public DependencyRule<T, V> IsNotNull()
+		public DependencyRule<TClass, TVal> IsNotNull()
 		{
 			ThrowIfPredicateNotNull();
 			Predicate = PredicateNull;
@@ -122,7 +121,7 @@ namespace CommandLineFluent.Arguments
 		/// Configures the error message to show when this rule is violated
 		/// </summary>
 		/// <param name="errorMessage"></param>
-		public DependencyRule<T, V> WithErrorMessage(string errorMessage)
+		public DependencyRule<TClass, TVal> WithErrorMessage(string errorMessage)
 		{
 			ErrorMessage = errorMessage;
 			return this;
@@ -134,10 +133,10 @@ namespace CommandLineFluent.Arguments
 		/// </summary>
 		/// <param name="obj">The object</param>
 		/// <param name="didAppear">If a string appeared during parsing</param>
-		public bool DoesSatifyRule(T obj, bool didAppear)
+		public bool DoesSatifyRule(TClass obj, bool didAppear)
 		{
 			// TargetProperty's value corresponds to the WhateverIf(e => e.Property) part they write.
-			V propertyVal = (V)TargetProperty.GetValue(obj);
+			TVal propertyVal = (TVal)TargetProperty.GetValue(obj);
 			// Requiredness depends on what they said. RequiredIf, OptionalIf, MustNotAppearIf.
 			switch (Requiredness)
 			{
@@ -168,11 +167,11 @@ namespace CommandLineFluent.Arguments
 			}
 			return default;
 		}
-		private bool PredicateEquals(V val)
+		private bool PredicateEquals(TVal val)
 		{
 			return Equals(Value, val);
 		}
-		private bool PredicateNull(V val)
+		private bool PredicateNull(TVal val)
 		{
 			return val == null;
 		}

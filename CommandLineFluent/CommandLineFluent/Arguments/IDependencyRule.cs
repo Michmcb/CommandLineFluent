@@ -3,8 +3,8 @@
 	/// <summary>
 	/// Defines a single rule of a FluentRelationship.
 	/// </summary>
-	/// <typeparam name="T">The class</typeparam>
-	public interface IDependencyRule<T> where T : new()
+	/// <typeparam name="TClass">The class</typeparam>
+	public interface IDependencyRule<TClass> where TClass : new()
 	{
 		/// <summary>
 		/// You don't need to call this; but this checks that the specified property of an object
@@ -13,7 +13,7 @@
 		/// </summary>
 		/// <param name="obj">The object</param>
 		/// <param name="didAppear">If a string appeared during parsing</param>
-		bool DoesSatifyRule(T obj, bool didAppear);
+		bool DoesSatifyRule(TClass obj, bool didAppear);
 		/// <summary>
 		/// The error message when this rule is violated
 		/// </summary>

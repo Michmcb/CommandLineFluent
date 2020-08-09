@@ -9,7 +9,7 @@
 		private readonly CliParserConfig config;
 		private IConsole? console;
 		private ITokenizer? tokenizer;
-		private IHelpFormatter? helpFormatter;
+		private IMessageFormatter? helpFormatter;
 		public CliParserBuilder()
 		{
 			verbs = new Dictionary<string, IVerb>();
@@ -30,7 +30,7 @@
 			this.tokenizer = tokenizer;
 			return this;
 		}
-		public CliParserBuilder UseHelpFormatter(IHelpFormatter helpFormatter)
+		public CliParserBuilder UseHelpFormatter(IMessageFormatter helpFormatter)
 		{
 			this.helpFormatter = helpFormatter;
 			return this;
@@ -68,14 +68,7 @@
 		public CliParser Build()
 		{
 			List<Error> errors = new List<Error>();
-			if (verbs.Values.Count > 0)
-			{
-				foreach (IVerb verb in verbs.Values)
-				{
-					errors.AddRange(verb.Validate());
-				}
-			}
-			else
+			if (verbs.Values.Count <= 0)
 			{
 				throw new CliParserBuilderException("The parser has no verbs, use AddVerb<T> to add some verbs");
 			}
