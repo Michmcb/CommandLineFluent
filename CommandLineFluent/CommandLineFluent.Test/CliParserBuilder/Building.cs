@@ -15,7 +15,7 @@
 			CliParserBuilder fpb = new CliParserBuilder()
 				.AddVerb<Verb1>("default", verb =>
 				{
-					Option<Verb1, string> opt = verb.AddOption("o", "option", o => o
+					Option<Verb1, string> opt = verb.AddOptionString("o", "option", o => o
 						.ForProperty(x => x.Option)
 						.WithHelpText("help")
 						.WithName("name")
@@ -28,7 +28,7 @@
 					Assert.Equal(ArgumentRequired.Required, opt.ArgumentRequired);
 					
 
-					Value<Verb1, string> val = verb.AddValue(v => v
+					Value<Verb1, string> val = verb.AddValueString(v => v
 						.ForProperty(x => x.Value)
 						.WithHelpText("help")
 						.WithName("name")
@@ -38,7 +38,7 @@
 					Assert.Equal("name", val.Name);
 					Assert.Equal(ArgumentRequired.Required, val.ArgumentRequired);
 
-					Switch<Verb1, bool> sw = verb.AddSwitch("s", "switch", s => s
+					Switch<Verb1, bool> sw = verb.AddSwitchBool("s", "switch", s => s
 						.ForProperty(x => x.Switch)
 						.WithHelpText("help")
 						.IsOptional(true));
@@ -54,7 +54,7 @@
 			CliParser fp = new CliParserBuilder()
 				.AddVerb<ManyValuesVerb>("default", verb =>
 				{
-					var val = verb.AddMultiValue(mv => mv
+					var val = verb.AddMultiValueString(mv => mv
 						.ForProperty(o => o.ManyValues)
 						.WithName("name")
 						.WithHelpText("help")
@@ -72,9 +72,9 @@
 			new CliParserBuilder()
 				.AddVerb<Verb1>("default", verb =>
 				{
-					verb.AddOption("-o", "--o", o => o.ForProperty(x => x.Option).WithHelpText("h"));
-					Assert.Throws<ArgumentException>(() => verb.AddOption("-o", "--o", o => o.ForProperty(x => x.Option).WithHelpText("h")));
-					Assert.Throws<ArgumentException>(() => verb.AddOption("--o", "-o", o => o.ForProperty(x => x.Option).WithHelpText("h")));
+					verb.AddOptionString("-o", "--o", o => o.ForProperty(x => x.Option).WithHelpText("h"));
+					Assert.Throws<ArgumentException>(() => verb.AddOptionString("-o", "--o", o => o.ForProperty(x => x.Option).WithHelpText("h")));
+					Assert.Throws<ArgumentException>(() => verb.AddOptionString("--o", "-o", o => o.ForProperty(x => x.Option).WithHelpText("h")));
 				});
 		}
 		[Fact]
@@ -83,11 +83,11 @@
 			CliParser fp = new CliParserBuilder()
 				.AddVerb<Verb1>("default", verb =>
 				{
-					Assert.Throws<ArgumentException>(() => verb.AddOption(null, null, o => { }));
-					Assert.Throws<ArgumentException>(() => verb.AddOption("", null, o => { }));
-					Assert.Throws<ArgumentException>(() => verb.AddOption(null, "", o => { }));
-					Assert.Throws<ArgumentException>(() => verb.AddOption(" ", null, o => { }));
-					Assert.Throws<ArgumentException>(() => verb.AddOption(null, " ", o => { }));
+					Assert.Throws<ArgumentException>(() => verb.AddOptionString(null, null, o => { }));
+					Assert.Throws<ArgumentException>(() => verb.AddOptionString("", null, o => { }));
+					Assert.Throws<ArgumentException>(() => verb.AddOptionString(null, "", o => { }));
+					Assert.Throws<ArgumentException>(() => verb.AddOptionString(" ", null, o => { }));
+					Assert.Throws<ArgumentException>(() => verb.AddOptionString(null, " ", o => { }));
 				}).Build();
 		}
 	}

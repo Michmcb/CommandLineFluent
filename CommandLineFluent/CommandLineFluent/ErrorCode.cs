@@ -5,6 +5,8 @@
 	/// </summary>
 	public enum ErrorCode
 	{
+		// TODO sort out these error codes, and remove ProgrammerError.
+
 		/// <summary>
 		/// All is well, nothing went wrong
 		/// </summary>
@@ -22,17 +24,13 @@
 		/// </summary>
 		MissingRequiredOption,
 		/// <summary>
-		/// The user specified more values than we were expecting
+		/// A switch was required but was missing
 		/// </summary>
-		TooManyValues,
+		MissingRequiredSwitch,
 		/// <summary>
-		/// The user specified an option which we were not expecting
+		/// Many values were required but were missing
 		/// </summary>
-		OptionNotFound,
-		/// <summary>
-		/// The user specified a switch which we were not expecting
-		/// </summary>
-		SwitchNotFound,
+		MissingRequiredManyValues,
 		/// <summary>
 		/// We were expecting to find something more, e.g. A value after an option, but we did not
 		/// </summary>
@@ -50,17 +48,9 @@
 		/// </summary>
 		DuplicateSwitch,
 		/// <summary>
-		/// The value that the user provided for an option failed validation
+		/// The user specified more values than we were expecting
 		/// </summary>
-		OptionFailedValidation,
-		/// <summary>
-		/// The value that the user provided for a value failed validation
-		/// </summary>
-		ValueFailedValidation,
-		/// <summary>
-		/// The values that the user provided for many values failed validation
-		/// </summary>
-		ValuesFailedValidation,
+		TooManyValues,
 		/// <summary>
 		/// The value that the user provided for an option failed conversion
 		/// </summary>
@@ -98,10 +88,6 @@
 		/// </summary>
 		OptionMustNotBeProvided,
 		/// <summary>
-		/// A switch was required but was missing
-		/// </summary>
-		MissingRequiredSwitch,
-		/// <summary>
 		/// A switch must not be provided
 		/// </summary>
 		SwitchMustNotBeProvided,
@@ -109,10 +95,6 @@
 		/// A value must not be provided
 		/// </summary>
 		ValueMustNotBeProvided,
-		/// <summary>
-		/// Many values were required but were missing
-		/// </summary>
-		MissingRequiredManyValues,
 		/// <summary>
 		/// Many values must not be provided
 		/// </summary>

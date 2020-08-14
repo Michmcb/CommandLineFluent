@@ -9,7 +9,7 @@
 		private readonly CliParserConfig config;
 		private IConsole? console;
 		private ITokenizer? tokenizer;
-		private IMessageFormatter? helpFormatter;
+		private IMessageFormatter? msgFormatter;
 		public CliParserBuilder()
 		{
 			verbs = new Dictionary<string, IVerb>();
@@ -20,19 +20,34 @@
 			verbs = new Dictionary<string, IVerb>();
 			this.config = config;
 		}
+		/// <summary>
+		/// Specifies the IConsole to use.
+		/// By default, this is <see cref="StandardConsole"/>, which just uses the static class <see cref="Console"/>.
+		/// </summary>
+		/// <param name="console">The console to use.</param>
 		public CliParserBuilder UseConsole(IConsole console)
 		{
 			this.console = console;
 			return this;
 		}
+		/// <summary>
+		/// Specifies the ITokenizer to use.
+		/// By default, this is <see cref="QuotedStringTokenizer"/>, which splits strings into tokens based on single or double quotes, or spaces.
+		/// </summary>
+		/// <param name="tokenizer">The tokenizer to use.</param>
 		public CliParserBuilder UseTokenizer(ITokenizer tokenizer)
 		{
 			this.tokenizer = tokenizer;
 			return this;
 		}
-		public CliParserBuilder UseHelpFormatter(IMessageFormatter helpFormatter)
+		/// <summary>
+		/// Specifies the IMessageFormatter to use.
+		/// By default, this is <see cref="StandardMessageFormatter"/>.
+		/// </summary>
+		/// <param name="msgFormatter">The tokenizer to use.</param>
+		public CliParserBuilder UseHelpFormatter(IMessageFormatter msgFormatter)
 		{
-			this.helpFormatter = helpFormatter;
+			this.msgFormatter = msgFormatter;
 			return this;
 		}
 		/// <summary>
@@ -63,7 +78,7 @@
 		}
 		/// <summary>
 		/// Creates a <see cref="CliParser"/>.
-		/// Throws a <see cref="CliParserBuilderException"/> if anything or any verbs are improperly configured.
+		/// Throws a <see cref="CliParserBuilderException"/> if anything is improperly configured.
 		/// </summary>
 		public CliParser Build()
 		{
@@ -74,7 +89,7 @@
 			}
 			if (errors.Count == 0)
 			{
-				return new CliParser(console ?? new StandardConsole(), tokenizer ?? new QuotedStringTokenizer(), helpFormatter ?? new DefaultHelpFormatter(), verbs, config);
+				return new CliParser(console ?? new StandardConsole(), tokenizer ?? new QuotedStringTokenizer(), msgFormatter ?? new StandardMessageFormatter(), verbs, config);
 			}
 			else
 			{

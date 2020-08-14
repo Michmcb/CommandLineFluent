@@ -6,6 +6,6 @@ namespace CommandLineFluent.Test.Options
 	{
 		public string Option2 { get; internal set; }
 		public string Option1 { get; internal set; }
-		public ICollection<string> Values { get; internal set; }
+		public IReadOnlyCollection<string> Values { get; internal set; }
 	}
 }

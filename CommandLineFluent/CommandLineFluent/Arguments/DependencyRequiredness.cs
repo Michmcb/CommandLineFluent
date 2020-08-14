@@ -1,9 +1,6 @@
 ﻿namespace CommandLineFluent.Arguments
 {
-	/// <summary>
-	/// Whether 
-	/// </summary>
-	public enum Requiredness
+	public enum DependencyRequiredness
 	{
 		/// <summary>
 		/// Required to appear

@@ -3,22 +3,30 @@
 	using System;
 	using System.Collections.Generic;
 	using System.Reflection;
-
 	/// <summary>
-	/// Captures all lone values.
+	/// Captures all lone values, such as: Foo.exe Value1 -t someswitch Value2 Value3. All 3 values there would be captured as an array: [Value1, Value2, Value3].
 	/// Use this when you want to consume an indeterminate number of values, regardless of their position.
 	/// </summary>
 	public class MultiValue<TClass, TProp> : IMultiValue<TClass> where TClass : class, new()
 	{
-		public string? Name { get; private set; }
-		public string HelpText { get; private set; }
-		public ArgumentRequired ArgumentRequired { get; private set; }
-		public PropertyInfo TargetProperty { get; private set; }
-		public IReadOnlyCollection<TProp> DefaultValues { get; private set; }
-		public Dependencies<TClass, TProp>? Dependencies { get; private set; }
-		public Func<IReadOnlyCollection<string>, Maybe<TProp, string>>? Converter { get; private set; }
-		public ICollection<string> IgnoredPrefixes { get; }
-		public MultiValue(string? name, string helpText, ArgumentRequired argumentRequired, PropertyInfo targetProperty, IReadOnlyCollection<TProp> defaultValues, Dependencies<TClass, TProp>? dependencies, Func<IReadOnlyCollection<string>, Maybe<TProp, string>>? converter, ICollection<string> ignoredPrefixes)
+		public string? Name { get; }
+		public string HelpText { get; }
+		public ArgumentRequired ArgumentRequired { get; }
+		public PropertyInfo TargetProperty { get; }
+		/// <summary>
+		/// The default values to use when nothing is provided.
+		/// </summary>
+		public IReadOnlyCollection<TProp> DefaultValues { get; }
+		/// <summary>
+		/// Any dependencies upon other properties, if some have been set up. Otherwise, null.
+		/// </summary>
+		public Dependencies<TClass, TProp>? Dependencies { get; }
+		/// <summary>
+		/// Converts from a string into <typeparamref name="TProp"/>, or returns an error message.
+		/// </summary>
+		public Func<string, Maybe<TProp, string>>? Converter { get; }
+		//public ICollection<string> IgnoredPrefixes { get; }
+		public MultiValue(string? name, string helpText, ArgumentRequired argumentRequired, PropertyInfo targetProperty, IReadOnlyCollection<TProp> defaultValues, Dependencies<TClass, TProp>? dependencies, Func<string, Maybe<TProp, string>>? converter)//, ICollection<string> ignoredPrefixes)
 		{
 			Name = name;
 			HelpText = helpText;
@@ -27,7 +35,7 @@
 			DefaultValues = defaultValues;
 			Dependencies = dependencies;
 			Converter = converter;
-			IgnoredPrefixes = ignoredPrefixes;
+			//IgnoredPrefixes = ignoredPrefixes;
 		}
 		public Error SetValue(TClass target, IReadOnlyCollection<string> rawValue)
 		{
@@ -35,23 +43,26 @@
 			{
 				if (Converter != null)
 				{
-					Maybe<TProp, string> converted;
+					List<TProp> convertedValues = new List<TProp>(rawValue.Count);
 					try
 					{
-						converted = Converter.Invoke(rawValue);
+						foreach (string rv in rawValue)
+						{
+							if (Converter.Invoke(rv).Get(out TProp val, out string error))
+							{
+								convertedValues.Add(val);
+							}
+							else
+							{
+								return new Error(ErrorCode.MultiValueFailedConversion, error);
+							}
+						}
 					}
 					catch (Exception ex)
 					{
 						return new Error(ErrorCode.MultiValueFailedConversion, $"Converter for MultiValue {Name} threw an exception ({ex.Message})");
 					}
-					if (converted.Get(out TProp val, out string error))
-					{
-						TargetProperty.SetValue(target, val);
-					}
-					else
-					{
-						return new Error(ErrorCode.MultiValueFailedConversion, error);
-					}
+					TargetProperty.SetValue(target, convertedValues);
 				}
 				else
 				{
@@ -71,17 +82,17 @@
 			}
 			return default;
 		}
-		public bool HasIgnoredPrefix(string str)
-		{
-			foreach (string prefix in IgnoredPrefixes)
-			{
-				if (str.StartsWith(prefix))
-				{
-					return true;
-				}
-			}
-			return false;
-		}
+		//public bool HasIgnoredPrefix(string str)
+		//{
+		//	foreach (string prefix in IgnoredPrefixes)
+		//	{
+		//		if (str.StartsWith(prefix))
+		//		{
+		//			return true;
+		//		}
+		//	}
+		//	return false;
+		//}
 		/// <summary>
 		/// Checks to make sure that all dependencies are respected. If they are not, returns an Error
 		/// describing the first dependency that was violated.

@@ -8,13 +8,22 @@
 	/// </summary>
 	public sealed class Value<TClass, TProp> : IValue<TClass> where TClass : class, new()
 	{
-		public string? Name { get; private set; }
-		public string HelpText { get; private set; }
-		public ArgumentRequired ArgumentRequired { get; private set; }
-		public PropertyInfo TargetProperty { get; private set; }
-		public TProp DefaultValue { get; private set; }
-		public Dependencies<TClass, TProp>? Dependencies { get; private set; }
-		public Func<string, Maybe<TProp, string>>? Converter { get; private set; }
+		public string? Name { get; }
+		public string HelpText { get; }
+		public ArgumentRequired ArgumentRequired { get; }
+		public PropertyInfo TargetProperty { get; }
+		/// <summary>
+		/// The default value to use when nothing is provided.
+		/// </summary>
+		public TProp DefaultValue { get; }
+		/// <summary>
+		/// Any dependencies upon other properties, if some have been set up. Otherwise, null.
+		/// </summary>
+		public Dependencies<TClass, TProp>? Dependencies { get; }
+		/// <summary>
+		/// Converts from a string into <typeparamref name="TProp"/>, or returns an error message.
+		/// </summary>
+		public Func<string, Maybe<TProp, string>>? Converter { get; }
 		internal Value(string? name, string helpText, ArgumentRequired argumentRequired, PropertyInfo targetProperty, TProp defaultValue, Dependencies<TClass, TProp>? dependencies, Func<string, Maybe<TProp, string>>? converter)
 		{
 			Name = name;

@@ -1,5 +1,8 @@
 ﻿namespace CommandLineFluent.Arguments
 {
+	/// <summary>
+	/// Defines if a partiular argument is required or not. Or, if it's only sometimes required because it has dependencies.
+	/// </summary>
 	public enum ArgumentRequired
 	{
 		/// <summary>

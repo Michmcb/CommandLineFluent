@@ -10,13 +10,22 @@
 	{
 		public string? ShortName { get; }
 		public string? LongName { get; }
-		public string? Name { get; private set; }
-		public string HelpText { get; private set; }
-		public ArgumentRequired ArgumentRequired { get; private set; }
-		public PropertyInfo TargetProperty { get; private set; }
-		public TProp DefaultValue { get; private set; }
-		public Dependencies<TClass, TProp>? Dependencies { get; private set; }
-		public Func<bool, Maybe<TProp, string>>? Converter { get; private set; }
+		public string? Name { get; }
+		public string HelpText { get; }
+		public ArgumentRequired ArgumentRequired { get; }
+		public PropertyInfo TargetProperty { get; }
+		/// <summary>
+		/// The default value to use when nothing is provided.
+		/// </summary>
+		public TProp DefaultValue { get; }
+		/// <summary>
+		/// Any dependencies upon other properties, if some have been set up. Otherwise, null.
+		/// </summary>
+		public Dependencies<TClass, TProp>? Dependencies { get; }
+		/// <summary>
+		/// Converts from a bool into <typeparamref name="TProp"/>, or returns an error message.
+		/// </summary>
+		public Func<bool, Maybe<TProp, string>>? Converter { get; }
 		internal Switch(string? shortName, string? longName, string? name, string helpText, ArgumentRequired argumentRequired, PropertyInfo targetProperty, TProp defaultValue, Dependencies<TClass, TProp>? dependencies, Func<bool, Maybe<TProp, string>>? converter)
 		{
 			ShortName = shortName;

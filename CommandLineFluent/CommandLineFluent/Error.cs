@@ -23,9 +23,13 @@
 			Message = message;
 			ErrorCode = errorCode;
 		}
+		/// <summary>
+		/// Returns <see cref="ErrorCode"/> - <see cref="Message"/>
+		/// </summary>
+		/// <returns><see cref="ErrorCode"/> - <see cref="Message"/></returns>
 		public override string ToString()
 		{
-			return string.Concat(ErrorCode.ToString(), " ", Message);
+			return string.Concat(ErrorCode.ToString(), " - ", Message);
 		}
 	}
 }

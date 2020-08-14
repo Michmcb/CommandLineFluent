@@ -1,15 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq.Expressions;
-
-namespace CommandLineFluent.Arguments
+﻿namespace CommandLineFluent.Arguments
 {
+	using System;
+	using System.Collections.Generic;
+	using System.Linq.Expressions;
 	/// <summary>
-	/// Defines a relationship between a FluentArgument and a property of the target object.
-	/// It allows you to specify that certain FluentArguments are only required under certain circumstances.
+	/// Defines a relationship between an Argument and a property of the target object.
+	/// It allows you to specify that certain Arguments are only required under certain circumstances.
 	/// </summary>
-	/// <typeparam name="TClass">The class of the property which this FluentRelationship is for</typeparam>
-	/// <typeparam name="TProp">The type of the property</typeparam>
+	/// <typeparam name="TClass">The class of the property which this set of Dependencies is for.</typeparam>
+	/// <typeparam name="TProp">The type of the property.</typeparam>
 	public sealed class Dependencies<TClass, TProp> where TClass : new()
 	{
 		private readonly List<IDependencyRule<TClass>> rules;
@@ -22,14 +21,14 @@ namespace CommandLineFluent.Arguments
 			rules = new List<IDependencyRule<TClass>>();
 		}
 		/// <summary>
-		/// Specifies that a property of type <typeparamref name="TOtherProp"/> of an object of type <typeparamref name="TClass"/>
+		/// Specifies that the property <paramref name="property"/> of an object of type <typeparamref name="TClass"/>
 		/// is required to be provided under specific circumstances.
 		/// </summary>
-		/// <typeparam name="TOtherProp">The type of the property</typeparam>
-		/// <param name="expression">The property that is required</param>
-		public DependencyRule<TClass, TOtherProp> RequiredIf<TOtherProp>(Expression<Func<TClass, TOtherProp>> expression)
+		/// <typeparam name="TOtherProp">The type of the <paramref name="property"/>.</typeparam>
+		/// <param name="property">The rule stipulates this Argument is required if <paramref name="property"/> has a certain value.</param>
+		public DependencyRule<TClass, TOtherProp> RequiredIf<TOtherProp>(Expression<Func<TClass, TOtherProp>> property)
 		{
-			DependencyRule<TClass, TOtherProp> rule = new DependencyRule<TClass, TOtherProp>(ArgUtils.PropertyInfoFromExpression(expression), Requiredness.Required);
+			DependencyRule<TClass, TOtherProp> rule = new DependencyRule<TClass, TOtherProp>(ArgUtils.PropertyInfoFromExpression(property), DependencyRequiredness.Required);
 			rules.Add(rule);
 			return rule;
 		}
@@ -38,10 +37,10 @@ namespace CommandLineFluent.Arguments
 		/// is required to NOT be provided under specific circumstances.
 		/// </summary>
 		/// <typeparam name="TOtherProp">The type of the property</typeparam>
-		/// <param name="expression">The property that is required</param>
-		public DependencyRule<TClass, TOtherProp> MustNotAppearIf<TOtherProp>(Expression<Func<TClass, TOtherProp>> expression)
+		/// <param name="property">The rule stipulates this Argument must not appear if <paramref name="property"/> has a certain value.</param>
+		public DependencyRule<TClass, TOtherProp> MustNotAppearIf<TOtherProp>(Expression<Func<TClass, TOtherProp>> property)
 		{
-			DependencyRule<TClass, TOtherProp> rule = new DependencyRule<TClass, TOtherProp>(ArgUtils.PropertyInfoFromExpression(expression), Requiredness.MustNotAppear);
+			DependencyRule<TClass, TOtherProp> rule = new DependencyRule<TClass, TOtherProp>(ArgUtils.PropertyInfoFromExpression(property), DependencyRequiredness.MustNotAppear);
 			rules.Add(rule);
 			return rule;
 		}
@@ -77,10 +76,10 @@ namespace CommandLineFluent.Arguments
 						case ArgumentType.Option:
 							switch (rule.Requiredness)
 							{
-								case Requiredness.Required:
+								case DependencyRequiredness.Required:
 									errorCode = ErrorCode.MissingRequiredOption;
 									break;
-								case Requiredness.MustNotAppear:
+								case DependencyRequiredness.MustNotAppear:
 									errorCode = ErrorCode.OptionMustNotBeProvided;
 									break;
 							}
@@ -88,10 +87,10 @@ namespace CommandLineFluent.Arguments
 						case ArgumentType.Switch:
 							switch (rule.Requiredness)
 							{
-								case Requiredness.Required:
+								case DependencyRequiredness.Required:
 									errorCode = ErrorCode.MissingRequiredSwitch;
 									break;
-								case Requiredness.MustNotAppear:
+								case DependencyRequiredness.MustNotAppear:
 									errorCode = ErrorCode.SwitchMustNotBeProvided;
 									break;
 							}
@@ -99,10 +98,10 @@ namespace CommandLineFluent.Arguments
 						case ArgumentType.Value:
 							switch (rule.Requiredness)
 							{
-								case Requiredness.Required:
+								case DependencyRequiredness.Required:
 									errorCode = ErrorCode.MissingRequiredValue;
 									break;
-								case Requiredness.MustNotAppear:
+								case DependencyRequiredness.MustNotAppear:
 									errorCode = ErrorCode.ValueMustNotBeProvided;
 									break;
 							}
@@ -110,10 +109,10 @@ namespace CommandLineFluent.Arguments
 						case ArgumentType.MultiValue:
 							switch (rule.Requiredness)
 							{
-								case Requiredness.Required:
+								case DependencyRequiredness.Required:
 									errorCode = ErrorCode.MissingRequiredManyValues;
 									break;
-								case Requiredness.MustNotAppear:
+								case DependencyRequiredness.MustNotAppear:
 									errorCode = ErrorCode.ManyValuesMustNotBeProvided;
 									break;
 							}

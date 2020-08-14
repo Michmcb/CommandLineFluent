@@ -12,7 +12,7 @@
 			CliParser fp = new CliParserBuilder()
 				.AddVerb<VerbVariety>("default", verb =>
 				{
-					verb.AddValue<string>(v => v
+					verb.AddValueString(v => v
 						.ForProperty(e => e.Value)
 						.WithHelpText("h")
 						.WithDependencies("", value =>
@@ -20,7 +20,7 @@
 							value.RequiredIf(e => e.Option).IsEqualTo(25).WithErrorMessage("If Option is equal to 25, you must specify a value");
 						}));
 
-					verb.AddOption<int>("o", "option", o => o
+					verb.AddOptionInt("o", "option", o => o
 						.ForProperty(e => e.Option)
 						.WithHelpText("h")
 						.WithConverter(ToInt));
@@ -39,7 +39,7 @@
 			fp = new CliParserBuilder()
 				.AddVerb<VerbVariety>("default", verb =>
 				{
-					verb.AddValue<string>(v => v
+					verb.AddValueString(v => v
 						.ForProperty(e => e.Value)
 						.WithHelpText("h")
 						.WithDependencies("", value =>
@@ -47,7 +47,7 @@
 							value.MustNotAppearIf(e => e.Option).IsEqualTo(25).WithErrorMessage("If Option is equal to 25, you must NOT specify a value");
 						}));
 
-					verb.AddOption<int>("o", "option", o => o
+					verb.AddOptionInt("o", "option", o => o
 						.ForProperty(e => e.Option)
 						.WithHelpText("h")
 						.WithConverter(ToInt));
@@ -69,7 +69,7 @@
 			CliParser fp = new CliParserBuilder()
 				.AddVerb<VerbVariety>("default", verb =>
 				{
-					verb.AddValue<string>(v => v
+					verb.AddValueString(v => v
 						.ForProperty(e => e.Value)
 						.WithHelpText("h")
 						.WithDependencies("", value =>
@@ -77,7 +77,7 @@
 							value.RequiredIf(e => e.Option).IsNotEqualTo(25).WithErrorMessage("If Option is not equal to 25, you must specify a value");
 						}));
 
-					verb.AddOption<int>("o", "option", o => o
+					verb.AddOptionInt("o", "option", o => o
 						.ForProperty(e => e.Option)
 						.WithHelpText("h")
 						.WithConverter(ToInt));
@@ -93,11 +93,10 @@
 			res = fp.Parse(new string[] { "default", "-o", "25" });
 			Assert.True(res.Ok);
 
-
 			fp = new CliParserBuilder()
 				.AddVerb<VerbVariety>("default", verb =>
 				{
-					verb.AddValue<string>(v => v
+					verb.AddValueString(v => v
 						.ForProperty(e => e.Value)
 						.WithHelpText("h")
 						.WithDependencies("", value =>
@@ -105,10 +104,9 @@
 							value.MustNotAppearIf(e => e.Option).IsNotEqualTo(25).WithErrorMessage("If Option is not equal to 25, you must NOT specify a value");
 						}));
 
-					verb.AddOption<int>("o", "option", o => o
+					verb.AddOptionInt("o", "option", o => o
 						.ForProperty(e => e.Option)
-						.WithHelpText("h")
-						.WithConverter(ToInt));
+						.WithHelpText("h"));
 				})
 				.Build();
 
@@ -127,7 +125,7 @@
 			CliParser fp = new CliParserBuilder()
 				.AddVerb<VerbVariety>("default", verb =>
 				{
-					verb.AddValue<string>(v => v
+					verb.AddValueString(v => v
 						.ForProperty(e => e.Value)
 						.WithHelpText("h")
 						.WithDependencies("", value =>
@@ -135,10 +133,9 @@
 							value.RequiredIf(e => e.OptionNullable).IsNull().WithErrorMessage("If OptionNullable is null, you must specify a value");
 						}));
 
-					verb.AddOption<int?>("o", "option", o => o
+					verb.AddOptionNullableInt("o", "option", o => o
 						.ForProperty(e => e.OptionNullable)
 						.WithHelpText("h")
-						.WithConverter(ToNullableInt)
 						.IsOptional(null));
 				})
 				.Build();
@@ -156,7 +153,7 @@
 			fp = new CliParserBuilder()
 				.AddVerb<VerbVariety>("default", verb =>
 				{
-					verb.AddValue<string>(v => v
+					verb.AddValueString(v => v
 						.ForProperty(e => e.Value)
 						.WithHelpText("h")
 						.WithDependencies("", value =>
@@ -164,7 +161,7 @@
 							value.MustNotAppearIf(e => e.OptionNullable).IsNull().WithErrorMessage("If OptionNullable is null, you must NOT specify a value");
 						}));
 
-					verb.AddOption<int?>("o", "option", o => o
+					verb.AddOptionNullableInt("o", "option", o => o
 						.ForProperty(e => e.OptionNullable)
 						.WithConverter(ToNullableInt)
 						.WithHelpText("h")
@@ -187,7 +184,7 @@
 			CliParser fp = new CliParserBuilder()
 				.AddVerb<VerbVariety>("default", verb =>
 				{
-					verb.AddValue<string>(v => v
+					verb.AddValueString(v => v
 						.ForProperty(e => e.Value)
 						.WithHelpText("h")
 						.WithDependencies("", value =>
@@ -195,7 +192,7 @@
 							value.RequiredIf(e => e.OptionNullable).IsNotNull().WithErrorMessage("If OptionNullable is not null, you must specify a value");
 						}));
 
-					verb.AddOption<int?>("o", "option", o => o
+					verb.AddOptionNullableInt("o", "option", o => o
 						.ForProperty(e => e.OptionNullable)
 						.WithHelpText("h")
 						.WithConverter(ToNullableInt)
@@ -216,7 +213,7 @@
 			fp = new CliParserBuilder()
 				.AddVerb<VerbVariety>("default", verb =>
 				{
-					verb.AddValue<string>(v => v
+					verb.AddValueString(v => v
 						.WithHelpText("h")
 						.ForProperty(e => e.Value)
 						.WithDependencies("", value =>
@@ -224,7 +221,7 @@
 							value.MustNotAppearIf(e => e.OptionNullable).IsNotNull().WithErrorMessage("If OptionNullable is not null, you must NOT specify a value");
 						}));
 
-					verb.AddOption<int?>("o", "option", o => o
+					verb.AddOptionNullableInt("o", "option", o => o
 						.ForProperty(e => e.OptionNullable)
 						.WithConverter(ToNullableInt)
 						.WithHelpText("h")
@@ -247,7 +244,7 @@
 			CliParser fp = new CliParserBuilder()
 				.AddVerb<VerbVariety>("default", verb =>
 				{
-					verb.AddValue<string>(v => v
+					verb.AddValueString(v => v
 						.ForProperty(e => e.Value)
 						.WithHelpText("h")
 						.WithDependencies("", value =>
@@ -255,7 +252,7 @@
 							value.RequiredIf(e => e.OptionNullable).When(v => v > 50).WithErrorMessage("Only required if OptionNullable is larger than 50");
 						}));
 
-					verb.AddOption<int?>("o", "option", o => o
+					verb.AddOptionNullableInt("o", "option", o => o
 						.ForProperty(e => e.OptionNullable)
 						.WithConverter(ToNullableInt)
 						.WithHelpText("h")
@@ -278,7 +275,7 @@
 			fp = new CliParserBuilder()
 				.AddVerb<VerbVariety>("default", verb =>
 				{
-					verb.AddValue<string>(v => v
+					verb.AddValueString(v => v
 						.ForProperty(e => e.Value)
 						.WithHelpText("h")
 						.WithDependencies("", value =>
@@ -286,7 +283,7 @@
 							value.MustNotAppearIf(e => e.OptionNullable).When(v => v > 50).WithErrorMessage("Shouldn't appear if OptionNullable is larger than 50");
 						}));
 
-					verb.AddOption<int?>("o", "option", o => o
+					verb.AddOptionNullableInt("o", "option", o => o
 						.ForProperty(e => e.OptionNullable)
 						.WithHelpText("h")
 						.WithConverter(ToNullableInt)
@@ -311,7 +308,7 @@
 			CliParser fp = new CliParserBuilder()
 				.AddVerb<VerbVariety>("default", verb =>
 				{
-					verb.AddValue<string>(v => v
+					verb.AddValueString(v => v
 						.ForProperty(e => e.Value)
 						.WithHelpText("h")
 						.WithDependencies("", value =>
@@ -319,7 +316,7 @@
 							value.RequiredIf(e => e.OptionNullable).WhenNot(v => v > 50).WithErrorMessage("Only required if OptionNullable is not larger than 50");
 						}));
 
-					verb.AddOption<int?>("o", "option", o => o
+					verb.AddOptionNullableInt("o", "option", o => o
 						.ForProperty(e => e.OptionNullable)
 						.WithHelpText("h")
 						.WithConverter(ToNullableInt)
@@ -342,7 +339,7 @@
 			fp = new CliParserBuilder()
 				.AddVerb<VerbVariety>("default", verb =>
 				{
-					verb.AddValue<string>(v => v
+					verb.AddValueString(v => v
 						.ForProperty(e => e.Value)
 						.WithHelpText("h")
 						.WithDependencies("", value =>
@@ -350,7 +347,7 @@
 							value.MustNotAppearIf(e => e.OptionNullable).WhenNot(v => v > 50).WithErrorMessage("Must not appear if OptionNullable is smaller than 51");
 						}));
 
-					verb.AddOption<int?>("o", "option", o => o
+					verb.AddOptionNullableInt("o", "option", o => o
 						.ForProperty(e => e.OptionNullable)
 						.WithHelpText("h")
 						.WithConverter(ToNullableInt)
@@ -375,7 +372,7 @@
 			CliParser fp = new CliParserBuilder()
 				.AddVerb<VerbVariety>("default", verb =>
 				{
-					verb.AddValue<string>(v => v
+					verb.AddValueString(v => v
 						.ForProperty(e => e.Value)
 						.WithHelpText("h")
 						.WithDependencies("", value =>
@@ -385,7 +382,7 @@
 							// Optional if it's between 45 to 50, inclusive
 						}));
 
-					verb.AddOption<int?>("o", "option", o => o
+					verb.AddOptionNullableInt("o", "option", o => o
 						.ForProperty(e => e.OptionNullable)
 						.WithHelpText("h")
 						.WithConverter(ToNullableInt)

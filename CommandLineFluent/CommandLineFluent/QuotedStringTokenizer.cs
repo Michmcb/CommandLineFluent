@@ -2,6 +2,9 @@
 {
 	using System;
 	using System.Collections.Generic;
+	/// <summary>
+	/// Splits a string into tokens. Splits based on spaces, or "double quotes" or 'single quotes'.
+	/// </summary>
 	public sealed class QuotedStringTokenizer : ITokenizer
 	{
 		public QuotedStringTokenizer() { }
@@ -12,6 +15,7 @@
 		/// <param name="line">The string to split into tokens</param>
 		public ICollection<string> Tokenize(string line)
 		{
+			// TODO enforce having to close the last quote, maybe? make it an option?
 			// Empty strings, no tokens at all
 			if (string.IsNullOrWhiteSpace(line))
 			{

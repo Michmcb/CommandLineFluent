@@ -4,9 +4,9 @@
 	using CommandLineFluent.Arguments.Config;
 	using System;
 	using System.Collections.Generic;
+	using System.ComponentModel;
 	using System.Threading.Tasks;
-
-	public sealed class Verb<TClass> : IVerb where TClass : class, new()
+	public sealed partial class Verb<TClass> : IVerb where TClass : class, new()
 	{
 		private readonly CliParserConfig config;
 		private readonly List<IValue<TClass>> allValues;
@@ -43,11 +43,11 @@
 		{
 			helpFormatter.WriteSpecificHelp(console, this, config);
 		}
-		public Option<TClass, string> AddOption(string? shortName, string? longName, Action<OptionConfig<TClass, string>> optionConfig)
-		{
-			return AddOption<string>(shortName, longName, optionConfig);
-		}
 		public Option<TClass, TProp> AddOption<TProp>(string? shortName, string? longName, Action<OptionConfig<TClass, TProp>> optionConfig)
+		{
+			return AddOptionWithConverter(shortName, longName, optionConfig, null);
+		}
+		public Option<TClass, TProp> AddOptionWithConverter<TProp>(string? shortName, string? longName, Action<OptionConfig<TClass, TProp>> optionConfig, Func<string, Maybe<TProp, string>>? converter)
 		{
 			if (optionConfig == null)
 			{
@@ -66,18 +66,34 @@
 				throw new ArgumentException("Long name cannot be an empty string or only whitespace", nameof(longName));
 			}
 			ApplyDefaultPrefixAndCheck(ref shortName, ref longName, "option", allOptionsByShortName, allOptionsByLongName);
-			OptionConfig<TClass, TProp> c = new OptionConfig<TClass, TProp>(shortName, longName);
+			OptionConfig<TClass, TProp> c = new OptionConfig<TClass, TProp>(shortName, longName, converter);
 			optionConfig(c);
 			Option<TClass, TProp> thing = c.Build();
 			AddToDictionary(shortName, longName, thing, allOptionsByShortName, allOptionsByLongName);
 			allOptions.Add(thing);
 			return thing;
 		}
-		public Switch<TClass, bool> AddSwitch(string? shortName, string? longName, Action<SwitchConfig<TClass, bool>> switchConfig)
+		public Value<TClass, TProp> AddValue<TProp>(Action<ValueConfig<TClass, TProp>> ValueConfig)
 		{
-			return AddSwitch<bool>(shortName, longName, switchConfig);
+			return AddValueWithConverter(ValueConfig, null);
 		}
-		public Switch<TClass, TProp> AddSwitch<TProp>(string? shortName, string? longName, Action<SwitchConfig<TClass, TProp>> switchConfig)
+		public Value<TClass, TProp> AddValueWithConverter<TProp>(Action<ValueConfig<TClass, TProp>> valueConfig, Func<string, Maybe<TProp, string>>? converter)
+		{
+			if (valueConfig == null)
+			{
+				throw new ArgumentNullException(nameof(valueConfig), "valueConfig cannot be null");
+			}
+			ValueConfig<TClass, TProp> c = new ValueConfig<TClass, TProp>(converter);
+			valueConfig(c);
+			Value<TClass, TProp> thing = c.Build();
+			allValues.Add(thing);
+			return thing;
+		}
+		public Switch<TClass, TProp> AddSwitch<TProp>(string? shortName, string? longName, Action<SwitchConfig<TClass, TProp>> SwitchConfig)
+		{
+			return AddSwitchWithConverter(shortName, longName, SwitchConfig, null);
+		}
+		public Switch<TClass, TProp> AddSwitchWithConverter<TProp>(string? shortName, string? longName, Action<SwitchConfig<TClass, TProp>> switchConfig, Func<bool, Maybe<TProp, string>>? converter)
 		{
 			if (switchConfig == null)
 			{
@@ -96,38 +112,18 @@
 				throw new ArgumentException("Short name cannot be an empty string", nameof(longName));
 			}
 			ApplyDefaultPrefixAndCheck(ref shortName, ref longName, "switch", allSwitchesByShortName, allSwitchesByLongName);
-			SwitchConfig<TClass, TProp> c = new SwitchConfig<TClass, TProp>(shortName, longName);
+			SwitchConfig<TClass, TProp> c = new SwitchConfig<TClass, TProp>(shortName, longName, converter);
 			switchConfig(c);
 			Switch<TClass, TProp> thing = c.Build();
 			AddToDictionary(shortName, longName, thing, allSwitchesByShortName, allSwitchesByLongName);
 			allSwitches.Add(thing);
 			return thing;
 		}
-		public Value<TClass, string> AddValue(Action<ValueConfig<TClass, string>> valueConfig)
+		public MultiValue<TClass, TProp> AddMultiValue<TProp>(Action<MultiValueConfig<TClass, TProp>> ValueConfig)
 		{
-			return AddValue<string>(valueConfig);
+			return AddMultiValueWithConverter(ValueConfig, null);
 		}
-		public Value<TClass, TProp> AddValue<TProp>(Action<ValueConfig<TClass, TProp>> valueConfig)
-		{
-			if (valueConfig == null)
-			{
-				throw new ArgumentNullException(nameof(valueConfig), "valueConfig cannot be null");
-			}
-			ValueConfig<TClass, TProp> c = new ValueConfig<TClass, TProp>();
-			valueConfig(c);
-			Value<TClass, TProp> thing = c.Build();
-			allValues.Add(thing);
-			return thing;
-		}
-		public MultiValue<TClass, ICollection<string>> AddMultiValue(Action<MultiValueConfig<TClass, ICollection<string>>> multivalueConfig)
-		{
-			return AddMultiValue<ICollection<string>>(multivalueConfig);
-		}
-		public MultiValue<TClass, IReadOnlyCollection<string>> AddMultiValue(Action<MultiValueConfig<TClass, IReadOnlyCollection<string>>> multivalueConfig)
-		{
-			return AddMultiValue<IReadOnlyCollection<string>>(multivalueConfig);
-		}
-		public MultiValue<TClass, TProp> AddMultiValue<TProp>(Action<MultiValueConfig<TClass, TProp>> multivalueConfig)
+		public MultiValue<TClass, TProp> AddMultiValueWithConverter<TProp>(Action<MultiValueConfig<TClass, TProp>> multivalueConfig, Func<string, Maybe<TProp, string>>? converter)
 		{
 			if (multivalueConfig == null)
 			{
@@ -137,7 +133,7 @@
 			{
 				throw new CliParserBuilderException("MultiValue has already been added; you cannot add more than one MultiValue");
 			}
-			MultiValueConfig<TClass, TProp> c = new MultiValueConfig<TClass, TProp>();
+			MultiValueConfig<TClass, TProp> c = new MultiValueConfig<TClass, TProp>(converter);
 			multivalueConfig(c);
 			MultiValue<TClass, TProp> thing = c.Build();
 			MultiValue = thing;
@@ -214,7 +210,7 @@
 						}
 					}
 					// Might be a MultiValue, unless it starts with something that should be ignored
-					else if (MultiValue != null && !MultiValue.HasIgnoredPrefix(arg))
+					else if (MultiValue != null)// && !MultiValue.HasIgnoredPrefix(arg))
 					{
 						multiValuesFound.Add(arg);
 					}
@@ -360,6 +356,22 @@
 			{
 				shortNames.Add(shortName, obj);
 			}
+		}
+		// This stuff is useless and just adds clutter, so hide it
+		[EditorBrowsable(EditorBrowsableState.Never)]
+		public override bool Equals(object obj)
+		{
+			return base.Equals(obj);
+		}
+		[EditorBrowsable(EditorBrowsableState.Never)]
+		public override int GetHashCode()
+		{
+			return base.GetHashCode();
+		}
+		[EditorBrowsable(EditorBrowsableState.Never)]
+		public override string ToString()
+		{
+			return base.ToString();
 		}
 	}
 }

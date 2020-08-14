@@ -6,11 +6,11 @@
 	public interface ISwitch<TClass> : ISingleArgument<TClass>
 	{
 		/// <summary>
-		/// The Short Name for this FluentSwitch
+		/// The Short Name for this
 		/// </summary>
 		string? ShortName { get; }
 		/// <summary>
-		/// The Long Name for this FluentSwitch
+		/// The Long Name for this
 		/// </summary>
 		string? LongName { get; }
 		/// <summary>

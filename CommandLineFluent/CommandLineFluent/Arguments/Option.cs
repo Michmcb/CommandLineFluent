@@ -1,7 +1,6 @@
 ﻿namespace CommandLineFluent.Arguments
 {
 	using System;
-	using System.Collections.Generic;
 	using System.Reflection;
 
 	/// <summary>
@@ -15,8 +14,17 @@
 		public string HelpText { get; }
 		public ArgumentRequired ArgumentRequired { get; }
 		public PropertyInfo TargetProperty { get; }
+		/// <summary>
+		/// The default value to use when nothing is provided.
+		/// </summary>
 		public TProp DefaultValue { get; }
+		/// <summary>
+		/// Any dependencies upon other properties, if some have been set up. Otherwise, null.
+		/// </summary>
 		public Dependencies<TClass, TProp>? Dependencies { get; }
+		/// <summary>
+		/// Converts from a string into <typeparamref name="TProp"/>, or returns an error message.
+		/// </summary>
 		public Func<string, Maybe<TProp, string>>? Converter { get; }
 		internal Option(string? shortName, string? longName, string? name, string helpText, ArgumentRequired argumentRequired, PropertyInfo targetProperty, TProp defaultValue, Dependencies<TClass, TProp>? dependencies, Func<string, Maybe<TProp, string>>? converter)
 		{
@@ -91,7 +99,7 @@
 		/// </summary>
 		public string ShortAndLongName()
 		{
-			return ArgUtils.ShortAndLongName(ShortName, LongName, ArgumentRequired == ArgumentRequired.Optional);
+			return ArgUtils.ShortAndLongName(ShortName, LongName, ArgumentRequired != ArgumentRequired.Required);
 		}
 	}
 }

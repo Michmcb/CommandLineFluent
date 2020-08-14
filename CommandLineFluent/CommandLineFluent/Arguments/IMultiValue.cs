@@ -10,10 +10,10 @@
 		/// The prefixes that are ignored when capturing values. This is useful if you use a consistent prefixing scheme,
 		/// and want to avoid capturing possible user typos; an error will be thrown instead of using it as a value.
 		/// </summary>
-		System.Collections.Generic.ICollection<string> IgnoredPrefixes { get; }
+		//System.Collections.Generic.ICollection<string> IgnoredPrefixes { get; }
 		/// <summary>
 		/// Returns true if the provided string starts with an ignored prefix.
 		/// </summary>
-		bool HasIgnoredPrefix(string str);
+		//bool HasIgnoredPrefix(string str);
 	}
 }

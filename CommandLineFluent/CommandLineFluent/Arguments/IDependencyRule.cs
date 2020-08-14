@@ -1,27 +1,27 @@
 ﻿namespace CommandLineFluent.Arguments
 {
 	/// <summary>
-	/// Defines a single rule of a FluentRelationship.
+	/// Defines a single rule of a Dependency.
 	/// </summary>
-	/// <typeparam name="TClass">The class</typeparam>
+	/// <typeparam name="TClass">The class.</typeparam>
 	public interface IDependencyRule<TClass> where TClass : new()
 	{
 		/// <summary>
 		/// You don't need to call this; but this checks that the specified property of an object
-		/// of type T satisfies the rule, given whether or not the FluentArgument on which this rule was configured
-		/// had the string appear during parsing or not
+		/// of type T satisfies the rule, given whether or not the Argument on which this rule was configured
+		/// had a value appear during parsing or not.
 		/// </summary>
-		/// <param name="obj">The object</param>
-		/// <param name="didAppear">If a string appeared during parsing</param>
+		/// <param name="obj">The object.</param>
+		/// <param name="didAppear">If a value appeared during parsing.</param>
 		bool DoesSatifyRule(TClass obj, bool didAppear);
 		/// <summary>
-		/// The error message when this rule is violated
+		/// The error message when this rule is violated.
 		/// </summary>
 		string ErrorMessage { get; }
 		/// <summary>
-		/// Does this rule say it's required, or must NOT appear
+		/// When this rule applies, the requiredness; either required or must not appear.
 		/// </summary>
-		Requiredness Requiredness { get; }
+		DependencyRequiredness Requiredness { get; }
 		/// <summary>
 		/// Validates this rule. Returns an Error if something is invalid, or null otherwise.
 		/// </summary>

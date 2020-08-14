@@ -1,12 +1,103 @@
 ﻿namespace CommandLineFluent
 {
 	using System;
-
 	public static class Converters
 	{
+		//public static Maybe<byte[], string> FromHexString(string s)
+		//{
+		//}
 		/// <summary>
-		/// Converts the provided string to an int.
-		/// Uses int.TryParse()
+		/// If <paramref name="s"/> is 1 character, returns that. Otherwise, error.
+		/// </summary>
+		/// <param name="s">The string to convert</param>
+		public static Maybe<char, string> ToChar(string s)
+		{
+			if (s.Length == 1)
+			{
+				return s[0];
+			}
+			else
+			{
+				return s + " must be a single character";
+			}
+		}
+		/// <summary>
+		/// If <paramref name="s"/> is 1 character, returns that. Otherwise, error.
+		/// </summary>
+		/// <param name="s">The string to convert</param>
+		public static Maybe<char?, string> ToNullableChar(string s)
+		{
+			if (s.Length == 1)
+			{
+				return s[0];
+			}
+			else
+			{
+				return s + " must be a single character";
+			}
+		}
+		/// <summary>
+		/// Converts the provided string to short.
+		/// </summary>
+		/// <param name="s">The string to convert</param>
+		public static Maybe<short, string> ToShort(string s)
+		{
+			if (short.TryParse(s, out short v))
+			{
+				return v;
+			}
+			else
+			{
+				return s + " was not an integer";
+			}
+		}
+		/// <summary>
+		/// Converts the provided string to short?.
+		/// </summary>
+		/// <param name="s">The string to convert</param>
+		public static Maybe<short?, string> ToNullableShort(string s)
+		{
+			if (short.TryParse(s, out short v))
+			{
+				return v;
+			}
+			else
+			{
+				return s + " was not an integer";
+			}
+		}
+		/// <summary>
+		/// Converts the provided string to ushort.
+		/// </summary>
+		/// <param name="s">The string to convert</param>
+		public static Maybe<ushort, string> ToUShort(string s)
+		{
+			if (ushort.TryParse(s, out ushort v))
+			{
+				return v;
+			}
+			else
+			{
+				return s + " was not an integer";
+			}
+		}
+		/// <summary>
+		/// Converts the provided string to ushort?.
+		/// </summary>
+		/// <param name="s">The string to convert</param>
+		public static Maybe<ushort?, string> ToNullableUShort(string s)
+		{
+			if (ushort.TryParse(s, out ushort v))
+			{
+				return v;
+			}
+			else
+			{
+				return s + " was not an integer";
+			}
+		}
+		/// <summary>
+		/// Converts the provided string to int.
 		/// </summary>
 		/// <param name="s">The string to convert</param>
 		public static Maybe<int, string> ToInt(string s)
@@ -21,7 +112,7 @@
 			}
 		}
 		/// <summary>
-		/// Converts the provided string to a nullable int. Identical to ToInt, but can be used with Optional parameters.
+		/// Converts the provided string to int?.
 		/// </summary>
 		/// <param name="s">The string to convert</param>
 		public static Maybe<int?, string> ToNullableInt(string s)
@@ -36,8 +127,7 @@
 			}
 		}
 		/// <summary>
-		/// Converts the provided string to an uint.
-		/// Uses uint.TryParse()
+		/// Converts the provided string to uint.
 		/// </summary>
 		/// <param name="s">The string to convert</param>
 		public static Maybe<uint, string> ToUInt(string s)
@@ -52,7 +142,7 @@
 			}
 		}
 		/// <summary>
-		/// Converts the provided string to a nullable uint. Identical to ToUInt, but can be used with Optional parameters.
+		/// Converts the provided string to uint?.
 		/// </summary>
 		/// <param name="s">The string to convert</param>
 		public static Maybe<uint?, string> ToNullableUInt(string s)
@@ -67,8 +157,7 @@
 			}
 		}
 		/// <summary>
-		/// Converts the provided string to a long.
-		/// Uses long.TryParse()
+		/// Converts the provided string to long.
 		/// </summary>
 		/// <param name="s">The string to convert</param>
 		public static Maybe<long, string> ToLong(string s)
@@ -83,7 +172,7 @@
 			}
 		}
 		/// <summary>
-		/// Converts the provided string to a nullable long. Identical to ToLong, but can be used with Optional parameters.
+		/// Converts the provided string to long?.
 		/// </summary>
 		/// <param name="s">The string to convert</param>
 		public static Maybe<long?, string> ToNullableLong(string s)
@@ -98,8 +187,7 @@
 			}
 		}
 		/// <summary>
-		/// Converts the provided string to an ulong.
-		/// Uses ulong.TryParse()
+		/// Converts the provided string to ulong.
 		/// </summary>
 		/// <param name="s">The string to convert</param>
 		public static Maybe<ulong, string> ToULong(string s)
@@ -114,7 +202,7 @@
 			}
 		}
 		/// <summary>
-		/// Converts the provided string to a nullable ulong. Identical to ToULong, but can be used with Optional parameters.
+		/// Converts the provided string to ulong?.
 		/// </summary>
 		/// <param name="s">The string to convert</param>
 		public static Maybe<ulong?, string> ToNullableULong(string s)
@@ -129,8 +217,37 @@
 			}
 		}
 		/// <summary>
-		/// Converts the provided string to a double.
-		/// Uses double.TryParse()
+		/// Converts the provided string to float.
+		/// </summary>
+		/// <param name="s">The string to convert</param>
+		public static Maybe<float, string> ToFloat(string s)
+		{
+			if (float.TryParse(s, out float v))
+			{
+				return v;
+			}
+			else
+			{
+				return s + " was not a floating-point number";
+			}
+		}
+		/// <summary>
+		/// Converts the provided string to float?.
+		/// </summary>
+		/// <param name="s">The string to convert</param>
+		public static Maybe<float?, string> ToNullableFloat(string s)
+		{
+			if (float.TryParse(s, out float v))
+			{
+				return v;
+			}
+			else
+			{
+				return s + " was not a floating-point number";
+			}
+		}
+		/// <summary>
+		/// Converts the provided string to double.
 		/// </summary>
 		/// <param name="s">The string to convert</param>
 		public static Maybe<double, string> ToDouble(string s)
@@ -145,7 +262,7 @@
 			}
 		}
 		/// <summary>
-		/// Converts the provided string to a nullable double. Identical to ToDouble, but can be used with Optional parameters.
+		/// Converts the provided string to double?.
 		/// </summary>
 		/// <param name="s">The string to convert</param>
 		public static Maybe<double?, string> ToNullableDouble(string s)
@@ -160,8 +277,7 @@
 			}
 		}
 		/// <summary>
-		/// Converts the provided string to a decimal.
-		/// Uses decimal.TryParse()
+		/// Converts the provided string to decimal.
 		/// </summary>
 		/// <param name="s">The string to convert</param>
 		public static Maybe<decimal, string> ToDecimal(string s)
@@ -176,7 +292,7 @@
 			}
 		}
 		/// <summary>
-		/// Converts the provided string to a nullable decimal. Identical to ToDecimal, but can be used with Optional parameters.
+		/// Converts the provided string to decimal?.
 		/// </summary>
 		/// <param name="s">The string to convert</param>
 		public static Maybe<decimal?, string> ToNullableDecimal(string s)
@@ -191,53 +307,39 @@
 			}
 		}
 		/// <summary>
-		/// Converts the provided string to a Date, at midnight. Returns an error if a Time component was specified.
-		/// Uses DateTime.TryParse()
+		/// Converts the provided string to the Enum <typeparamref name="TEnum"/>.
 		/// </summary>
+		/// <typeparam name="TEnum">The type of the enum to parse</typeparam>
 		/// <param name="s">The string to convert</param>
-		public static Maybe<DateTime, string> ToDate(string s)
+		public static Maybe<TEnum, string> ToEnum<TEnum>(string s) where TEnum : struct, Enum
 		{
-			if (DateTime.TryParse(s, out DateTime v))
+			if (Enum.TryParse(s, out TEnum v))
 			{
-				if (v.TimeOfDay.Ticks == 0)
-				{
-					return v;
-				}
-				else
-				{
-					return s + " was not a date (It should not have a time of day specified)";
-				}
+				return v;
 			}
 			else
 			{
-				return s + " was not a date";
+				return string.Concat(s, " should be one of: ", string.Join(", ", Enum.GetNames(typeof(TEnum))));
 			}
 		}
 		/// <summary>
-		/// Converts the provided string to a nullable DateTime. Identical to ToDate, but can be used with Optional parameters.
+		/// Converts the provided string to the Enum <typeparamref name="TEnum"/>?.
 		/// </summary>
+		/// <typeparam name="TEnum">The type of the enum to parse</typeparam>
 		/// <param name="s">The string to convert</param>
-		public static Maybe<DateTime?, string> ToNullableDate(string s)
+		public static Maybe<TEnum?, string> ToNullableEnum<TEnum>(string s) where TEnum : struct, Enum
 		{
-			if (DateTime.TryParse(s, out DateTime v))
+			if (Enum.TryParse(s, out TEnum v))
 			{
-				if (v.TimeOfDay.Ticks == 0)
-				{
-					return v;
-				}
-				else
-				{
-					return s + " was not a date (It should not have a time of day specified)";
-				}
+				return v;
 			}
 			else
 			{
-				return s + " was not a date";
+				return string.Concat(s, " should be one of: ", string.Join(", ", Enum.GetNames(typeof(TEnum))));
 			}
 		}
 		/// <summary>
-		/// Converts the provided string to a DateTime.
-		/// Uses DateTime.TryParse()
+		/// Converts the provided string to DateTime.
 		/// </summary>
 		/// <param name="s">The string to convert</param>
 		public static Maybe<DateTime, string> ToDateTime(string s)
@@ -252,7 +354,7 @@
 			}
 		}
 		/// <summary>
-		/// Converts the provided string to a nullable DateTime. Identical to ToDateTime, but can be used with Optional parameters.
+		/// Converts the provided string to DateTime?.
 		/// </summary>
 		/// <param name="s">The string to convert</param>
 		public static Maybe<DateTime?, string> ToNullableDateTime(string s)
@@ -267,20 +369,78 @@
 			}
 		}
 		/// <summary>
-		/// Converts the provided string to an Enum.
-		/// Uses Enum.TryParse&lt;<typeparamref name="T"/>>()
+		/// Converts the provided string to TimeSpan.
 		/// </summary>
-		/// <typeparam name="T">The type of the enum to parse</typeparam>
 		/// <param name="s">The string to convert</param>
-		public static Maybe<T, string> ToEnum<T>(string s) where T : struct, Enum
+		public static Maybe<TimeSpan, string> ToTimeSpan(string s)
 		{
-			if (Enum.TryParse(s, out T v))
+			if (TimeSpan.TryParse(s, out TimeSpan v))
 			{
 				return v;
 			}
 			else
 			{
-				return string.Concat(s, " should be one of: ", string.Join(", ", Enum.GetNames(typeof(T))));
+				return s + " was not a time";
+			}
+		}
+		/// <summary>
+		/// Converts the provided string to TimeSpan?.
+		/// </summary>
+		/// <param name="s">The string to convert</param>
+		public static Maybe<TimeSpan?, string> ToNullableTimeSpan(string s)
+		{
+			if (TimeSpan.TryParse(s, out TimeSpan v))
+			{
+				return v;
+			}
+			else
+			{
+				return s + " was not a time";
+			}
+		}
+		/// <summary>
+		/// Converts the provided string to Guid.
+		/// </summary>
+		/// <param name="s">The string to convert</param>
+		public static Maybe<Guid, string> ToGuid(string s)
+		{
+			if (Guid.TryParse(s, out Guid v))
+			{
+				return v;
+			}
+			else
+			{
+				return s + " was not a GUID";
+			}
+		}
+		/// <summary>
+		/// Converts the provided string to Guid?.
+		/// </summary>
+		/// <param name="s">The string to convert</param>
+		public static Maybe<Guid?, string> ToNullableGuid(string s)
+		{
+			if (Guid.TryParse(s, out Guid v))
+			{
+				return v;
+			}
+			else
+			{
+				return s + " was not a GUID";
+			}
+		}
+		/// <summary>
+		/// Converts the provided string to Uri.
+		/// </summary>
+		/// <param name="s">The string to convert</param>
+		public static Maybe<Uri, string> ToUri(string s)
+		{
+			if (Uri.TryCreate(s, UriKind.RelativeOrAbsolute, out Uri v))
+			{
+				return v;
+			}
+			else
+			{
+				return s + " was not a URL";
 			}
 		}
 		/// <summary>

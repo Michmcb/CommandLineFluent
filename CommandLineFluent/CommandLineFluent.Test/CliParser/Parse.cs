@@ -12,19 +12,19 @@
 		private static readonly CliParser parser = new CliParserBuilder()
 			.AddVerb<OptOneOfEach>("OptOneOfEach", verb =>
 			{
-				verb.AddOption("-o", "--option", o => o
+				verb.AddOptionString("-o", "--option", o => o
 					.ForProperty(x => x.Option)
 					.IsRequired()
 					.WithName("Option")
 					.WithHelpText("Help me please"));
 
-				verb.AddSwitch("-s", "--switch", s => s
+				verb.AddSwitchBool("-s", "--switch", s => s
 					.ForProperty(x => x.Switch)
 					.IsRequired()
 					.WithName("Switch")
 					.WithHelpText("really help meeeeee"));
 
-				verb.AddValue(v => v
+				verb.AddValueString(v => v
 					.ForProperty(x => x.Value)
 					.IsRequired()
 					.WithName("Value")
@@ -32,19 +32,19 @@
 			})
 			.AddVerb<OptMulti>("OptMulti", verb =>
 			{
-				verb.AddOption("-o1", "--option1", o => o
+				verb.AddOptionString("-o1", "--option1", o => o
 					.ForProperty(x => x.Option1)
 					.IsRequired()
 					.WithName("Option")
 					.WithHelpText("Help me please"));
 
-				verb.AddOption("-o2", "--option2", o => o
+				verb.AddOptionString("-o2", "--option2", o => o
 					.ForProperty(x => x.Option2)
 					.IsRequired()
 					.WithName("Option")
 					.WithHelpText("Help me please"));
 
-				verb.AddMultiValue(mv => mv
+				verb.AddMultiValueString(mv => mv
 					.ForProperty(x => x.Values)
 					.WithHelpText("help"));
 			})

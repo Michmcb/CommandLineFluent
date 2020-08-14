@@ -3,18 +3,24 @@
 	using System.Reflection;
 
 	/// <summary>
-	/// A single argument on the command line.
+	/// An argument which a single value on the command line.
 	/// </summary>
 	public interface ISingleArgument<TClass>
 	{
 		/// <summary>
-		/// A human-readable name which describes this
+		/// A human-readable name which describes this.
 		/// </summary>
 		string? Name { get; }
+		/// <summary>
+		/// Text that describes this.
+		/// </summary>
 		string HelpText { get; }
+		/// <summary>
+		/// If the argument is required or not, or if it's sometimes required based on dependencies.
+		/// </summary>
 		ArgumentRequired ArgumentRequired { get; }
 		/// <summary>
-		/// The property that this argument maps to
+		/// The property that this argument maps to.
 		/// </summary>
 		PropertyInfo TargetProperty { get; }
 		Error EvaluateDependencies(TClass obj, bool gotValue);
