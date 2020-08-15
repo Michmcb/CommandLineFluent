@@ -1,7 +1,6 @@
-﻿using System;
-
-namespace CommandLineFluent
+﻿namespace CommandLineFluent
 {
+	using System;
 	public interface IConsole
 	{
 		int CurrentWidth { get; }

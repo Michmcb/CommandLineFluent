@@ -19,9 +19,10 @@
 
 		}
 		/// <summary>
-		/// Formats the overall help.
-		/// Lists all verbs and their description.
+		/// Writes the overall help.
+		/// Lists all verbs and their help text.
 		/// </summary>
+		/// <param name="console">The console help is written to.</param>
 		public void WriteOverallHelp(IConsole console, IReadOnlyCollection<IVerb> verbs, CliParserConfig config)
 		{
 			console.WriteLine($@"Usage: {string.Join("|", verbs.Select(x => x.Name))} options...{Environment.NewLine}{Environment.NewLine}");
@@ -36,7 +37,14 @@
 			console.WriteLine($@"Use verbname {config.ShortHelpSwitch}|{config.LongHelpSwitch} for detailed help.");
 			console.WriteLine();
 		}
-		public void WriteSpecificHelp<TClass>(IConsole console, Verb<TClass> verb, CliParserConfig config) where TClass : class, new()
+		/// <summary>
+		/// Writes specific help for <paramref name="verb"/> to <paramref name="console"/>. Shows all of the possible arguments and their help text.
+		/// Any arguments that aren't required are shown in [brackets].
+		/// </summary>
+		/// <typeparam name="TClass">The class that this verb parses input into.</typeparam>
+		/// <param name="console">The console help is written to.</param>
+		/// <param name="verb">The verb to write help for.</param>
+		public void WriteSpecificHelp<TClass>(IConsole console, Verb<TClass> verb) where TClass : class, new()
 		{
 			console.WriteLine(verb.HelpText);
 			console.Write(verb.Name + " ");
@@ -102,6 +110,11 @@
 			//}
 			//return sb.ToString();
 		}
+		/// <summary>
+		/// Writes each error's Message property to the console
+		/// </summary>
+		/// <param name="console">The console errors are written to.</param>
+		/// <param name="errors">The errors to write.</param>
 		public void WriteErrors(IConsole console, IEnumerable<Error> errors)
 		{
 			ConsoleColor original = console.ForegroundColor;
@@ -109,7 +122,7 @@
 
 			foreach (Error e in errors)
 			{
-				console.WriteLine(e.ToString());
+				console.WriteLine(e.Message);
 			}
 
 			console.ForegroundColor = original;

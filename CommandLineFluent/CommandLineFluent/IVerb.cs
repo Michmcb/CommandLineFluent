@@ -9,9 +9,12 @@
 	public interface IVerb
 	{
 		/// <summary>
-		/// The name used to invoke the verb. This must be unique.
+		/// The name of this verb. This is what the user must enter to invoke this verb. This must be unique.
 		/// </summary>
 		string Name { get; }
+		/// <summary>
+		/// Human-readable help for this verb.
+		/// </summary>
 		string HelpText { get; set; }
 		/// <summary>
 		/// Parses the provided arguments using this verb's rules. You shouldn't need to use this directly. But if you do,
@@ -19,6 +22,9 @@
 		/// </summary>
 		/// <param name="args">The arguments to parse</param>
 		Maybe<IParseResult, IReadOnlyCollection<Error>> Parse(IEnumerable<string> args);
-		void WriteHelpTo(IMessageFormatter helpFormatter, IConsole console);
+		/// <summary>
+		/// Calls <see cref="IMessageFormatter.WriteSpecificHelp{TClass}(IConsole, Verb{TClass})"/>, passing this verb as a parameter.
+		/// </summary>
+		void WriteHelpTo(IMessageFormatter msgFormatter, IConsole console);
 	}
 }

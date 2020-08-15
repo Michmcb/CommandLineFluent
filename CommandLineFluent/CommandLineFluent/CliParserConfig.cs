@@ -1,5 +1,6 @@
 ﻿namespace CommandLineFluent
 {
+	using System;
 	public sealed class CliParserConfig
 	{
 		/// <summary>
@@ -22,5 +23,10 @@
 		/// By default: --help
 		/// </summary>
 		public string LongHelpSwitch { get; set; } = "--help";
+		/// <summary>
+		/// The string comparer to use when parsing argument short/long names and verb names.
+		/// By default: StringComparer.OrdinalIgnoreCase.
+		/// </summary>
+		public StringComparer StringComparer { get; set; } = StringComparer.OrdinalIgnoreCase;
 	}
 }

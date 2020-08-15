@@ -2,7 +2,6 @@
 {
 	using System;
 	using System.Collections.Generic;
-
 	public sealed class CliParserBuilder
 	{
 		private readonly Dictionary<string, IVerb> verbs;
@@ -10,14 +9,20 @@
 		private IConsole? console;
 		private ITokenizer? tokenizer;
 		private IMessageFormatter? msgFormatter;
+		/// <summary>
+		/// Creates a new CliParserBuilder, using <see cref="StringComparer.OrdinalIgnoreCase"/> as the comparer for verbs, and a default <see cref="CliParserConfig"/>.
+		/// </summary>
 		public CliParserBuilder()
 		{
-			verbs = new Dictionary<string, IVerb>();
+			verbs = new Dictionary<string, IVerb>(StringComparer.OrdinalIgnoreCase);
 			config = new CliParserConfig();
 		}
+		/// <summary>
+		/// Creates a new CliParserBuilder.
+		/// </summary>
 		public CliParserBuilder(CliParserConfig config)
 		{
-			verbs = new Dictionary<string, IVerb>();
+			verbs = new Dictionary<string, IVerb>(config.StringComparer);
 			this.config = config;
 		}
 		/// <summary>
@@ -85,7 +90,7 @@
 			List<Error> errors = new List<Error>();
 			if (verbs.Values.Count <= 0)
 			{
-				throw new CliParserBuilderException("The parser has no verbs, use AddVerb<T> to add some verbs");
+				throw new CliParserBuilderException("The parser has no verbs, use AddVerb<TClass> to add some verbs");
 			}
 			if (errors.Count == 0)
 			{
