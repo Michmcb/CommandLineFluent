@@ -27,7 +27,7 @@
 				})
 				.Build();
 
-			Maybe<IParseResult, System.Collections.Generic.IReadOnlyCollection<Error>> res = fp.Parse(new string[] { "default", "MyValue", "-o", "30" });
+			IParseResult res = fp.Parse(new string[] { "default", "MyValue", "-o", "30" });
 			Assert.True(res.Ok);
 			res = fp.Parse(new string[] { "default", "-o", "30" });
 			Assert.True(res.Ok);
@@ -84,7 +84,7 @@
 				})
 				.Build();
 
-			Maybe<IParseResult, System.Collections.Generic.IReadOnlyCollection<Error>> res = fp.Parse(new string[] { "default", "MyValue", "-o", "30" });
+			IParseResult res = fp.Parse(new string[] { "default", "MyValue", "-o", "30" });
 			Assert.True(res.Ok);
 			res = fp.Parse(new string[] { "default", "-o", "30" });
 			Assert.False(res.Ok);
@@ -140,7 +140,7 @@
 				})
 				.Build();
 
-			Maybe<IParseResult, System.Collections.Generic.IReadOnlyCollection<Error>> res = fp.Parse(new string[] { "default", "MyValue", "-o", "30" });
+			IParseResult res = fp.Parse(new string[] { "default", "MyValue", "-o", "30" });
 			Assert.True(res.Ok);
 			res = fp.Parse(new string[] { "default", "-o", "30" });
 			Assert.True(res.Ok);
@@ -200,7 +200,7 @@
 				})
 				.Build();
 
-			Maybe<IParseResult, System.Collections.Generic.IReadOnlyCollection<Error>> res = fp.Parse(new string[] { "default", "MyValue", "-o", "30" });
+			IParseResult res = fp.Parse(new string[] { "default", "MyValue", "-o", "30" });
 			Assert.True(res.Ok);
 			res = fp.Parse(new string[] { "default", "-o", "30" });
 			Assert.False(res.Ok);
@@ -261,7 +261,7 @@
 				.Build();
 
 			// We're basically saying first: MyValue is required
-			Maybe<IParseResult, System.Collections.Generic.IReadOnlyCollection<Error>> res = fp.Parse(new string[] { "default", "MyValue", "-o", "55" });
+			IParseResult res = fp.Parse(new string[] { "default", "MyValue", "-o", "55" });
 			Assert.True(res.Ok);
 			res = fp.Parse(new string[] { "default", "-o", "55" });
 			Assert.False(res.Ok);
@@ -325,7 +325,7 @@
 				.Build();
 
 			// We're basically saying first: MyValue is required
-			Maybe<IParseResult, System.Collections.Generic.IReadOnlyCollection<Error>> res = fp.Parse(new string[] { "default", "MyValue", "-o", "55" });
+			IParseResult res = fp.Parse(new string[] { "default", "MyValue", "-o", "55" });
 			Assert.True(res.Ok);
 			res = fp.Parse(new string[] { "default", "-o", "55" });
 			Assert.True(res.Ok);
@@ -390,7 +390,7 @@
 				})
 				.Build();
 
-			Maybe<IParseResult, System.Collections.Generic.IReadOnlyCollection<Error>> res = fp.Parse(new string[] { "default", "MyValue", "-o", "55" });
+			IParseResult res = fp.Parse(new string[] { "default", "MyValue", "-o", "55" });
 			Assert.False(res.Ok);
 			res = fp.Parse(new string[] { "default", "-o", "55" });
 			Assert.True(res.Ok);

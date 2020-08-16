@@ -5,6 +5,7 @@
 	using System.Linq.Expressions;
 	using System.Reflection;
 	using System.Collections.Generic;
+	using System.Diagnostics.CodeAnalysis;
 
 	/// <summary>
 	/// Configures an Option.
@@ -28,7 +29,7 @@
 		/// <param name="shortName">The short name the user can use to provide this.</param>
 		/// <param name="shortName">The long name the user can use to provide this.</param>
 		/// <param name="converter">The converter to use to convert from string to <typeparamref name="TProp"/>.</param>
-		public OptionConfig(string? shortName, string? longName, Func<string, Maybe<TProp, string>>? converter)
+		public OptionConfig([AllowNull] string? shortName, [AllowNull] string? longName, [AllowNull] Func<string, Maybe<TProp, string>>? converter)
 		{
 			this.shortName = shortName;
 			this.longName = longName;

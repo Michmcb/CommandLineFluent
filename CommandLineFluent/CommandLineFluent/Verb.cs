@@ -57,9 +57,9 @@
 		public Func<TClass, Task> InvokeAsync { get; set; }
 		public string Name { get; }
 		public string HelpText { get; set; }
-		public void WriteHelpTo(IMessageFormatter helpFormatter, IConsole console)
+		public void WriteSpecificHelp(IConsole console, IMessageFormatter msgFormatter)
 		{
-			helpFormatter.WriteSpecificHelp(console, this);
+			msgFormatter.WriteSpecificHelp(console, this);
 		}
 		/// <summary>
 		/// Adds a new Option, without any predefined converter. If you're calling this, make sure you set a converter in <paramref name="optionConfig"/>!
@@ -229,7 +229,7 @@
 			MultiValue = thing;
 			return thing;
 		}
-		public Maybe<IParseResult, IReadOnlyCollection<Error>> Parse(IEnumerable<string> args)
+		public IParseResult Parse(IEnumerable<string> args)
 		{
 			TClass parsedClass = new TClass();
 			List<Error> errors = new List<Error>();
@@ -247,7 +247,7 @@
 					if (arg == config.ShortHelpSwitch || arg == config.LongHelpSwitch)
 					{
 						errors.Add(new Error(ErrorCode.HelpRequested, string.Empty));
-						return errors;
+						return new FailedParseWithVerb<TClass>(this, errors);
 					}
 
 					if (allOptionsByShortName.TryGetValue(arg, out IOption<TClass>? oval) || allOptionsByLongName.TryGetValue(arg, out oval))
@@ -351,7 +351,7 @@
 			// Make sure all of the stuff we've set so far is good, if not bail out
 			if (errors.Count > 0)
 			{
-				return errors;
+				return new FailedParseWithVerb<TClass>(this, errors);
 			}
 
 			// Evaluate dependencies; we know we got the value if it doesn't appear in our lists of remaining stuff
@@ -391,15 +391,15 @@
 			}
 			if (errors.Count > 0)
 			{
-				return errors;
+				return new FailedParseWithVerb<TClass>(this, errors);
 			}
-			return new ParseResult<TClass>(this, parsedClass);
+			return new SuccessfulParse<TClass>(this, parsedClass);
 		}
 		private void ApplyDefaultPrefixAndCheck<T>(ref string? shortName, ref string? longName, string type, Dictionary<string, T> shortNames, Dictionary<string, T> longNames)
 		{
 			if (shortName != null)
 			{
-				if (!shortName.StartsWith(config.DefaultShortPrefix))
+				if (!string.IsNullOrEmpty(config.DefaultShortPrefix) && !shortName.StartsWith(config.DefaultShortPrefix))
 				{
 					shortName = config.DefaultShortPrefix + shortName;
 				}
@@ -418,7 +418,7 @@
 			}
 			if (longName != null)
 			{
-				if (!longName.StartsWith(config.DefaultLongPrefix))
+				if (!string.IsNullOrEmpty(config.DefaultLongPrefix) && !longName.StartsWith(config.DefaultLongPrefix))
 				{
 					longName = config.DefaultLongPrefix + longName;
 				}

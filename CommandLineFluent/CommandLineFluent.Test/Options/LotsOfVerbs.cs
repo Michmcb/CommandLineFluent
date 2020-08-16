@@ -1,5 +1,6 @@
 ﻿namespace CommandLineFluent.Test.Options
 {
+#pragma warning disable CS8618 // Non-nullable field is uninitialized. Consider declaring as nullable.
 	public abstract class Verb
 	{
 		public string Value { get; set; }
@@ -29,4 +30,5 @@
 	public class Verb14 : Verb { }
 	public class Verb15 : Verb { }
 	public class Verb16 : Verb { }
+#pragma warning restore CS8618 // Non-nullable field is uninitialized. Consider declaring as nullable.
 }

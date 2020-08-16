@@ -22,20 +22,20 @@
 		[Fact]
 		public async Task InvokeWorksFine()
 		{
-			Maybe<IParseResult, System.Collections.Generic.IReadOnlyCollection<Error>> r = parser.Parse("Invoke1");
-			ParseResult<InvokedTracker> ipr = Assert.IsType<ParseResult<InvokedTracker>>(r.ValueOr(null));
+			IParseResult r = parser.Parse("Invoke1");
+			SuccessfulParse<InvokedTracker> ipr = Assert.IsType<SuccessfulParse<InvokedTracker>>(r);
 			ipr.Invoke();
-			Assert.True(ipr.ParsedObject.DidIGetInvoked);
-			ipr.ParsedObject.DidIGetInvoked = false;
+			Assert.True(ipr.Object.DidIGetInvoked);
+			ipr.Object.DidIGetInvoked = false;
 			await ipr.InvokeAsync();
-			Assert.True(ipr.ParsedObject.DidIGetInvoked);
+			Assert.True(ipr.Object.DidIGetInvoked);
 		}
 		[Fact]
 		public void FailureGivesNothing()
 		{
-			Maybe<IParseResult, System.Collections.Generic.IReadOnlyCollection<Error>> r = parser.Parse("Nothing");
+			IParseResult r = parser.Parse("Nothing");
 			Assert.False(r.Ok);
-			Assert.Null(r.ValueOr(null));
+			Assert.Null(r.Verb);
 		}
 		private static void SetInvoked(InvokedTracker opt)
 		{

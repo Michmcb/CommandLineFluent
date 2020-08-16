@@ -2,6 +2,7 @@
 {
 	using System;
 	using System.Collections.Generic;
+	using System.Diagnostics.CodeAnalysis;
 	using System.Linq;
 	using System.Linq.Expressions;
 	using System.Reflection;
@@ -25,7 +26,7 @@
 		/// Creates a new <see cref="MultiValueConfig{TClass, TProp}"/>. You shouldn't need to create this manually.
 		/// </summary>
 		/// <param name="converter">The converter to use to convert from string to <typeparamref name="TProp"/>.</param>
-		public MultiValueConfig(Func<string, Maybe<TProp, string>>? converter)
+		public MultiValueConfig([AllowNull]Func<string, Maybe<TProp, string>>? converter)
 		{
 			//ignoredPrefixes = new List<string>();
 			this.converter = converter;
@@ -133,7 +134,7 @@
 		/// If the user doesn't provide any values, the converter isn't invoked, instead the default values provided are used.
 		/// </summary>
 		/// <param name="converter">A convert that converts a string to <typeparamref name="TProp"/>.</param>
-		public MultiValueConfig<TClass, TProp> WithConverter(Func<string, Maybe<TProp, string>> converter)
+		public MultiValueConfig<TClass, TProp> WithConverter([AllowNull]Func<string, Maybe<TProp, string>>? converter)
 		{
 			this.converter = converter;
 			return this;

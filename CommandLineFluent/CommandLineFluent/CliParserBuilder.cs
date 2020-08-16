@@ -2,6 +2,8 @@
 {
 	using System;
 	using System.Collections.Generic;
+	using System.Diagnostics.CodeAnalysis;
+
 	public sealed class CliParserBuilder
 	{
 		private readonly Dictionary<string, IVerb> verbs;
@@ -22,15 +24,15 @@
 		/// </summary>
 		public CliParserBuilder(CliParserConfig config)
 		{
-			verbs = new Dictionary<string, IVerb>(config.StringComparer);
-			this.config = config;
+			this.config = config ?? new CliParserConfig();
+			verbs = new Dictionary<string, IVerb>(this.config.StringComparer);
 		}
 		/// <summary>
 		/// Specifies the IConsole to use.
 		/// By default, this is <see cref="StandardConsole"/>, which just uses the static class <see cref="Console"/>.
 		/// </summary>
 		/// <param name="console">The console to use.</param>
-		public CliParserBuilder UseConsole(IConsole console)
+		public CliParserBuilder UseConsole([DisallowNull] IConsole console)
 		{
 			this.console = console;
 			return this;
@@ -40,7 +42,7 @@
 		/// By default, this is <see cref="QuotedStringTokenizer"/>, which splits strings into tokens based on single or double quotes, or spaces.
 		/// </summary>
 		/// <param name="tokenizer">The tokenizer to use.</param>
-		public CliParserBuilder UseTokenizer(ITokenizer tokenizer)
+		public CliParserBuilder UseTokenizer([DisallowNull] ITokenizer tokenizer)
 		{
 			this.tokenizer = tokenizer;
 			return this;
@@ -50,7 +52,7 @@
 		/// By default, this is <see cref="StandardMessageFormatter"/>.
 		/// </summary>
 		/// <param name="msgFormatter">The tokenizer to use.</param>
-		public CliParserBuilder UseHelpFormatter(IMessageFormatter msgFormatter)
+		public CliParserBuilder UseHelpFormatter([DisallowNull] IMessageFormatter msgFormatter)
 		{
 			this.msgFormatter = msgFormatter;
 			return this;

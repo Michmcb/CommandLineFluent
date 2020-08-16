@@ -1,6 +1,7 @@
 ﻿namespace CommandLineFluent.Arguments
 {
 	using System;
+	using System.Diagnostics.CodeAnalysis;
 	using System.Reflection;
 
 	/// <summary>
@@ -26,7 +27,7 @@
 		/// Converts from a bool into <typeparamref name="TProp"/>, or returns an error message.
 		/// </summary>
 		public Func<bool, Maybe<TProp, string>>? Converter { get; }
-		internal Switch(string? shortName, string? longName, string? name, string helpText, ArgumentRequired argumentRequired, PropertyInfo targetProperty, TProp defaultValue, Dependencies<TClass, TProp>? dependencies, Func<bool, Maybe<TProp, string>>? converter)
+		internal Switch(string? shortName, string? longName, string? name, string helpText, ArgumentRequired argumentRequired, [DisallowNull] PropertyInfo targetProperty, TProp defaultValue, [AllowNull] Dependencies<TClass, TProp>? dependencies, [AllowNull] Func<bool, Maybe<TProp, string>>? converter)
 		{
 			ShortName = shortName;
 			LongName = longName;
@@ -38,7 +39,7 @@
 			Dependencies = dependencies;
 			Converter = converter;
 		}
-		public Error SetValue(TClass target, string? rawValue)
+		public Error SetValue([DisallowNull] TClass target, string? rawValue)
 		{
 			if (rawValue != null)
 			{
@@ -53,7 +54,7 @@
 					{
 						return new Error(ErrorCode.SwitchFailedConversion, $"Converter for Switch {Name} threw an exception ({ex.Message})");
 					}
-					if (converted.Get(out TProp val, out string error))
+					if (converted.Success(out TProp val, out string error))
 					{
 						TargetProperty.SetValue(target, val);
 					}
@@ -93,7 +94,7 @@
 		/// If no dependencies have been set up, returns null.
 		/// </summary>
 		/// <param name="obj">The object to check</param>
-		public Error EvaluateDependencies(TClass obj, bool gotValue)
+		public Error EvaluateDependencies([DisallowNull] TClass obj, bool gotValue)
 		{
 			if (Dependencies == null)
 			{

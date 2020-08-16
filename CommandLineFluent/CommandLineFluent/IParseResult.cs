@@ -1,9 +1,12 @@
 ﻿namespace CommandLineFluent
 {
+	using System.Collections.Generic;
 	using System.Threading.Tasks;
 	public interface IParseResult
 	{
-		IVerb ParsedVerb { get; }
+		bool Ok { get; }
+		IVerb? Verb { get; }
+		IReadOnlyCollection<Error> Errors { get; }
 		void Invoke();
 		Task InvokeAsync();
 	}

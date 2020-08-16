@@ -52,7 +52,7 @@
 		[Fact]
 		public void NoArgs_EmptyResult()
 		{
-			Maybe<IParseResult, IReadOnlyCollection<Error>> rParse = parser.Parse(Array.Empty<string>());
+			IParseResult rParse = parser.Parse(Array.Empty<string>());
 			Assert.False(rParse.Ok);
 			rParse = parser.Parse("");
 			Assert.False(rParse.Ok);
@@ -68,24 +68,24 @@
 		{
 			CliParser fp = new CliParserBuilder()
 				.AddVerb<OptEmpty>("blah", (verb) => { }).Build();
-			Maybe<IParseResult, IReadOnlyCollection<Error>> result1 = fp.Parse(new string[] { "-?" });
-			Maybe<IParseResult, IReadOnlyCollection<Error>> result2 = fp.Parse("--help");
-			Error err = result1.ErrorOr(default).Single();
+			IParseResult result1 = fp.Parse(new string[] { "-?" });
+			IParseResult result2 = fp.Parse("--help");
+			Error err = result1.Errors.Single();
 			Assert.Equal(ErrorCode.HelpRequested, err.ErrorCode);
 			Assert.Empty(err.Message);
-			err = result2.ErrorOr(default).Single();
+			err = result2.Errors.Single();
 			Assert.Equal(ErrorCode.HelpRequested, err.ErrorCode);
 			Assert.Empty(err.Message);
 		}
 		[Fact]
 		public void ParsingWithInvalidVerb_Error()
 		{
-			Maybe<IParseResult, IReadOnlyCollection<Error>> result = new CliParserBuilder()
+			IParseResult result = new CliParserBuilder()
 				.AddVerb<Verb1>("verb1", verb => { })
 				.Build()
 				.Parse(new string[] { "InvalidVerb" });
 			Assert.False(result.Ok);
-			Assert.Equal(ErrorCode.InvalidVerb, result.ErrorOr(default).First().ErrorCode);
+			Assert.Equal(ErrorCode.InvalidVerb, result.Errors.First().ErrorCode);
 		}
 		[Fact]
 		public void NullConfigActionAddVerb_Exception()
@@ -105,14 +105,14 @@
 		[Fact]
 		public void GoodArgs_NormalResult()
 		{
-			Maybe<IParseResult, IReadOnlyCollection<Error>> ipr = parser.Parse(new string[] { "OptOneOfEach", "-o", "string", "--switch", "value" });
+			IParseResult ipr = parser.Parse(new string[] { "OptOneOfEach", "-o", "string", "--switch", "value" });
 			Assert.True(ipr.Ok);
-			ParseResult<OptOneOfEach> pr = Assert.IsType<ParseResult<OptOneOfEach>>(ipr.ValueOr(null));
+			SuccessfulParse<OptOneOfEach> pr = Assert.IsType<SuccessfulParse<OptOneOfEach>>(ipr);
 			Assert.NotNull(pr);
-			Assert.NotNull(pr.ParsedVerb);
-			Assert.NotNull(pr.TypedParsedVerb);
-			Assert.NotNull(pr.ParsedObject);
-			OptOneOfEach obj = pr.ParsedObject;
+			Assert.NotNull(pr.Verb);
+			Assert.NotNull(pr.Verb);
+			Assert.NotNull(pr.Object);
+			OptOneOfEach obj = pr.Object;
 			Assert.Equal("string", obj.Option);
 			Assert.True(obj.Switch);
 			Assert.Equal("value", obj.Value);
@@ -120,14 +120,14 @@
 		[Fact]
 		public void GoodArgs_MultiValue()
 		{
-			Maybe<IParseResult, IReadOnlyCollection<Error>> ipr = parser.Parse(new string[] { "OptMulti", "-o1", "opt1", "value1", "value2", "--option2", "opt2", "value3" });
+			IParseResult ipr = parser.Parse(new string[] { "OptMulti", "-o1", "opt1", "value1", "value2", "--option2", "opt2", "value3" });
 			Assert.True(ipr.Ok);
-			ParseResult<OptMulti> pr = Assert.IsType<ParseResult<OptMulti>>(ipr.ValueOr(null));
+			SuccessfulParse<OptMulti> pr = Assert.IsType<SuccessfulParse<OptMulti>>(ipr);
 			Assert.NotNull(pr);
-			Assert.NotNull(pr.ParsedVerb);
-			Assert.NotNull(pr.TypedParsedVerb);
-			Assert.NotNull(pr.ParsedObject);
-			OptMulti obj = pr.ParsedObject;
+			Assert.NotNull(pr.Verb);
+			Assert.NotNull(pr.Verb);
+			Assert.NotNull(pr.Object);
+			OptMulti obj = pr.Object;
 			Assert.Equal("opt1", obj.Option1);
 			Assert.Equal("opt2", obj.Option2);
 			Assert.Collection(obj.Values, x => Assert.Equal("value1", x), x => Assert.Equal("value2", x), x => Assert.Equal("value3", x));

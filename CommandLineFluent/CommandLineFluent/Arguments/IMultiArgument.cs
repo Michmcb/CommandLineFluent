@@ -1,6 +1,7 @@
 ﻿namespace CommandLineFluent.Arguments
 {
 	using System.Collections.Generic;
+	using System.Diagnostics.CodeAnalysis;
 	using System.Reflection;
 	/// <summary>
 	/// An argument which has multiple values on the command line.
@@ -23,13 +24,13 @@
 		/// The property that this argument maps to.
 		/// </summary>
 		PropertyInfo TargetProperty { get; }
-		Error EvaluateDependencies(TClass obj, bool gotValue);
+		Error EvaluateDependencies([DisallowNull] TClass obj, bool gotValue);
 		/// <summary>
 		/// Sets a property of <paramref name="obj"/> to <paramref name="rawValues"/>, after conversion.
 		/// There may or may not be a converter set up to translate <paramref name="rawValues"/> into something else.
 		/// </summary>
 		/// <param name="obj">The object on which to set a property</param>
 		/// <param name="rawValues">The value to set the property to (before any conversion)</param>
-		Error SetValue(TClass obj, IReadOnlyCollection<string> rawValues);
+		Error SetValue([DisallowNull] TClass obj, IReadOnlyCollection<string> rawValues);
 	}
 }

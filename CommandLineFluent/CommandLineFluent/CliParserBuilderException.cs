@@ -1,8 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace CommandLineFluent
+﻿namespace CommandLineFluent
 {
+	using System;
+	using System.Collections.Generic;
 	public class CliParserBuilderException : Exception
 	{
 		public ICollection<Error> Errors { get; }
@@ -34,5 +33,9 @@ namespace CommandLineFluent
 		/// <param name="errors">The errors encountered upon validation</param>
 		/// <param name="innerException">The exception that is the cause of the current exception</param>
 		public CliParserBuilderException(string message, ICollection<Error> errors, Exception innerException) : base(message, innerException) { Errors = errors; }
+		public override string ToString()
+		{
+			return string.Concat(base.ToString(), Environment.NewLine, string.Join(Environment.NewLine, Errors));
+		}
 	}
 }

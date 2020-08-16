@@ -81,18 +81,18 @@
 		/// </summary>
 		/// <param name="val">If <see cref="Ok"/> is true, the value. Otherwise, the default value for <typeparamref name="TVal"/>.</param>
 		/// <param name="error">If <see cref="Ok"/> is false, the error. Otherwise, the default value for <typeparamref name="TErr"/>.</param>
-		public bool Get([NotNullWhen(true)] out TVal val, [NotNullWhen(false)] out TErr error)
+		public bool Success([NotNullWhen(true)] out TVal val, [NotNullWhen(false)] out TErr error)
 		{
 			val = value;
 			error = this.error;
 			return Ok;
 		}
 #pragma warning restore CS8762 // Parameter must have a non-null value when exiting in some condition.
-		public static Maybe<TVal, TErr> Success([DisallowNull]TVal value)
+		public static Maybe<TVal, TErr> Value([DisallowNull]TVal value)
 		{
 			return new Maybe<TVal, TErr>(value, default, true);
 		}
-		public static Maybe<TVal, TErr> Failure([DisallowNull] TErr error)
+		public static Maybe<TVal, TErr> Error([DisallowNull] TErr error)
 		{
 			return new Maybe<TVal, TErr>(default, error, false);
 		}

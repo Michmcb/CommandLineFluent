@@ -1,6 +1,7 @@
 ﻿namespace CommandLineFluent.Arguments
 {
 	using System;
+	using System.Diagnostics.CodeAnalysis;
 	using System.Reflection;
 	/// <summary>
 	/// Defines a single rule of a Dependency.
@@ -29,7 +30,7 @@
 		/// The error message when this rule is violated.
 		/// </summary>
 		public string ErrorMessage { get; private set; }
-		internal DependencyRule(PropertyInfo targetProperty, DependencyRequiredness required)
+		internal DependencyRule([DisallowNull] PropertyInfo targetProperty, [DisallowNull] DependencyRequiredness required)
 		{
 			TargetProperty = targetProperty;
 			Requiredness = required;
@@ -125,7 +126,7 @@
 		/// </summary>
 		/// <param name="obj">The object.</param>
 		/// <param name="didAppear">If a value appeared during parsing.</param>
-		public bool DoesSatifyRule(TClass obj, bool didAppear)
+		public bool DoesSatifyRule([DisallowNull] TClass obj, bool didAppear)
 		{
 			// TargetProperty's value corresponds to the WhateverIf(e => e.Property) part they write.
 			TOtherProp propertyVal = (TOtherProp)TargetProperty.GetValue(obj);

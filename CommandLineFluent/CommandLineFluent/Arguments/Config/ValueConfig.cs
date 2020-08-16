@@ -5,6 +5,7 @@
 	using System.Linq.Expressions;
 	using System.Reflection;
 	using System.Collections.Generic;
+	using System.Diagnostics.CodeAnalysis;
 
 	/// <summary>
 	/// Configures a Value.
@@ -24,7 +25,7 @@
 		/// Creates a new <see cref="ValueConfig{TClass, TProp}"/>. You shouldn't need to create this manually.
 		/// </summary>
 		/// <param name="converter">The converter to use to convert from string to <typeparamref name="TProp"/>.</param>
-		public ValueConfig(Func<string, Maybe<TProp, string>>? converter)
+		public ValueConfig([AllowNull] Func<string, Maybe<TProp, string>>? converter)
 		{
 			defaultValue = default!;
 			this.converter = converter;

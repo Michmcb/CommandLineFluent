@@ -1,6 +1,7 @@
 ﻿namespace CommandLineFluent.Arguments
 {
 	using System;
+	using System.Diagnostics.CodeAnalysis;
 	using System.Linq.Expressions;
 	using System.Reflection;
 
@@ -18,7 +19,7 @@
 		/// <param name="longName">The long name.</param>
 		/// <param name="encloseInBrackets">If true, the string will be enclosed in [].</param>
 		/// <returns>A string with short and long name, separated by a pipe. Or if one is null, only the non-null name.</returns>
-		public static string ShortAndLongName(string? shortName, string? longName, bool encloseInBrackets = false)
+		public static string ShortAndLongName([AllowNull] string? shortName, [AllowNull] string? longName, bool encloseInBrackets = false)
 		{
 			if (shortName != null && longName != null)
 			{
@@ -36,7 +37,7 @@
 		/// <param name="valueName">The name of the value.</param>
 		/// <param name="encloseInBrackets">If true, the string will be enclosed in [].</param>
 		/// <returns>A string with short and long name, separated by a pipe. Or if one is null, only the non-null name.</returns>
-		public static string ShortAndLongName(string? shortName, string? longName, string valueName, bool encloseInBrackets = false)
+		public static string ShortAndLongName([AllowNull] string? shortName, [AllowNull] string? longName, string valueName, bool encloseInBrackets = false)
 		{
 			if (shortName != null && longName != null)
 			{

@@ -70,15 +70,13 @@
 					}
 				}).Build();
 
-			Maybe<IParseResult, IReadOnlyCollection<Error>> parsed = fp.Parse(args);
+			IParseResult parsed = fp.Parse(args);
 			if (outcome)
 			{
 				Assert.True(parsed.Ok);
-				IParseResult? pr = parsed.ValueOr(null);
-				Assert.NotNull(pr);
-				ParseResult<OptOneOfEach> parseResult = Assert.IsType<ParseResult<OptOneOfEach>>(pr);
-				Assert.NotNull(parseResult.ParsedObject);
-				OptOneOfEach parsedObject = parseResult.ParsedObject!;
+				SuccessfulParse<OptOneOfEach> parseResult = Assert.IsType<SuccessfulParse<OptOneOfEach>>(parsed);
+				Assert.NotNull(parseResult.Object);
+				OptOneOfEach parsedObject = parseResult.Object!;
 
 				Assert.NotNull(parsedObject);
 				if ((components & Components.Value) == Components.Value)
@@ -242,12 +240,12 @@
 
 					verb.AddSwitch<string>("s3", "ss3", s => s
 						.ForProperty(x => x.ConvertedSwitch)
-						.WithConverter(v => Maybe<string, string>.Success(v.ToString()))
+						.WithConverter(v => Maybe<string, string>.Value(v.ToString()))
 						.WithHelpText("h"));
 
 					verb.AddSwitch<string>("s4", "ss4", s => s
 						.ForProperty(x => x.DefaultValueConvertedSwitch)
-						.WithConverter(v => Maybe<string, string>.Success(v.ToString()))
+						.WithConverter(v => Maybe<string, string>.Value(v.ToString()))
 						.IsOptional("Default")
 						.WithHelpText("h"));
 
@@ -266,16 +264,14 @@
 						.WithHelpText("h"));
 				}).Build();
 
-			Maybe<IParseResult, IReadOnlyCollection<Error>> result = fp.Parse(args);
+			IParseResult result = fp.Parse(args);
 			Assert.Equal(shouldBeSuccessful, result.Ok);
 			if (shouldBeSuccessful)
 			{
-				IParseResult? pr = result.ValueOr(null);
-				Assert.NotNull(pr);
-				ParseResult<ComplexVerb1> tResult = Assert.IsType<ParseResult<ComplexVerb1>>(pr);
-				Assert.NotNull(tResult.ParsedObject);
-				ComplexVerb1 x = tResult.ParsedObject!;
-				Assert.True(expectedResult.RequiredValue == x.RequiredValue);
+				SuccessfulParse<ComplexVerb1> tResult = Assert.IsType<SuccessfulParse<ComplexVerb1>>(result);
+				Assert.NotNull(tResult.Object);
+				ComplexVerb1 x = tResult.Object!;
+				Assert.True(expectedResult!.RequiredValue == x.RequiredValue);
 				Assert.True(expectedResult.ConvertedValue == x.ConvertedValue);
 				Assert.True(expectedResult.OptionalValue == x.OptionalValue);
 				Assert.True(expectedResult.Switch1 == x.Switch1);
@@ -317,14 +313,12 @@
 						.WithHelpText("h"));
 				}).Build();
 
-			Maybe<IParseResult, IReadOnlyCollection<Error>> result = fp.Parse(args);
+			IParseResult result = fp.Parse(args);
 			Assert.Equal(shouldBeSuccessful, result.Ok);
 			if (shouldBeSuccessful)
 			{
-				IParseResult? pr = result.ValueOr(null);
-				Assert.NotNull(pr);
-				ParseResult<ManyValuesVerb> tResult = Assert.IsType<ParseResult<ManyValuesVerb>>(pr);
-				ManyValuesVerb x = tResult.ParsedObject!;
+				SuccessfulParse<ManyValuesVerb> tResult = Assert.IsType<SuccessfulParse<ManyValuesVerb>>(result);
+				ManyValuesVerb x = tResult.Object!;
 				Assert.NotNull(x);
 				Assert.True(expectedResult.Option == x.Option);
 				Assert.True(expectedResult.Switch == x.Switch);
@@ -376,10 +370,9 @@
 			{
 				args[0] = $"verb{i}";
 				args[1] = "Value";
-				IParseResult? parsed = fp.Parse(args).ValueOr(null);
-				Assert.NotNull(parsed);
-				Assert.NotNull(parsed.ParsedVerb);
-				Assert.Equal(args[0], parsed.ParsedVerb!.Name);
+				IParseResult parsed = fp.Parse(args);
+				Assert.NotNull(parsed.Verb);
+				Assert.Equal(args[0], parsed.Verb!.Name);
 				i++;
 			}
 		}

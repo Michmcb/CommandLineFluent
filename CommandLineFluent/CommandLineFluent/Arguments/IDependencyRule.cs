@@ -1,5 +1,6 @@
 ﻿namespace CommandLineFluent.Arguments
 {
+	using System.Diagnostics.CodeAnalysis;
 	/// <summary>
 	/// Defines a single rule of a Dependency.
 	/// </summary>
@@ -13,7 +14,7 @@
 		/// </summary>
 		/// <param name="obj">The object.</param>
 		/// <param name="didAppear">If a value appeared during parsing.</param>
-		bool DoesSatifyRule(TClass obj, bool didAppear);
+		bool DoesSatifyRule([DisallowNull] TClass obj, bool didAppear);
 		/// <summary>
 		/// The error message when this rule is violated.
 		/// </summary>
