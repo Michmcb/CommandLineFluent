@@ -72,7 +72,7 @@
 			{
 				if (ArgumentRequired == ArgumentRequired.Required)
 				{
-					return new Error(ErrorCode.MissingRequiredOption, $"Switch {Name} ({ArgUtils.ShortAndLongName(ShortName, LongName)}) is required and was not present");
+					return new Error(ErrorCode.MissingRequiredSwitch, $"Switch {Name} ({ArgUtils.ShortAndLongName(ShortName, LongName)}) is required and was not present");
 				}
 				else
 				{

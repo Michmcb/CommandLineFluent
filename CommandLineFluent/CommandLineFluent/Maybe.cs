@@ -49,12 +49,12 @@
 		/// Gets the value, or <paramref name="ifNone"/> if <see cref="Ok"/> is false.
 		/// </summary>
 		[return: NotNullIfNotNull("ifNone")]
-		public TVal ValueOr([AllowNull] TVal ifNone) => Ok ? value : ifNone;
+		public TVal ValueOr([AllowNull] TVal ifNone) => Ok ? value : ifNone!;
 		/// <summary>
 		/// Gets the error, or <paramref name="ifNone"/> if <see cref="Ok"/> is true.
 		/// </summary>
 		[return: NotNullIfNotNull("ifNone")]
-		public TErr ErrorOr([AllowNull] TErr ifNone) => Ok ? ifNone : error;
+		public TErr ErrorOr([AllowNull] TErr ifNone) => Ok ? ifNone! : error;
 #pragma warning disable CS8762 // Parameter must have a non-null value when exiting in some condition.
 		/// <summary>
 		/// If <see cref="Ok"/> is true, sets <paramref name="val"/> to the Value for this instance and returns true.
@@ -90,25 +90,25 @@
 #pragma warning restore CS8762 // Parameter must have a non-null value when exiting in some condition.
 		public static Maybe<TVal, TErr> Value([DisallowNull]TVal value)
 		{
-			return new Maybe<TVal, TErr>(value, default, true);
+			return new Maybe<TVal, TErr>(value, default!, true);
 		}
 		public static Maybe<TVal, TErr> Error([DisallowNull] TErr error)
 		{
-			return new Maybe<TVal, TErr>(default, error, false);
+			return new Maybe<TVal, TErr>(default!, error, false);
 		}
 		/// <summary>
 		/// Equivalent to new Maybe(<paramref name="value"/>, default, true);
 		/// </summary>
 		public static implicit operator Maybe<TVal, TErr>([DisallowNull] TVal value)
 		{
-			return new Maybe<TVal, TErr>(value, default, true);
+			return new Maybe<TVal, TErr>(value, default!, true);
 		}
 		/// <summary>
 		/// Equivalent to new Maybe(default, <paramref name="error"/>, true);
 		/// </summary>
 		public static implicit operator Maybe<TVal, TErr>([DisallowNull] TErr error)
 		{
-			return new Maybe<TVal, TErr>(default, error, false);
+			return new Maybe<TVal, TErr>(default!, error, false);
 		}
 		/// <summary>
 		/// Calls ToString() on the value if <see cref="Ok"/> is true, otherwise calls ToString() on the error.

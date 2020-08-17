@@ -50,8 +50,8 @@
 		/// <see cref="PropertyInfo"/>. If not, throws an ArgumentException.
 		/// </summary>
 		/// <typeparam name="TClass">Argument which is passed to the expression.</typeparam>
-		/// <typeparam name="TProp">What the expression returns</typeparam>
-		/// <param name="expression">The expression which must be a MemberE to a PropertyInfo</param>
+		/// <typeparam name="TProp">What the expression returns.</typeparam>
+		/// <param name="expression">The expression which must be a property.</param>
 		public static PropertyInfo PropertyInfoFromExpression<TClass, TProp>(Expression<Func<TClass, TProp>> expression)
 		{
 			if (!(expression.Body is MemberExpression me))
@@ -62,10 +62,6 @@
 			{
 				throw new ArgumentException($"Expression has to be a property of type {typeof(TProp)} of class {typeof(TClass)}", nameof(expression));
 			}
-			//if (prop.PropertyType != typeof(TProp))
-			//{
-			//	throw new ArgumentException($"Expression has to be a property of type {typeof(TProp)} of class {typeof(TClass)}", nameof(expression));
-			//}
 			return prop;
 		}
 	}

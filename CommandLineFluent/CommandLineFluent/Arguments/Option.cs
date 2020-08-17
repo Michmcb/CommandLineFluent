@@ -70,7 +70,7 @@
 			}
 			else
 			{
-				if(ArgumentRequired == ArgumentRequired.Required)
+				if (ArgumentRequired == ArgumentRequired.Required)
 				{
 					return new Error(ErrorCode.MissingRequiredOption, $"Option {Name} ({ArgUtils.ShortAndLongName(ShortName, LongName)}) is required and did not have a value provided");
 				}

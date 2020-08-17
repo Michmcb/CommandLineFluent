@@ -119,11 +119,7 @@
 			}
 			if (dependencies != null)
 			{
-				IEnumerable<Error> errors = dependencies.Validate();
-				if (errors.Any())
-				{
-					throw new CliParserBuilderException(string.Concat("Dependencies are not valid for Value ", name, " ", string.Join(", ", errors)));
-				}
+				dependencies.Validate();
 			}
 
 			return new Value<TClass, TProp>(name, helpText, argumentRequired, targetProperty, defaultValue, dependencies, converter);

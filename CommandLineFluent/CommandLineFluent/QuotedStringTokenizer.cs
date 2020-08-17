@@ -15,7 +15,6 @@
 		/// <param name="line">The string to split into tokens</param>
 		public ICollection<string> Tokenize(string line)
 		{
-			// TODO enforce having to close the last quote, maybe? make it an option?
 			// Empty strings, no tokens at all
 			if (string.IsNullOrWhiteSpace(line))
 			{

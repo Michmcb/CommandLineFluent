@@ -5,68 +5,91 @@
 	/// </summary>
 	public enum ErrorCode
 	{
-		// TODO sort out these error codes, and remove ProgrammerError.
-
 		/// <summary>
 		/// All is well, nothing went wrong
 		/// </summary>
 		Ok,
+		#region option
 		/// <summary>
-		/// A required value was specified but the user did not provide it
-		/// </summary>
-		MissingRequiredValue,
-		/// <summary>
-		/// Many required values were specified but the user did not provide at least 1
-		/// </summary>
-		MissingRequiredMultiValue,
-		/// <summary>
-		/// A required option was specified but the user did not provide it
+		/// User did not provide a required option
 		/// </summary>
 		MissingRequiredOption,
 		/// <summary>
-		/// A switch was required but was missing
+		/// An option is disallowed due to a dependency rule
 		/// </summary>
-		MissingRequiredSwitch,
+		OptionNotAllowed,
 		/// <summary>
-		/// Many values were required but were missing
-		/// </summary>
-		MissingRequiredManyValues,
-		/// <summary>
-		/// We were expecting to find something more, e.g. A value after an option, but we did not
-		/// </summary>
-		UnexpectedEndOfArguments,
-		/// <summary>
-		/// The user specified something we were not expecting
-		/// </summary>
-		UnexpectedArgument,
-		/// <summary>
-		/// The user specified an option multiple times
+		/// The user provided an option multiple times
 		/// </summary>
 		DuplicateOption,
 		/// <summary>
-		/// The user specified a switch multiple times
+		/// The user provided an option's short or long name, but no value after it
 		/// </summary>
-		DuplicateSwitch,
-		/// <summary>
-		/// The user specified more values than we were expecting
-		/// </summary>
-		TooManyValues,
+		OptionMissingValue,
 		/// <summary>
 		/// The value that the user provided for an option failed conversion
 		/// </summary>
 		OptionFailedConversion,
+		#endregion
+
+		#region switch
 		/// <summary>
-		/// The value that the user provided for a value failed conversion
+		/// User did not provide a required switch
 		/// </summary>
-		ValueFailedConversion,
+		MissingRequiredSwitch,
 		/// <summary>
-		/// The values that the user provided for many values failed conversion
+		/// A switch is disallowed due to a dependency rule
 		/// </summary>
-		MultiValueFailedConversion,
+		SwitchNotAllowed,
+		/// <summary>
+		/// The user provided a switch multiple times
+		/// </summary>
+		DuplicateSwitch,
 		/// <summary>
 		/// The switch that the user specified failed conversion
 		/// </summary>
 		SwitchFailedConversion,
+		#endregion
+
+		#region value
+		/// <summary>
+		/// User did not provide a required value
+		/// </summary>
+		MissingRequiredValue,
+		/// <summary>
+		/// A value is disallowed due to a dependency rule
+		/// </summary>
+		ValueNotAllowed,
+		/// <summary>
+		/// The user provided more values than we were expecting
+		/// </summary>
+		//TooManyValues,
+		/// <summary>
+		/// The value that the user provided for a value failed conversion
+		/// </summary>
+		ValueFailedConversion,
+		#endregion
+
+		#region multivalue
+		/// <summary>
+		/// User did not provide a required multivalue
+		/// </summary>
+		MissingRequiredMultiValue,
+		/// <summary>
+		/// A multivalue is disallowed due to a dependency rule
+		/// </summary>
+		MultiValueNotAllowed,
+		/// <summary>
+		/// One of the values provided for a multivalue failed conversion
+		/// </summary>
+		MultiValueFailedConversion,
+		#endregion
+
+		#region misc
+		/// <summary>
+		/// The user provided an argument we were not expecting
+		/// </summary>
+		UnexpectedArgument,
 		/// <summary>
 		/// The verb that the user specified was not a defined verb
 		/// </summary>
@@ -79,25 +102,6 @@
 		/// The user requested help
 		/// </summary>
 		HelpRequested,
-		/// <summary>
-		/// This error code value indicates a bug in your program, you'll only see this ErrorCode when an exception is raised.
-		/// </summary>
-		ProgrammerError,
-		/// <summary>
-		/// An option must not be provided
-		/// </summary>
-		OptionMustNotBeProvided,
-		/// <summary>
-		/// A switch must not be provided
-		/// </summary>
-		SwitchMustNotBeProvided,
-		/// <summary>
-		/// A value must not be provided
-		/// </summary>
-		ValueMustNotBeProvided,
-		/// <summary>
-		/// Many values must not be provided
-		/// </summary>
-		ManyValuesMustNotBeProvided
+		#endregion
 	}
 }

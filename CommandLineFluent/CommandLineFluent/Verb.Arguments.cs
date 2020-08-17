@@ -3,9 +3,7 @@
 	using CommandLineFluent.Arguments;
 	using CommandLineFluent.Arguments.Config;
 	using System;
-	using System.Collections.Generic;
 	using static Converters;
-
 	public sealed partial class Verb<TClass> : IVerb where TClass : class, new()
 	{
 		// TODO add a converter from hexadecimal strings to byte arrays, and methods here for that converter
@@ -240,66 +238,65 @@
 			return AddSwitchWithConverter(shortName, longName, switchConfig, null);
 		}
 
-		public MultiValue<TClass, IReadOnlyCollection<string>> AddMultiValueString(Action<MultiValueConfig<TClass, IReadOnlyCollection<string>>> multivalueConfig)
+		public MultiValue<TClass, string> AddMultiValueString(Action<MultiValueConfig<TClass, string>> multivalueConfig)
 		{
 			return AddMultiValueWithConverter(multivalueConfig, null);
 		}
-		// TODO make the MultiValue class work with singular converters
-		//public MultiValue<TClass, IReadOnlyCollection<short>> AddMultiValueShort(Action<MultiValueConfig<TClass, short>> MultiValueConfig)
-		//{
-		//	return AddMultiValueWithConverter(MultiValueConfig, ToShort);
-		//}
-		//public MultiValue<TClass, IReadOnlyCollection<ushort>> AddMultiValueUShort(Action<MultiValueConfig<TClass, ushort>> MultiValueConfig)
-		//{
-		//	return AddMultiValueWithConverter(MultiValueConfig, ToUShort);
-		//}
-		//public MultiValue<TClass, IReadOnlyCollection<int>> AddMultiValueInt(Action<MultiValueConfig<TClass, int>> MultiValueConfig)
-		//{
-		//	return AddMultiValueWithConverter(MultiValueConfig, ToInt);
-		//}
-		//public MultiValue<TClass, IReadOnlyCollection<uint>> AddMultiValueUInt(Action<MultiValueConfig<TClass, uint>> MultiValueConfig)
-		//{
-		//	return AddMultiValueWithConverter(MultiValueConfig, ToUInt);
-		//}
-		//public MultiValue<TClass, IReadOnlyCollection<long>> AddMultiValueLong(Action<MultiValueConfig<TClass, long>> MultiValueConfig)
-		//{
-		//	return AddMultiValueWithConverter(MultiValueConfig, ToLong);
-		//}
-		//public MultiValue<TClass, IReadOnlyCollection<ulong>> AddMultiValueULong(Action<MultiValueConfig<TClass, ulong>> MultiValueConfig)
-		//{
-		//	return AddMultiValueWithConverter(MultiValueConfig, ToULong);
-		//}
-		//public MultiValue<TClass, IReadOnlyCollection<float>> AddMultiValueFloat(Action<MultiValueConfig<TClass, float>> MultiValueConfig)
-		//{
-		//	return AddMultiValueWithConverter(MultiValueConfig, ToFloat);
-		//}
-		//public MultiValue<TClass, IReadOnlyCollection<double>> AddMultiValueDouble(Action<MultiValueConfig<TClass, double>> MultiValueConfig)
-		//{
-		//	return AddMultiValueWithConverter(MultiValueConfig, ToDouble);
-		//}
-		//public MultiValue<TClass, IReadOnlyCollection<decimal>> AddMultiValueDecimal(Action<MultiValueConfig<TClass, decimal>> MultiValueConfig)
-		//{
-		//	return AddMultiValueWithConverter(MultiValueConfig, ToDecimal);
-		//}
-		//public MultiValue<TClass, IReadOnlyCollection<TEnum>> AddMultiValueEnum<TEnum>(Action<MultiValueConfig<TClass, TEnum>> MultiValueConfig) where TEnum : struct, Enum
-		//{
-		//	return AddMultiValueWithConverter(MultiValueConfig, ToEnum<TEnum>);
-		//}
-		//public MultiValue<TClass, IReadOnlyCollection<DateTime>> AddMultiValueDateTime(Action<MultiValueConfig<TClass, DateTime>> MultiValueConfig)
-		//{
-		//	return AddMultiValueWithConverter(MultiValueConfig, ToDateTime);
-		//}
-		//public MultiValue<TClass, IReadOnlyCollection<TimeSpan>> AddMultiValueTimeSpan(Action<MultiValueConfig<TClass, TimeSpan>> MultiValueConfig)
-		//{
-		//	return AddMultiValueWithConverter(MultiValueConfig, ToTimeSpan);
-		//}
-		//public MultiValue<TClass, IReadOnlyCollection<Guid>> AddMultiValueGuid(Action<MultiValueConfig<TClass, Guid>> MultiValueConfig)
-		//{
-		//	return AddMultiValueWithConverter(MultiValueConfig, ToGuid);
-		//}
-		//public MultiValue<TClass, IReadOnlyCollection<Uri>> AddMultiValueUrl(Action<MultiValueConfig<TClass, Uri>> MultiValueConfig)
-		//{
-		//	return AddMultiValueWithConverter(MultiValueConfig, ToUri);
-		//}
+		public MultiValue<TClass, short> AddMultiValueShort(Action<MultiValueConfig<TClass, short>> MultiValueConfig)
+		{
+			return AddMultiValueWithConverter(MultiValueConfig, ToShort);
+		}
+		public MultiValue<TClass, ushort> AddMultiValueUShort(Action<MultiValueConfig<TClass, ushort>> MultiValueConfig)
+		{
+			return AddMultiValueWithConverter(MultiValueConfig, ToUShort);
+		}
+		public MultiValue<TClass, int> AddMultiValueInt(Action<MultiValueConfig<TClass, int>> MultiValueConfig)
+		{
+			return AddMultiValueWithConverter(MultiValueConfig, ToInt);
+		}
+		public MultiValue<TClass, uint> AddMultiValueUInt(Action<MultiValueConfig<TClass, uint>> MultiValueConfig)
+		{
+			return AddMultiValueWithConverter(MultiValueConfig, ToUInt);
+		}
+		public MultiValue<TClass, long> AddMultiValueLong(Action<MultiValueConfig<TClass, long>> MultiValueConfig)
+		{
+			return AddMultiValueWithConverter(MultiValueConfig, ToLong);
+		}
+		public MultiValue<TClass, ulong> AddMultiValueULong(Action<MultiValueConfig<TClass, ulong>> MultiValueConfig)
+		{
+			return AddMultiValueWithConverter(MultiValueConfig, ToULong);
+		}
+		public MultiValue<TClass, float> AddMultiValueFloat(Action<MultiValueConfig<TClass, float>> MultiValueConfig)
+		{
+			return AddMultiValueWithConverter(MultiValueConfig, ToFloat);
+		}
+		public MultiValue<TClass, double> AddMultiValueDouble(Action<MultiValueConfig<TClass, double>> MultiValueConfig)
+		{
+			return AddMultiValueWithConverter(MultiValueConfig, ToDouble);
+		}
+		public MultiValue<TClass, decimal> AddMultiValueDecimal(Action<MultiValueConfig<TClass, decimal>> MultiValueConfig)
+		{
+			return AddMultiValueWithConverter(MultiValueConfig, ToDecimal);
+		}
+		public MultiValue<TClass, TEnum> AddMultiValueEnum<TEnum>(Action<MultiValueConfig<TClass, TEnum>> MultiValueConfig) where TEnum : struct, Enum
+		{
+			return AddMultiValueWithConverter(MultiValueConfig, ToEnum<TEnum>);
+		}
+		public MultiValue<TClass, DateTime> AddMultiValueDateTime(Action<MultiValueConfig<TClass, DateTime>> MultiValueConfig)
+		{
+			return AddMultiValueWithConverter(MultiValueConfig, ToDateTime);
+		}
+		public MultiValue<TClass, TimeSpan> AddMultiValueTimeSpan(Action<MultiValueConfig<TClass, TimeSpan>> MultiValueConfig)
+		{
+			return AddMultiValueWithConverter(MultiValueConfig, ToTimeSpan);
+		}
+		public MultiValue<TClass, Guid> AddMultiValueGuid(Action<MultiValueConfig<TClass, Guid>> MultiValueConfig)
+		{
+			return AddMultiValueWithConverter(MultiValueConfig, ToGuid);
+		}
+		public MultiValue<TClass, Uri> AddMultiValueUrl(Action<MultiValueConfig<TClass, Uri>> MultiValueConfig)
+		{
+			return AddMultiValueWithConverter(MultiValueConfig, ToUri);
+		}
 	}
 }

@@ -46,17 +46,13 @@
 			return rule;
 		}
 		/// <summary>
-		/// Validates this rule. Returns an Error for each invalid thing.
+		/// Validates this rule. Throws an exception when something's wrong.
 		/// </summary>
-		public IEnumerable<Error> Validate()
+		public void Validate()
 		{
 			foreach (IDependencyRule<TClass> rule in rules)
 			{
-				Error err = rule.Validate();
-				if (err.ErrorCode != ErrorCode.Ok)
-				{
-					yield return err;
-				}
+				rule.Validate();
 			}
 		}
 		/// <summary>
@@ -81,7 +77,7 @@
 									errorCode = ErrorCode.MissingRequiredOption;
 									break;
 								case DependencyRequiredness.MustNotAppear:
-									errorCode = ErrorCode.OptionMustNotBeProvided;
+									errorCode = ErrorCode.OptionNotAllowed;
 									break;
 							}
 							break;
@@ -92,7 +88,7 @@
 									errorCode = ErrorCode.MissingRequiredSwitch;
 									break;
 								case DependencyRequiredness.MustNotAppear:
-									errorCode = ErrorCode.SwitchMustNotBeProvided;
+									errorCode = ErrorCode.SwitchNotAllowed;
 									break;
 							}
 							break;
@@ -103,7 +99,7 @@
 									errorCode = ErrorCode.MissingRequiredValue;
 									break;
 								case DependencyRequiredness.MustNotAppear:
-									errorCode = ErrorCode.ValueMustNotBeProvided;
+									errorCode = ErrorCode.ValueNotAllowed;
 									break;
 							}
 							break;
@@ -111,10 +107,10 @@
 							switch (rule.Requiredness)
 							{
 								case DependencyRequiredness.Required:
-									errorCode = ErrorCode.MissingRequiredManyValues;
+									errorCode = ErrorCode.MissingRequiredMultiValue;
 									break;
 								case DependencyRequiredness.MustNotAppear:
-									errorCode = ErrorCode.ManyValuesMustNotBeProvided;
+									errorCode = ErrorCode.MultiValueNotAllowed;
 									break;
 							}
 							break;

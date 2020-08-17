@@ -266,12 +266,12 @@
 							}
 							else
 							{
-								errors.Add(new Error(ErrorCode.DuplicateOption, $"The Option {arg} appeared twice"));
+								errors.Add(new Error(ErrorCode.DuplicateOption, "An Option appeared twice: " + arg));
 							}
 						}
 						else
 						{
-							errors.Add(new Error(ErrorCode.UnexpectedEndOfArguments, $"Expected to find a value after Option {arg}, but found nothing"));
+							errors.Add(new Error(ErrorCode.OptionMissingValue, "An Option was missing a value: " + arg));
 						}
 					}
 					else if (allSwitchesByShortName.TryGetValue(arg, out ISwitch<TClass>? sval) || allSwitchesByLongName.TryGetValue(arg, out sval))
@@ -287,7 +287,7 @@
 						}
 						else
 						{
-							errors.Add(new Error(ErrorCode.DuplicateSwitch, $"The Switch {arg} appeared twice"));
+							errors.Add(new Error(ErrorCode.DuplicateSwitch, "A Switch appeared twice: " + arg));
 						}
 					}
 					// Might be a Value
@@ -307,7 +307,7 @@
 					// It's something unrecognized
 					else
 					{
-						errors.Add(new Error(ErrorCode.UnexpectedArgument, $"Found the string {arg} in an unexpected place"));
+						errors.Add(new Error(ErrorCode.UnexpectedArgument, "Found an unexpected argument: " + arg));
 					}
 				}
 			}
@@ -348,7 +348,7 @@
 					errors.Add(error);
 				}
 			}
-			// Make sure all of the stuff we've set so far is good, if not bail out
+			// Make sure all of the stuff we've set so far is good, if not then bail out
 			if (errors.Count > 0)
 			{
 				return new FailedParseWithVerb<TClass>(this, errors);

@@ -17,7 +17,7 @@
 		/// <summary>
 		/// The default values to use when nothing is provided.
 		/// </summary>
-		public IReadOnlyCollection<TProp> DefaultValues { get; }
+		public IEnumerable<TProp> DefaultValues { get; }
 		/// <summary>
 		/// Any dependencies upon other properties, if some have been set up. Otherwise, null.
 		/// </summary>
@@ -26,8 +26,13 @@
 		/// Converts from a string into <typeparamref name="TProp"/>, or returns an error message.
 		/// </summary>
 		public Func<string, Maybe<TProp, string>>? Converter { get; }
+		/// <summary>
+		/// Creates a new collection, filled with the values provided.
+		/// </summary>
+		public Func<TProp[], IEnumerable<TProp>> CreateCollection { get; }
 		//public ICollection<string> IgnoredPrefixes { get; }
-		public MultiValue(string? name, string helpText, ArgumentRequired argumentRequired, [DisallowNull]PropertyInfo targetProperty, IReadOnlyCollection<TProp> defaultValues, [AllowNull] Dependencies<TClass, TProp>? dependencies, [AllowNull] Func<string, Maybe<TProp, string>>? converter)//, ICollection<string> ignoredPrefixes)
+		public MultiValue(string? name, string helpText, ArgumentRequired argumentRequired, [DisallowNull]PropertyInfo targetProperty, IEnumerable<TProp> defaultValues,
+			[AllowNull] Dependencies<TClass, TProp>? dependencies, [AllowNull] Func<string, Maybe<TProp, string>>? converter, [DisallowNull] Func<TProp[], IEnumerable<TProp>> createCollection)//, ICollection<string> ignoredPrefixes)
 		{
 			Name = name;
 			HelpText = helpText;
@@ -36,6 +41,7 @@
 			DefaultValues = defaultValues;
 			Dependencies = dependencies;
 			Converter = converter;
+			CreateCollection = createCollection;
 			//IgnoredPrefixes = ignoredPrefixes;
 		}
 		public Error SetValue([DisallowNull] TClass target, IReadOnlyCollection<string> rawValue)
@@ -44,14 +50,15 @@
 			{
 				if (Converter != null)
 				{
-					List<TProp> convertedValues = new List<TProp>(rawValue.Count);
+					int i = 0;
+					TProp[] convertedValues = new TProp[rawValue.Count];
 					try
 					{
 						foreach (string rv in rawValue)
 						{
 							if (Converter.Invoke(rv).Success(out TProp val, out string error))
 							{
-								convertedValues.Add(val);
+								convertedValues[i++] = val;
 							}
 							else
 							{
@@ -63,7 +70,7 @@
 					{
 						return new Error(ErrorCode.MultiValueFailedConversion, $"Converter for MultiValue {Name} threw an exception ({ex.Message})");
 					}
-					TargetProperty.SetValue(target, convertedValues);
+					TargetProperty.SetValue(target, CreateCollection(convertedValues));
 				}
 				else
 				{

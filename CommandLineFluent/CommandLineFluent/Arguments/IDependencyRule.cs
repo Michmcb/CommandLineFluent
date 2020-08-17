@@ -24,8 +24,8 @@
 		/// </summary>
 		DependencyRequiredness Requiredness { get; }
 		/// <summary>
-		/// Validates this rule. Returns an Error if something is invalid, or null otherwise.
+		/// Validates this rule. Throws an exception if something is invalid.
 		/// </summary>
-		Error Validate();
+		void Validate();
 	}
 }

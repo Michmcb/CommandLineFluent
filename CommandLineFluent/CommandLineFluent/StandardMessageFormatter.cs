@@ -13,11 +13,14 @@
 		public const string ThreeSpaces = "   ";
 		// TODO allow telling the StandardMessageFormatter how to order values/switches/options
 		// TODO wrap on >80 chars
-		// TODO maybe make the verb name cyan?
 		public StandardMessageFormatter()
 		{
-
+			KeywordColor = ConsoleColor.Cyan;
 		}
+		/// <summary>
+		/// The color that keywords are written in, such as verb names and short/long names for options/switches
+		/// </summary>
+		public ConsoleColor KeywordColor { get; set; }
 		/// <summary>
 		/// Writes the overall help.
 		/// Lists all verbs and their help text.
@@ -25,6 +28,7 @@
 		/// <param name="console">The console help is written to.</param>
 		public void WriteOverallHelp(IConsole console, IReadOnlyCollection<IVerb> verbs, CliParserConfig config)
 		{
+			ConsoleColor original = console.ForegroundColor;
 			console.WriteLine($@"Usage: {string.Join("|", verbs.Select(x => x.Name))} options...{Environment.NewLine}{Environment.NewLine}");
 
 			// This is the number of characters we're reserving for the key text
@@ -34,8 +38,11 @@
 				console.WriteLine(string.Concat(verb.Name, ThreeSpaces, verb.HelpText));
 				console.WriteLine();
 			}
-			console.WriteLine($@"Use verbname {config.ShortHelpSwitch}|{config.LongHelpSwitch} for detailed help.");
+			console.Write("For detailed help, use: ");
+			console.ForegroundColor = KeywordColor;
+			console.WriteLine($"verbname {config.ShortHelpSwitch}|{config.LongHelpSwitch}");
 			console.WriteLine();
+			console.ForegroundColor = original;
 		}
 		/// <summary>
 		/// Writes specific help for <paramref name="verb"/> to <paramref name="console"/>. Shows all of the possible arguments and their help text.
@@ -46,6 +53,7 @@
 		/// <param name="verb">The verb to write help for.</param>
 		public void WriteSpecificHelp<TClass>(IConsole console, Verb<TClass> verb) where TClass : class, new()
 		{
+			ConsoleColor original = console.ForegroundColor;
 			console.WriteLine(verb.HelpText);
 			console.Write(verb.Name + " ");
 
@@ -74,27 +82,39 @@
 
 			foreach (IOption<TClass> opt in verb.AllOptions)
 			{
+				console.ForegroundColor = KeywordColor;
 				console.Write(opt.ShortAndLongName() + ThreeSpaces);
+				console.ForegroundColor = original;
 				WriteRequiredness(console, opt.ArgumentRequired);
 				console.WriteLine(opt.HelpText);
+				console.WriteLine();
 			}
 			foreach (ISwitch<TClass> sw in verb.AllSwitches)
 			{
+				console.ForegroundColor = KeywordColor;
 				console.Write(sw.ShortAndLongName() + ThreeSpaces);
+				console.ForegroundColor = original;
 				WriteRequiredness(console, sw.ArgumentRequired);
 				console.WriteLine(sw.HelpText);
+				console.WriteLine();
 			}
 			foreach (IValue<TClass> val in verb.AllValues)
 			{
+				console.ForegroundColor = KeywordColor;
 				console.Write(val.Name + ThreeSpaces);
+				console.ForegroundColor = original;
 				WriteRequiredness(console, val.ArgumentRequired);
 				console.WriteLine(val.HelpText);
+				console.WriteLine();
 			}
 			if (verb.MultiValue != null)
 			{
+				console.ForegroundColor = KeywordColor;
 				console.Write(verb.MultiValue.Name + ThreeSpaces);
+				console.ForegroundColor = original;
 				WriteRequiredness(console, verb.MultiValue.ArgumentRequired);
 				console.WriteLine(verb.MultiValue.HelpText);
+				console.WriteLine();
 			}
 
 			// A few more spaces just so it's easier to read
@@ -109,6 +129,7 @@
 			//	}
 			//}
 			//return sb.ToString();
+			console.ForegroundColor = original;
 		}
 		/// <summary>
 		/// Writes each error's Message property to the console

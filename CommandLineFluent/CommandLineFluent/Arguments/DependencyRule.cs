@@ -152,13 +152,13 @@
 		/// <summary>
 		/// Validates this rule. Returns an Error if something is invalid, or null otherwise.
 		/// </summary>
-		public Error Validate()
+		public void Validate()
 		{
+			// TODO DependencyRule.Validate() should instead be replaced with a Build() method, and that throws an exception instead
 			if (Predicate == null)
 			{
-				return new Error(ErrorCode.ProgrammerError, $@"A rule that is {Requiredness} for the property {TargetProperty.Name} has no predicate. Probably missing a When, IsEqualTo, or IsNull call.");
+				throw new CliParserBuilderException($@"A rule that is {Requiredness} for the property {TargetProperty.Name} has no predicate. Probably missing a When, IsEqualTo, or IsNull call.");
 			}
-			return default;
 		}
 		private bool PredicateNull(TOtherProp val)
 		{

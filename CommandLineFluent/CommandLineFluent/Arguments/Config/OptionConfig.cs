@@ -130,11 +130,7 @@
 			}
 			if (dependencies != null)
 			{
-				IEnumerable<Error> errors = dependencies.Validate();
-				if (errors.Any())
-				{
-					throw new CliParserBuilderException(string.Concat("Dependencies are not valid for Option ", name, " ", string.Join(", ", errors)));
-				}
+				dependencies.Validate();
 			}
 
 			return new Option<TClass, TProp>(shortName, longName, name, helpText, argumentRequired, targetProperty, defaultValue, dependencies, converter);
