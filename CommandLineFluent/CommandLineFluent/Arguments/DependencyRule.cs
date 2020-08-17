@@ -25,12 +25,12 @@
 		/// <summary>
 		/// This rule applies when the predicate returns this value.
 		/// </summary>
-		public bool AppliesWhenPredicate { get; private set; }
+		public bool AppliesWhenPredicate => true;
 		/// <summary>
 		/// The error message when this rule is violated.
 		/// </summary>
 		public string ErrorMessage { get; private set; }
-		internal DependencyRule([DisallowNull] PropertyInfo targetProperty, [DisallowNull] DependencyRequiredness required)
+		internal DependencyRule(PropertyInfo targetProperty, DependencyRequiredness required)
 		{
 			TargetProperty = targetProperty;
 			Requiredness = required;
@@ -54,7 +54,6 @@
 		public DependencyRule<TClass, TOtherProp> IsEqualTo(TOtherProp value)
 		{
 			ThrowIfPredicateNotNull();
-			AppliesWhenPredicate = true;
 			Predicate = (x) => Equals(x, value);
 			return this;
 		}
@@ -65,8 +64,25 @@
 		public DependencyRule<TClass, TOtherProp> IsNotEqualTo(TOtherProp value)
 		{
 			ThrowIfPredicateNotNull();
-			AppliesWhenPredicate = true;
 			Predicate = (x) => !Equals(x, value);
+			return this;
+		}
+		/// <summary>
+		/// Configures the dependency rule to apply when the property specified prior is null
+		/// </summary>
+		public DependencyRule<TClass, TOtherProp> IsNull()
+		{
+			ThrowIfPredicateNotNull();
+			Predicate = PredicateNull;
+			return this;
+		}
+		/// <summary>
+		/// Configures the dependency rule to apply when the property specified prior is not null
+		/// </summary>
+		public DependencyRule<TClass, TOtherProp> IsNotNull()
+		{
+			ThrowIfPredicateNotNull();
+			Predicate = PredicateNotNull;
 			return this;
 		}
 		/// <summary>
@@ -77,38 +93,6 @@
 		{
 			ThrowIfPredicateNotNull();
 			Predicate = predicate;
-			AppliesWhenPredicate = true;
-			return this;
-		}
-		/// <summary>
-		/// Configures the dependency rule to apply when the provided predicate evaluates to false
-		/// </summary>
-		/// <param name="predicate">The predicate which determines whether or not this rule applies</param>
-		public DependencyRule<TClass, TOtherProp> WhenNot(Func<TOtherProp, bool> predicate)
-		{
-			ThrowIfPredicateNotNull();
-			Predicate = predicate;
-			AppliesWhenPredicate = false;
-			return this;
-		}
-		/// <summary>
-		/// Configures the dependency rule to apply when the property specified prior is null
-		/// </summary>
-		public DependencyRule<TClass, TOtherProp> IsNull()
-		{
-			ThrowIfPredicateNotNull();
-			Predicate = PredicateNull;
-			AppliesWhenPredicate = true;
-			return this;
-		}
-		/// <summary>
-		/// Configures the dependency rule to apply when the property specified prior is not null
-		/// </summary>
-		public DependencyRule<TClass, TOtherProp> IsNotNull()
-		{
-			ThrowIfPredicateNotNull();
-			Predicate = PredicateNotNull;
-			AppliesWhenPredicate = true;
 			return this;
 		}
 		/// <summary>
@@ -126,7 +110,7 @@
 		/// </summary>
 		/// <param name="obj">The object.</param>
 		/// <param name="didAppear">If a value appeared during parsing.</param>
-		public bool DoesSatifyRule([DisallowNull] TClass obj, bool didAppear)
+		public bool DoesSatifyRule(TClass obj, bool didAppear)
 		{
 			// TargetProperty's value corresponds to the WhateverIf(e => e.Property) part they write.
 			TOtherProp propertyVal = (TOtherProp)TargetProperty.GetValue(obj);
@@ -136,16 +120,14 @@
 				case DependencyRequiredness.Required:
 					// In this case, RequiredIf(e => e.Property).Predicate();
 					// Meaning it should be required if propertyVal satisfies the predicate.
-					bool isRequired = AppliesWhenPredicate == Predicate(propertyVal);
 					// If it was required, then it's true if it did appear, otherwise false.
 					// If it wasn't required, then it's all good whether or not it appeared.
-					return isRequired ? didAppear : true;
+					return Predicate(propertyVal) ? didAppear : true;
 				case DependencyRequiredness.MustNotAppear:
 					// In this case, MustNotAppearIf(e => e.Property).Predicate();
 					// Meaning it must not be provided if propertyVal satisfies the predicate
-					bool mustNotAppear = AppliesWhenPredicate == Predicate(propertyVal);
 					// If mustNotAppear is false, we don't care if it appears or not. It doesn't mean "must appear", it just means the rule of "must not appear" does not apply.
-					return mustNotAppear ? !didAppear : true;
+					return Predicate(propertyVal) ? !didAppear : true;
 			}
 			return AppliesWhenPredicate == Predicate(propertyVal);
 		}

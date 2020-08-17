@@ -3,10 +3,8 @@
 	using System;
 	using System.Collections.Generic;
 	using System.Diagnostics;
-	using System.Diagnostics.CodeAnalysis;
 	using System.Linq.Expressions;
 	using System.Reflection;
-	using System.Xml;
 
 	/// <summary>
 	/// Configures a MultiValue.
@@ -28,7 +26,7 @@
 		/// Creates a new <see cref="MultiValueConfig{TClass, TProp}"/>. You shouldn't need to create this manually.
 		/// </summary>
 		/// <param name="converter">The converter to use to convert from string to <typeparamref name="TProp"/>.</param>
-		public MultiValueConfig([AllowNull]Func<string, Maybe<TProp, string>> converter)
+		public MultiValueConfig(Func<string, Maybe<TProp, string>>? converter)
 		{
 			//ignoredPrefixes = new List<string>();
 			this.converter = converter;
@@ -121,7 +119,7 @@
 		/// </summary>
 		/// <param name="expression">The property to set.</param>
 		/// <param name="createCollection">A delegate which accepts an array of <typeparamref name="TProp"/>, and creates a new <typeparamref name="TPropCollection"/>.</param>
-		public MultiValueConfig<TClass, TProp> ForProperty<TPropCollection>([DisallowNull] Expression<Func<TClass, TPropCollection>> expression, [DisallowNull] Func<TProp[], IEnumerable<TProp>> createCollection) where TPropCollection : IEnumerable<TProp>
+		public MultiValueConfig<TClass, TProp> ForProperty<TPropCollection>(Expression<Func<TClass, TPropCollection>> expression, Func<TProp[], IEnumerable<TProp>> createCollection) where TPropCollection : IEnumerable<TProp>
 		{
 			Guard.ThrowIfNull(expression, nameof(expression));
 			Guard.ThrowIfNull(createCollection, nameof(createCollection));
@@ -168,7 +166,7 @@
 		/// </summary>
 		/// <param name="defaultValues">The default values to use when the rules allow this to not be provided.</param>
 		/// <param name="config">An action to configure the dependencies.</param>
-		public MultiValueConfig<TClass, TProp> WithDependencies(IEnumerable<TProp> defaultValues, [DisallowNull] Action<Dependencies<TClass, TProp>> config)
+		public MultiValueConfig<TClass, TProp> WithDependencies(IEnumerable<TProp> defaultValues, Action<Dependencies<TClass, TProp>> config)
 		{
 			Guard.ThrowIfNull(config, nameof(config));
 			argumentRequired = ArgumentRequired.HasDependencies;
@@ -191,7 +189,7 @@
 		/// <param name="name">The human-readable name.</param>
 		public MultiValueConfig<TClass, TProp> WithName(string name)
 		{
-			this.name = name;	
+			this.name = name;
 			return this;
 		}
 		// /// <summary>
@@ -216,7 +214,7 @@
 		/// If the user doesn't provide any values, the converter isn't invoked, instead the default values provided are used.
 		/// </summary>
 		/// <param name="converter">A convert that converts a string to <typeparamref name="TProp"/>.</param>
-		public MultiValueConfig<TClass, TProp> WithConverter([AllowNull]Func<string, Maybe<TProp, string>>? converter)
+		public MultiValueConfig<TClass, TProp> WithConverter(Func<string, Maybe<TProp, string>>? converter)
 		{
 			this.converter = converter;
 			return this;
@@ -240,7 +238,7 @@
 			{
 				dependencies.Validate();
 			}
-			
+
 			return new MultiValue<TClass, TProp>(name, helpText, argumentRequired, targetProperty, defaultValues ?? Array.Empty<TProp>(), dependencies, converter, createCollection);
 		}
 	}

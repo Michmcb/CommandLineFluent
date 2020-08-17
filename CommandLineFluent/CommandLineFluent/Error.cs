@@ -1,9 +1,11 @@
-﻿namespace CommandLineFluent
+﻿using System;
+
+namespace CommandLineFluent
 {
 	/// <summary>
 	/// Represents an error which was encountered when parsing the command line arguments provided
 	/// </summary>
-	public readonly struct Error
+	public readonly struct Error : IEquatable<Error>
 	{
 		/// <summary>
 		/// A human-readable error message
@@ -30,6 +32,26 @@
 		public override string ToString()
 		{
 			return string.Concat(ErrorCode.ToString(), " - ", Message);
+		}
+		public override bool Equals(object? obj)
+		{
+			return obj is Error error && Equals(error);
+		}
+		public bool Equals(Error other)
+		{
+			return ErrorCode == other.ErrorCode;
+		}
+		public override int GetHashCode()
+		{
+			return 431791832 + ErrorCode.GetHashCode();
+		}
+		public static bool operator ==(Error left, Error right)
+		{
+			return left.Equals(right);
+		}
+		public static bool operator !=(Error left, Error right)
+		{
+			return !(left == right);
 		}
 	}
 }

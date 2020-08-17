@@ -1,6 +1,5 @@
 ﻿namespace CommandLineFluent.Arguments
 {
-	using System.Diagnostics.CodeAnalysis;
 	using System.Reflection;
 
 	/// <summary>
@@ -24,13 +23,13 @@
 		/// The property that this argument maps to.
 		/// </summary>
 		PropertyInfo TargetProperty { get; }
-		Error EvaluateDependencies([DisallowNull] TClass obj, bool gotValue);
+		Error EvaluateDependencies(TClass obj, bool gotValue);
 		/// <summary>
 		/// Sets a property of <paramref name="obj"/> to <paramref name="rawValue"/>, after conversion.
 		/// There may or may not be a converter set up to translate <paramref name="rawValue"/> into something else.
 		/// </summary>
 		/// <param name="obj">The object on which to set a property</param>
 		/// <param name="rawValue">The value to set the property to (before any conversion)</param>
-		Error SetValue([DisallowNull] TClass obj, string? rawValue);
+		Error SetValue(TClass obj, string? rawValue);
 	}
 }

@@ -12,6 +12,6 @@
 		/// </summary>
 		/// <param name="args">The string to split.</param>
 		/// <returns>The tokens.</returns>
-		ICollection<string> Tokenize(string args);
+		IEnumerable<string> Tokenize(string args);
 	}
 }

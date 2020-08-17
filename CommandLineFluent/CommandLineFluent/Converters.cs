@@ -444,6 +444,21 @@
 			}
 		}
 		/// <summary>
+		/// Converts the provided string to Uri?.
+		/// </summary>
+		/// <param name="s">The string to convert</param>
+		public static Maybe<Uri?, string> ToNullableUri(string s)
+		{
+			if (Uri.TryCreate(s, UriKind.RelativeOrAbsolute, out Uri v))
+			{
+				return v;
+			}
+			else
+			{
+				return s + " was not a URL";
+			}
+		}
+		/// <summary>
 		/// Splits the string into multiple strings based on separators.
 		/// Uses s.Split()
 		/// </summary>

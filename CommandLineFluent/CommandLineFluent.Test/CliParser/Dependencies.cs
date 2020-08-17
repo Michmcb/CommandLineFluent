@@ -313,7 +313,7 @@
 						.WithHelpText("h")
 						.WithDependencies("", value =>
 						{
-							value.RequiredIf(e => e.OptionNullable).WhenNot(v => v > 50).WithErrorMessage("Only required if OptionNullable is not larger than 50");
+							value.RequiredIf(e => e.OptionNullable).When(v => v <= 50).WithErrorMessage("Only required if OptionNullable is less than or equal to 50");
 						}));
 
 					verb.AddOptionNullableInt("o", "option", o => o
@@ -344,7 +344,7 @@
 						.WithHelpText("h")
 						.WithDependencies("", value =>
 						{
-							value.MustNotAppearIf(e => e.OptionNullable).WhenNot(v => v > 50).WithErrorMessage("Must not appear if OptionNullable is smaller than 51");
+							value.MustNotAppearIf(e => e.OptionNullable).When(v => v <= 50).WithErrorMessage("Must not appear if OptionNullable is less than or equal to 50");
 						}));
 
 					verb.AddOptionNullableInt("o", "option", o => o

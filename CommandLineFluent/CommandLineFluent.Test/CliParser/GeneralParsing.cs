@@ -224,7 +224,7 @@
 						v.ForProperty(x => x.ConvertedValue)
 						.WithHelpText("h"));
 
-					verb.AddValueString(v => v
+					verb.AddValueNullableString(v => v
 						.ForProperty(x => x.OptionalValue)
 						.IsOptional(null)
 						.WithHelpText("h"));

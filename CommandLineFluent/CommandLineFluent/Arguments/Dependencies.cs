@@ -61,7 +61,7 @@
 		/// <param name="obj">The object to check</param>
 		/// <param name="wasValueProvided">Whether or not the FluentArgument received a value from parsing</param>
 		/// <param name="fluentArgumentType">The type of argument, used to return the correct error code</param>
-		internal Error EvaluateRelationship([DisallowNull] TClass obj, bool wasValueProvided, ArgumentType fluentArgumentType)
+		internal Error EvaluateRelationship(TClass obj, bool wasValueProvided, ArgumentType fluentArgumentType)
 		{
 			foreach (IDependencyRule<TClass> rule in rules)
 			{

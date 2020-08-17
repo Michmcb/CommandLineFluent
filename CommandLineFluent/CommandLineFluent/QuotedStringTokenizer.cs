@@ -13,17 +13,15 @@
 		/// If you don't terminate the last pair of quotes ("like this), then the last token will be to the end of the string, including any whitespace or newlines
 		/// </summary>
 		/// <param name="line">The string to split into tokens</param>
-		public ICollection<string> Tokenize(string line)
+		public IEnumerable<string> Tokenize(string line)
 		{
 			// Empty strings, no tokens at all
 			if (string.IsNullOrWhiteSpace(line))
 			{
-				return Array.Empty<string>();
+				yield break;
 			}
 
 			int i = 0;
-			List<string> tokens = new List<string>();
-
 			// Find the first character that isn't a whitespace character, and have i set to that char
 			for (; i < line.Length && char.IsWhiteSpace(line[i]); i++)
 			{
@@ -35,7 +33,7 @@
 				// We have to keep going until we find the delimiting character.
 				if (line[i] == delimitingChar)
 				{
-					tokens.Add(line.Substring(from, i - from));
+					yield return line.Substring(from, i - from);
 					// And now, we need to find the next delimiting char. To do that, just skip whitespace.
 					// Plus though, if we ended on a quote, jump 1 character ahead. Otherwise, we won't move forwards!
 					if (delimitingChar != ' ')
@@ -64,9 +62,8 @@
 			// Yes this means that the user doesn't HAVE to close their quotes
 			if (from < line.Length)
 			{
-				tokens.Add(line.Substring(from));
+				yield return line.Substring(from);
 			}
-			return tokens;
 		}
 		private char GetDelimiter(char c)
 		{

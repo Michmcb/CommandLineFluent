@@ -2,7 +2,6 @@
 {
 	using System;
 	using System.Collections.Generic;
-	using System.Diagnostics.CodeAnalysis;
 	using System.Reflection;
 	/// <summary>
 	/// Captures all lone values, such as: Foo.exe Value1 -t someswitch Value2 Value3. All 3 values there would be captured as an array: [Value1, Value2, Value3].
@@ -31,8 +30,8 @@
 		/// </summary>
 		public Func<TProp[], IEnumerable<TProp>> CreateCollection { get; }
 		//public ICollection<string> IgnoredPrefixes { get; }
-		public MultiValue(string? name, string helpText, ArgumentRequired argumentRequired, [DisallowNull]PropertyInfo targetProperty, IEnumerable<TProp> defaultValues,
-			[AllowNull] Dependencies<TClass, TProp>? dependencies, [AllowNull] Func<string, Maybe<TProp, string>>? converter, [DisallowNull] Func<TProp[], IEnumerable<TProp>> createCollection)//, ICollection<string> ignoredPrefixes)
+		public MultiValue(string? name, string helpText, ArgumentRequired argumentRequired, PropertyInfo targetProperty, IEnumerable<TProp> defaultValues,
+			Dependencies<TClass, TProp>? dependencies, Func<string, Maybe<TProp, string>>? converter, Func<TProp[], IEnumerable<TProp>> createCollection)//, ICollection<string> ignoredPrefixes)
 		{
 			Name = name;
 			HelpText = helpText;
@@ -44,7 +43,7 @@
 			CreateCollection = createCollection;
 			//IgnoredPrefixes = ignoredPrefixes;
 		}
-		public Error SetValue([DisallowNull] TClass target, IReadOnlyCollection<string> rawValue)
+		public Error SetValue(TClass target, IReadOnlyCollection<string> rawValue)
 		{
 			if (rawValue.Count > 0)
 			{
@@ -107,7 +106,7 @@
 		/// If no dependencies have been set up, returns null.
 		/// </summary>
 		/// <param name="obj">The object to check</param>
-		public Error EvaluateDependencies([DisallowNull] TClass obj, bool gotValue)
+		public Error EvaluateDependencies(TClass obj, bool gotValue)
 		{
 			if (Dependencies == null)
 			{

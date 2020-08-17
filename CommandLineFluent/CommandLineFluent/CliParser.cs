@@ -2,7 +2,6 @@
 {
 	using System;
 	using System.Collections.Generic;
-	using System.Diagnostics.CodeAnalysis;
 	using System.Linq;
 	using System.Threading.Tasks;
 	/// <summary>
@@ -21,7 +20,7 @@
 		/// <param name="msgFormatter"></param>
 		/// <param name="verbs"></param>
 		/// <param name="config"></param>
-		internal CliParser([DisallowNull] IConsole console, [DisallowNull] ITokenizer tokenizer, [DisallowNull] IMessageFormatter msgFormatter, Dictionary<string, IVerb> verbs, CliParserConfig config)
+		internal CliParser(IConsole console, ITokenizer tokenizer, IMessageFormatter msgFormatter, Dictionary<string, IVerb> verbs, CliParserConfig config)
 		{
 			Console = console;
 			Tokenizer = tokenizer;

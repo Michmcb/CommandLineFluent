@@ -2,7 +2,6 @@
 {
 	using System;
 	using System.Collections.Generic;
-	using System.Diagnostics.CodeAnalysis;
 
 	public sealed class CliParserBuilder
 	{
@@ -32,7 +31,7 @@
 		/// By default, this is <see cref="StandardConsole"/>, which just uses the static class <see cref="Console"/>.
 		/// </summary>
 		/// <param name="console">The console to use.</param>
-		public CliParserBuilder UseConsole([DisallowNull] IConsole console)
+		public CliParserBuilder UseConsole(IConsole console)
 		{
 			this.console = console;
 			return this;
@@ -42,7 +41,7 @@
 		/// By default, this is <see cref="QuotedStringTokenizer"/>, which splits strings into tokens based on single or double quotes, or spaces.
 		/// </summary>
 		/// <param name="tokenizer">The tokenizer to use.</param>
-		public CliParserBuilder UseTokenizer([DisallowNull] ITokenizer tokenizer)
+		public CliParserBuilder UseTokenizer(ITokenizer tokenizer)
 		{
 			this.tokenizer = tokenizer;
 			return this;
@@ -52,7 +51,7 @@
 		/// By default, this is <see cref="StandardMessageFormatter"/>.
 		/// </summary>
 		/// <param name="msgFormatter">The tokenizer to use.</param>
-		public CliParserBuilder UseHelpFormatter([DisallowNull] IMessageFormatter msgFormatter)
+		public CliParserBuilder UseHelpFormatter(IMessageFormatter msgFormatter)
 		{
 			this.msgFormatter = msgFormatter;
 			return this;

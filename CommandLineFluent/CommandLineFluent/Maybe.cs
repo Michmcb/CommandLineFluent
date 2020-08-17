@@ -1,7 +1,6 @@
 ﻿namespace CommandLineFluent
 {
 	using System;
-	using System.Diagnostics.CodeAnalysis;
 
 	/// <summary>
 	/// A way of returning either a Value or an Error. Provides methods to safely get either the Value or Error.
@@ -22,7 +21,7 @@
 		/// <param name="value">The success value.</param>
 		/// <param name="error">The failure value.</param>
 		/// <param name="ok">If true, success. If false, failure.</param>
-		private Maybe([DisallowNull] TVal value, [DisallowNull] TErr error, bool ok)
+		private Maybe(TVal value, TErr error, bool ok)
 		{
 			if (ok && value == null)
 			{
@@ -48,20 +47,18 @@
 		/// <summary>
 		/// Gets the value, or <paramref name="ifNone"/> if <see cref="Ok"/> is false.
 		/// </summary>
-		[return: NotNullIfNotNull("ifNone")]
-		public TVal ValueOr([AllowNull] TVal ifNone) => Ok ? value : ifNone!;
+		public TVal ValueOr(TVal ifNone) => Ok ? value : ifNone!;
 		/// <summary>
 		/// Gets the error, or <paramref name="ifNone"/> if <see cref="Ok"/> is true.
 		/// </summary>
-		[return: NotNullIfNotNull("ifNone")]
-		public TErr ErrorOr([AllowNull] TErr ifNone) => Ok ? ifNone! : error;
+		public TErr ErrorOr(TErr ifNone) => Ok ? ifNone! : error;
 #pragma warning disable CS8762 // Parameter must have a non-null value when exiting in some condition.
 		/// <summary>
 		/// If <see cref="Ok"/> is true, sets <paramref name="val"/> to the Value for this instance and returns true.
 		/// Otherwise, val is set to the default value for <typeparamref name="TVal"/> and returns false.
 		/// </summary>
 		/// <param name="val"></param>
-		public bool HasValue([NotNullWhen(true)] out TVal val)
+		public bool HasValue(out TVal val)
 		{
 			val = value;
 			return Ok;
@@ -71,7 +68,7 @@
 		/// Otherwise, val is set to the default value for <typeparamref name="TErr"/> and returns false.
 		/// </summary>
 		/// <param name="val"></param>
-		public bool HasError([NotNullWhen(true)] out TErr error)
+		public bool HasError(out TErr error)
 		{
 			error = this.error;
 			return !Ok;
@@ -81,32 +78,32 @@
 		/// </summary>
 		/// <param name="val">If <see cref="Ok"/> is true, the value. Otherwise, the default value for <typeparamref name="TVal"/>.</param>
 		/// <param name="error">If <see cref="Ok"/> is false, the error. Otherwise, the default value for <typeparamref name="TErr"/>.</param>
-		public bool Success([NotNullWhen(true)] out TVal val, [NotNullWhen(false)] out TErr error)
+		public bool Success(out TVal val, out TErr error)
 		{
 			val = value;
 			error = this.error;
 			return Ok;
 		}
 #pragma warning restore CS8762 // Parameter must have a non-null value when exiting in some condition.
-		public static Maybe<TVal, TErr> Value([DisallowNull]TVal value)
+		public static Maybe<TVal, TErr> Value(TVal value)
 		{
 			return new Maybe<TVal, TErr>(value, default!, true);
 		}
-		public static Maybe<TVal, TErr> Error([DisallowNull] TErr error)
+		public static Maybe<TVal, TErr> Error(TErr error)
 		{
 			return new Maybe<TVal, TErr>(default!, error, false);
 		}
 		/// <summary>
 		/// Equivalent to new Maybe(<paramref name="value"/>, default, true);
 		/// </summary>
-		public static implicit operator Maybe<TVal, TErr>([DisallowNull] TVal value)
+		public static implicit operator Maybe<TVal, TErr>(TVal value)
 		{
 			return new Maybe<TVal, TErr>(value, default!, true);
 		}
 		/// <summary>
 		/// Equivalent to new Maybe(default, <paramref name="error"/>, true);
 		/// </summary>
-		public static implicit operator Maybe<TVal, TErr>([DisallowNull] TErr error)
+		public static implicit operator Maybe<TVal, TErr>(TErr error)
 		{
 			return new Maybe<TVal, TErr>(default!, error, false);
 		}
