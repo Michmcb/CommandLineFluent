@@ -1,10 +1,8 @@
 ﻿namespace CommandLineFluent.Test.CliParser
 {
 	using CommandLineFluent;
-	using CommandLineFluent.Arguments.Config;
 	using CommandLineFluent.Test.Options;
 	using System;
-	using System.Collections.Generic;
 	using System.Linq;
 	using Xunit;
 
@@ -51,6 +49,14 @@
 		public void ValueShortOptionLongSwitch_Good() { SimpleParsing(true, Components.All, new string[] { "default", "Value", "--switch", "-o", "Option" }); }
 		[Fact]
 		public void ValueLongOptionLongSwitch_Good() { SimpleParsing(true, Components.All, new string[] { "default", "Value", "--switch", "--option", "Option" }); }
+		[Fact]
+		public void Nothing_Bad() { SimpleParsing(false, Components.None, new string[] { "" }); }
+		[Fact]
+		public void InvalidVerb_Bad() { SimpleParsing(false, Components.None, new string[] { "knuckles" }); }
+		[Fact]
+		public void InvalidArgument_Bad() { SimpleParsing(false, Components.None, new string[] { "default", "Value", "--hey" }); }
+		[Fact]
+		public void OptionMissingvalue_Bad() { SimpleParsing(false, Components.None, new string[] { "default", "Value", "--option" }); }
 		internal void SimpleParsing(bool outcome, Components components, string[] args)
 		{
 			CliParser fp = new CliParserBuilder()

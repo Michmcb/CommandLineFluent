@@ -11,7 +11,7 @@
 		private ITokenizer? tokenizer;
 		private IMessageFormatter? msgFormatter;
 		/// <summary>
-		/// Creates a new CliParserBuilder, using <see cref="StringComparer.OrdinalIgnoreCase"/> as the comparer for verbs, and a default <see cref="CliParserConfig"/>.
+		/// Creates a new CliParserBuilder, using and a default <see cref="CliParserConfig"/>.
 		/// </summary>
 		public CliParserBuilder()
 		{
@@ -60,10 +60,10 @@
 		/// Adds a verb for this parser. To invoke it, the user has to enter <paramref name="name"/> on the command line.
 		/// e.g. "foo.exe add" invokes the verb with the name "add".
 		/// </summary>
-		/// <typeparam name="TOpt">The type of the class which will be created when arguments for that verb are parsed successfully</typeparam>
+		/// <typeparam name="TClass">The type of the class which will be created when arguments for that verb are parsed successfully</typeparam>
 		/// <param name="name">The name of the verb</param>
 		/// <param name="config">The action to configure the verb</param>
-		public CliParserBuilder AddVerb<TOpt>(string name, Action<Verb<TOpt>> config) where TOpt : class, new()
+		public CliParserBuilder AddVerb<TClass>(string name, Action<Verb<TClass>> config) where TClass : class, new()
 		{
 			if (config == null)
 			{
@@ -77,7 +77,33 @@
 			{
 				throw new CliParserBuilderException("That verb name has already been used, you may only use unique verb names");
 			}
-			Verb<TOpt> v = new Verb<TOpt>(name, this.config);
+			Verb<TClass> v = new Verb<TClass>(name, this.config);
+			verbs.Add(name, v);
+			config.Invoke(v);
+			return this;
+		}
+		/// <summary>
+		/// Adds a verb for this parser. To invoke it, the user has to enter <paramref name="name"/> on the command line.
+		/// e.g. "foo.exe add" invokes the verb with the name "add".
+		/// </summary>
+		/// <typeparam name="TClass">The type of the class which will be created when arguments for that verb are parsed successfully</typeparam>
+		/// <param name="name">The name of the verb</param>
+		/// <param name="config">The action to configure the verb</param>
+		public CliParserBuilder AddVerb<TClass, TState1>(string name, Action<Verb<TClass>> config) where TClass : class, new()
+		{
+			if (config == null)
+			{
+				throw new ArgumentNullException(nameof(config), "You need to configure the verb");
+			}
+			if (string.IsNullOrEmpty(name))
+			{
+				throw new ArgumentNullException(nameof(name), "Verb Name cannot be null or an empty string");
+			}
+			if (verbs.ContainsKey(name))
+			{
+				throw new CliParserBuilderException("That verb name has already been used, you may only use unique verb names");
+			}
+			Verb<TClass> v = new Verb<TClass>(name, this.config);
 			verbs.Add(name, v);
 			config.Invoke(v);
 			return this;

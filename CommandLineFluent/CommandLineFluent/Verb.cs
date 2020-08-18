@@ -6,6 +6,7 @@
 	using System.Collections.Generic;
 	using System.ComponentModel;
 	using System.Threading.Tasks;
+
 	public sealed partial class Verb<TClass> : IVerb where TClass : class, new()
 	{
 		private readonly CliParserConfig config;
@@ -28,8 +29,8 @@
 			allSwitchesByLongName = new Dictionary<string, ISwitch<TClass>>(config.StringComparer);
 			allOptionsByLongName = new Dictionary<string, IOption<TClass>>(config.StringComparer);
 			HelpText = "No help available.";
-			Invoke = x => throw new CliParserBuilderException(string.Concat("Invoke for verb", Name, " has not been configured"));
-			InvokeAsync = x => throw new CliParserBuilderException(string.Concat("InvokeAsync for verb", Name, " has not been configured"));
+			Invoke = x => throw new CliParserBuilderException(string.Concat("Invoke for verb ", Name, " has not been configured"));
+			InvokeAsync = x => throw new CliParserBuilderException(string.Concat("InvokeAsync for verb ", Name, " has not been configured"));
 		}
 		/// <summary>
 		/// If not null, the MultiValue for this verb which picks up all extra arguments.
