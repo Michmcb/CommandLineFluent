@@ -51,7 +51,7 @@
 		/// By default, this is <see cref="StandardMessageFormatter"/>.
 		/// </summary>
 		/// <param name="msgFormatter">The tokenizer to use.</param>
-		public CliParserBuilder UseHelpFormatter(IMessageFormatter msgFormatter)
+		public CliParserBuilder UseMessageFormatter(IMessageFormatter msgFormatter)
 		{
 			this.msgFormatter = msgFormatter;
 			return this;

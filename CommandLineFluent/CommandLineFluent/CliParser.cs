@@ -47,8 +47,9 @@
 		/// </summary>
 		/// <param name="prompt">The prompt to write, e.g. MyShell>.</param>
 		/// <param name="exitKeyword">The keyword to use to stop the loop. Cannot be the same as a Verb name.</param>
-		/// <param name="color">The foreground color the console is set to just before writing the prompt.</param>
-		public void Shell(string prompt, string exitKeyword = "exit", ConsoleColor color = ConsoleColor.Gray)
+		/// <param name="promptColor">The foreground color of <paramref name="prompt"/>.</param>
+		/// <param name="commandColor">The foreground color of the text that the user enters after <paramref name="prompt"/> is written.</param>
+		public void Shell(string prompt, string exitKeyword = "exit", ConsoleColor promptColor = ConsoleColor.White, ConsoleColor commandColor = ConsoleColor.Gray)
 		{
 			if (verbs.ContainsKey(exitKeyword))
 			{
@@ -56,8 +57,9 @@
 			}
 			while (true)
 			{
-				Console.ForegroundColor = color;
+				Console.ForegroundColor = promptColor;
 				Console.Write(prompt);
+				Console.ForegroundColor = commandColor;
 				string line = Console.ReadLine();
 				if (!config.StringComparer.Equals(exitKeyword, line))
 				{

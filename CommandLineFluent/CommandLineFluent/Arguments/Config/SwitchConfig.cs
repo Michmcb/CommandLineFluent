@@ -114,7 +114,7 @@
 		}
 		internal Switch<TClass, TProp> Build()
 		{
-			if (string.IsNullOrWhiteSpace(helpText))
+			if (string.IsNullOrEmpty(helpText))
 			{
 				throw new CliParserBuilderException("You need to provide some help text for Switch " + name);
 			}
