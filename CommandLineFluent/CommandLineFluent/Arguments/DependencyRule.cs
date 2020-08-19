@@ -1,7 +1,7 @@
 ﻿namespace CommandLineFluent.Arguments
 {
 	using System;
-	using System.Diagnostics.CodeAnalysis;
+	using System.ComponentModel;
 	using System.Reflection;
 	/// <summary>
 	/// Defines a single rule of a Dependency.
@@ -149,6 +149,22 @@
 		private bool PredicateNotNull(TOtherProp val)
 		{
 			return val != null;
+		}
+		// This stuff is useless and just adds clutter, so hide it
+		[EditorBrowsable(EditorBrowsableState.Never)]
+		public override bool Equals(object obj)
+		{
+			return base.Equals(obj);
+		}
+		[EditorBrowsable(EditorBrowsableState.Never)]
+		public override int GetHashCode()
+		{
+			return base.GetHashCode();
+		}
+		[EditorBrowsable(EditorBrowsableState.Never)]
+		public override string ToString()
+		{
+			return base.ToString();
 		}
 	}
 }

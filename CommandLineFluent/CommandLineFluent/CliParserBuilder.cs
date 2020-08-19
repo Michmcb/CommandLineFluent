@@ -2,6 +2,7 @@
 {
 	using System;
 	using System.Collections.Generic;
+	using System.ComponentModel;
 
 	public sealed class CliParserBuilder
 	{
@@ -127,6 +128,22 @@
 			{
 				throw new CliParserBuilderException("CliParserBuilder has not been configured correctly", errors);
 			}
+		}
+		// This stuff is useless and just adds clutter, so hide it
+		[EditorBrowsable(EditorBrowsableState.Never)]
+		public override bool Equals(object obj)
+		{
+			return base.Equals(obj);
+		}
+		[EditorBrowsable(EditorBrowsableState.Never)]
+		public override int GetHashCode()
+		{
+			return base.GetHashCode();
+		}
+		[EditorBrowsable(EditorBrowsableState.Never)]
+		public override string ToString()
+		{
+			return base.ToString();
 		}
 	}
 }

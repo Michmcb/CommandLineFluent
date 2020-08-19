@@ -186,9 +186,9 @@ verb.AddOptionInt("f", "frobulationIntensity", o => o
 	.IsOptional(5)); // Optional values will also be typed as ints
 ```
 
-To use a custom converter, you can do the below, and return a Maybe<Type, string> instance in the WithConverter delegate, where string is the error message.
-Maybe<Type, string> instances are implicitly cast from either of their generic types, automatically denoting success or failure.
-However if you need to return Maybe<string, string>, you need to use Maybe<string, string>.Value() and Maybe<string, string>.Error().
+To use a custom converter, you can do the below, and return a Converted<Type, string> instance in the WithConverter delegate, where string is the error message.
+Converted<Type, string> instances are implicitly cast from either of their generic types, automatically denoting success or failure.
+However if you need to return Converted<string, string>, you need to use Converted<string, string>.Value() and Converted<string, string>.Error().
 
 ```csharp
 verb.AddOption<MyType>("f", "frobulationIntensity", o => o
@@ -200,7 +200,7 @@ verb.AddOption<MyType>("f", "frobulationIntensity", o => o
 	{
 		if (MyType.TryParse(rawString, out MyType instance)
 		{
-			// Maybe<MyType, string> can be implicitly constructed as successful from MyType
+			// Converted<MyType, string> can be implicitly constructed as successful from MyType
 			return instance;
 		}
 		else

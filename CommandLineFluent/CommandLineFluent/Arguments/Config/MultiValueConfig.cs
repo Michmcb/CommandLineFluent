@@ -2,6 +2,7 @@
 {
 	using System;
 	using System.Collections.Generic;
+	using System.ComponentModel;
 	using System.Diagnostics;
 	using System.Linq.Expressions;
 	using System.Reflection;
@@ -21,12 +22,12 @@
 		private string? helpText;
 		private string? name;
 		//private IReadOnlyCollection<string> ignoredPrefixes;
-		private Func<string, Maybe<TProp, string>>? converter;
+		private Func<string, Converted<TProp, string>>? converter;
 		/// <summary>
 		/// Creates a new <see cref="MultiValueConfig{TClass, TProp}"/>. You shouldn't need to create this manually.
 		/// </summary>
 		/// <param name="converter">The converter to use to convert from string to <typeparamref name="TProp"/>.</param>
-		public MultiValueConfig(Func<string, Maybe<TProp, string>>? converter)
+		public MultiValueConfig(Func<string, Converted<TProp, string>>? converter)
 		{
 			//ignoredPrefixes = new List<string>();
 			this.converter = converter;
@@ -214,7 +215,7 @@
 		/// If the user doesn't provide any values, the converter isn't invoked, instead the default values provided are used.
 		/// </summary>
 		/// <param name="converter">A convert that converts a string to <typeparamref name="TProp"/>.</param>
-		public MultiValueConfig<TClass, TProp> WithConverter(Func<string, Maybe<TProp, string>>? converter)
+		public MultiValueConfig<TClass, TProp> WithConverter(Func<string, Converted<TProp, string>>? converter)
 		{
 			this.converter = converter;
 			return this;
@@ -240,6 +241,22 @@
 			}
 
 			return new MultiValue<TClass, TProp>(name, helpText, argumentRequired, targetProperty, defaultValues ?? Array.Empty<TProp>(), dependencies, converter, createCollection);
+		}
+		// This stuff is useless and just adds clutter, so hide it
+		[EditorBrowsable(EditorBrowsableState.Never)]
+		public override bool Equals(object obj)
+		{
+			return base.Equals(obj);
+		}
+		[EditorBrowsable(EditorBrowsableState.Never)]
+		public override int GetHashCode()
+		{
+			return base.GetHashCode();
+		}
+		[EditorBrowsable(EditorBrowsableState.Never)]
+		public override string ToString()
+		{
+			return base.ToString();
 		}
 	}
 }

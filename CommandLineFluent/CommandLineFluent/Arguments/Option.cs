@@ -25,9 +25,9 @@
 		/// <summary>
 		/// Converts from a string into <typeparamref name="TProp"/>, or returns an error message.
 		/// </summary>
-		public Func<string, Maybe<TProp, string>>? Converter { get; }
+		public Func<string, Converted<TProp, string>>? Converter { get; }
 		internal Option(string? shortName, string? longName, string? name, string helpText, ArgumentRequired argumentRequired, PropertyInfo targetProperty,
-			TProp defaultValue, Dependencies<TClass, TProp>? dependencies, Func<string, Maybe<TProp, string>>? converter)
+			TProp defaultValue, Dependencies<TClass, TProp>? dependencies, Func<string, Converted<TProp, string>>? converter)
 		{
 			ShortName = shortName;
 			LongName = longName;
@@ -45,7 +45,7 @@
 			{
 				if (Converter != null)
 				{
-					Maybe<TProp, string> converted;
+					Converted<TProp, string> converted;
 					try
 					{
 						converted = Converter.Invoke(value);

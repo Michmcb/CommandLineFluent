@@ -1,6 +1,7 @@
 ﻿namespace CommandLineFluent.Arguments.Config
 {
 	using System;
+	using System.ComponentModel;
 	using System.Linq.Expressions;
 	using System.Reflection;
 
@@ -17,12 +18,12 @@
 		private Dependencies<TClass, TProp>? dependencies;
 		private string? helpText;
 		private string? name;
-		private Func<string, Maybe<TProp, string>>? converter;
+		private Func<string, Converted<TProp, string>>? converter;
 		/// <summary>
 		/// Creates a new <see cref="ValueConfig{TClass, TProp}"/>. You shouldn't need to create this manually.
 		/// </summary>
 		/// <param name="converter">The converter to use to convert from string to <typeparamref name="TProp"/>.</param>
-		public ValueConfig(Func<string, Maybe<TProp, string>>? converter)
+		public ValueConfig(Func<string, Converted<TProp, string>>? converter)
 		{
 			defaultValue = default!;
 			this.converter = converter;
@@ -99,7 +100,7 @@
 		/// If the user doesn't provide any value, the converter isn't invoked, instead the default value provided are used.
 		/// </summary>
 		/// <param name="converter">A convert that converts a string to <typeparamref name="TProp"/>.</param>
-		public ValueConfig<TClass, TProp> WithConverter(Func<string, Maybe<TProp, string>> converter)
+		public ValueConfig<TClass, TProp> WithConverter(Func<string, Converted<TProp, string>> converter)
 		{
 			this.converter = converter;
 			return this;
@@ -120,6 +121,22 @@
 			}
 
 			return new Value<TClass, TProp>(name, helpText, argumentRequired, targetProperty, defaultValue, dependencies, converter);
+		}
+		// This stuff is useless and just adds clutter, so hide it
+		[EditorBrowsable(EditorBrowsableState.Never)]
+		public override bool Equals(object obj)
+		{
+			return base.Equals(obj);
+		}
+		[EditorBrowsable(EditorBrowsableState.Never)]
+		public override int GetHashCode()
+		{
+			return base.GetHashCode();
+		}
+		[EditorBrowsable(EditorBrowsableState.Never)]
+		public override string ToString()
+		{
+			return base.ToString();
 		}
 	}
 }

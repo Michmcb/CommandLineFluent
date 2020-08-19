@@ -246,12 +246,12 @@
 
 					verb.AddSwitch<string>("s3", "ss3", s => s
 						.ForProperty(x => x.ConvertedSwitch)
-						.WithConverter(v => Maybe<string, string>.Value(v.ToString()))
+						.WithConverter(v => Converted<string, string>.Value(v.ToString()))
 						.WithHelpText("h"));
 
 					verb.AddSwitch<string>("s4", "ss4", s => s
 						.ForProperty(x => x.DefaultValueConvertedSwitch)
-						.WithConverter(v => Maybe<string, string>.Value(v.ToString()))
+						.WithConverter(v => Converted<string, string>.Value(v.ToString()))
 						.IsOptional("Default")
 						.WithHelpText("h"));
 

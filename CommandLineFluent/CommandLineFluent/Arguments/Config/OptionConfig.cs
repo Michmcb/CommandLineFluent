@@ -1,6 +1,7 @@
 ﻿namespace CommandLineFluent.Arguments.Config
 {
 	using System;
+	using System.ComponentModel;
 	using System.Linq.Expressions;
 	using System.Reflection;
 
@@ -19,14 +20,14 @@
 		private Dependencies<TClass, TProp>? dependencies;
 		private string? helpText;
 		private string? name;
-		private Func<string, Maybe<TProp, string>>? converter;
+		private Func<string, Converted<TProp, string>>? converter;
 		/// <summary>
 		/// Creates a new <see cref="OptionConfig{TClass, TProp}"/>. You shouldn't need to create this manually.
 		/// </summary>
 		/// <param name="shortName">The short name the user can use to provide this.</param>
 		/// <param name="shortName">The long name the user can use to provide this.</param>
 		/// <param name="converter">The converter to use to convert from string to <typeparamref name="TProp"/>.</param>
-		public OptionConfig(string? shortName, string? longName, Func<string, Maybe<TProp, string>>? converter)
+		public OptionConfig(string? shortName, string? longName, Func<string, Converted<TProp, string>>? converter)
 		{
 			this.shortName = shortName;
 			this.longName = longName;
@@ -106,7 +107,7 @@
 		/// If the user doesn't provide any value, the converter isn't invoked, instead the default value provided is used.
 		/// </summary>
 		/// <param name="converter">A convert that converts a string to <typeparamref name="TProp"/>.</param>
-		public OptionConfig<TClass, TProp> WithConverter(Func<string, Maybe<TProp, string>> converter)
+		public OptionConfig<TClass, TProp> WithConverter(Func<string, Converted<TProp, string>> converter)
 		{
 			this.converter = converter;
 			return this;
@@ -131,6 +132,22 @@
 			}
 
 			return new Option<TClass, TProp>(shortName, longName, name, helpText, argumentRequired, targetProperty, defaultValue, dependencies, converter);
+		}
+		// This stuff is useless and just adds clutter, so hide it
+		[EditorBrowsable(EditorBrowsableState.Never)]
+		public override bool Equals(object obj)
+		{
+			return base.Equals(obj);
+		}
+		[EditorBrowsable(EditorBrowsableState.Never)]
+		public override int GetHashCode()
+		{
+			return base.GetHashCode();
+		}
+		[EditorBrowsable(EditorBrowsableState.Never)]
+		public override string ToString()
+		{
+			return base.ToString();
 		}
 	}
 }

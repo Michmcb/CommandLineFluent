@@ -24,14 +24,14 @@
 		/// <summary>
 		/// Converts from a string into <typeparamref name="TProp"/>, or returns an error message.
 		/// </summary>
-		public Func<string, Maybe<TProp, string>>? Converter { get; }
+		public Func<string, Converted<TProp, string>>? Converter { get; }
 		/// <summary>
 		/// Creates a new collection, filled with the values provided.
 		/// </summary>
 		public Func<TProp[], IEnumerable<TProp>> CreateCollection { get; }
 		//public ICollection<string> IgnoredPrefixes { get; }
 		public MultiValue(string? name, string helpText, ArgumentRequired argumentRequired, PropertyInfo targetProperty, IEnumerable<TProp> defaultValues,
-			Dependencies<TClass, TProp>? dependencies, Func<string, Maybe<TProp, string>>? converter, Func<TProp[], IEnumerable<TProp>> createCollection)//, ICollection<string> ignoredPrefixes)
+			Dependencies<TClass, TProp>? dependencies, Func<string, Converted<TProp, string>>? converter, Func<TProp[], IEnumerable<TProp>> createCollection)//, ICollection<string> ignoredPrefixes)
 		{
 			Name = name;
 			HelpText = helpText;

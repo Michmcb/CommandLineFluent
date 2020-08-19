@@ -10,7 +10,7 @@
 	/// </summary>
 	/// <typeparam name="TVal">The Type on success.</typeparam>
 	/// <typeparam name="TErr">The Type on failure.</typeparam>
-	public readonly struct Maybe<TVal, TErr>
+	public readonly struct Converted<TVal, TErr>
 	{
 		private readonly TVal value;
 		private readonly TErr error;
@@ -21,15 +21,15 @@
 		/// <param name="value">The success value.</param>
 		/// <param name="error">The failure value.</param>
 		/// <param name="ok">If true, success. If false, failure.</param>
-		private Maybe(TVal value, TErr error, bool ok)
+		private Converted(TVal value, TErr error, bool ok)
 		{
 			if (ok && value == null)
 			{
-				throw new ArgumentNullException(nameof(value), "Can't make a Maybe from a null value when ok is true");
+				throw new ArgumentNullException(nameof(value), "Can't make a Converted from a null value when ok is true");
 			}
 			if (!ok && error == null)
 			{
-				throw new ArgumentNullException(nameof(error), "Can't make a Maybe from a null error when ok is false");
+				throw new ArgumentNullException(nameof(error), "Can't make a Converted from a null error when ok is false");
 			}
 			this.value = value;
 			this.error = error;
@@ -40,10 +40,6 @@
 		/// When this instance is used in an If statement, it produces this value.
 		/// </summary>
 		public bool Ok { get; }
-		public static bool operator true(Maybe<TVal, TErr> o) => o.Ok;
-		public static bool operator false(Maybe<TVal, TErr> o) => !o.Ok;
-		public static bool operator &(Maybe<TVal, TErr> lhs, Maybe<TVal, TErr> rhs) => lhs.Ok && rhs.Ok;
-		public static bool operator |(Maybe<TVal, TErr> lhs, Maybe<TVal, TErr> rhs) => lhs.Ok || rhs.Ok;
 		/// <summary>
 		/// Gets the value, or <paramref name="ifNone"/> if <see cref="Ok"/> is false.
 		/// </summary>
@@ -85,27 +81,27 @@
 			return Ok;
 		}
 #pragma warning restore CS8762 // Parameter must have a non-null value when exiting in some condition.
-		public static Maybe<TVal, TErr> Value(TVal value)
+		public static Converted<TVal, TErr> Value(TVal value)
 		{
-			return new Maybe<TVal, TErr>(value, default!, true);
+			return new Converted<TVal, TErr>(value, default!, true);
 		}
-		public static Maybe<TVal, TErr> Error(TErr error)
+		public static Converted<TVal, TErr> Error(TErr error)
 		{
-			return new Maybe<TVal, TErr>(default!, error, false);
-		}
-		/// <summary>
-		/// Equivalent to new Maybe(<paramref name="value"/>, default, true);
-		/// </summary>
-		public static implicit operator Maybe<TVal, TErr>(TVal value)
-		{
-			return new Maybe<TVal, TErr>(value, default!, true);
+			return new Converted<TVal, TErr>(default!, error, false);
 		}
 		/// <summary>
-		/// Equivalent to new Maybe(default, <paramref name="error"/>, true);
+		/// Equivalent to new Converted(<paramref name="value"/>, default, true);
 		/// </summary>
-		public static implicit operator Maybe<TVal, TErr>(TErr error)
+		public static implicit operator Converted<TVal, TErr>(TVal value)
 		{
-			return new Maybe<TVal, TErr>(default!, error, false);
+			return new Converted<TVal, TErr>(value, default!, true);
+		}
+		/// <summary>
+		/// Equivalent to new Converted(default, <paramref name="error"/>, true);
+		/// </summary>
+		public static implicit operator Converted<TVal, TErr>(TErr error)
+		{
+			return new Converted<TVal, TErr>(default!, error, false);
 		}
 		/// <summary>
 		/// Calls ToString() on the value if <see cref="Ok"/> is true, otherwise calls ToString() on the error.
@@ -116,20 +112,20 @@
 		}
 		public override bool Equals(object obj)
 		{
-			throw new InvalidOperationException("You cannot compare Maybe instances");
+			throw new InvalidOperationException("You cannot compare Converted instances");
 		}
 		public override int GetHashCode()
 		{
-			throw new InvalidOperationException("You cannot get HashCodes of Maybe instances");
+			throw new InvalidOperationException("You cannot get HashCodes of Converted instances");
 		}
 #pragma warning disable IDE0060 // Remove unused parameter
-		public static bool operator ==(Maybe<TVal, TErr> left, Maybe<TVal, TErr> right)
+		public static bool operator ==(Converted<TVal, TErr> left, Converted<TVal, TErr> right)
 		{
-			throw new InvalidOperationException("You cannot compare Maybe instances");
+			throw new InvalidOperationException("You cannot compare Converted instances");
 		}
-		public static bool operator !=(Maybe<TVal, TErr> left, Maybe<TVal, TErr> right)
+		public static bool operator !=(Converted<TVal, TErr> left, Converted<TVal, TErr> right)
 		{
-			throw new InvalidOperationException("You cannot compare Maybe instances");
+			throw new InvalidOperationException("You cannot compare Converted instances");
 		}
 #pragma warning restore IDE0060 // Remove unused parameter
 	}

@@ -1,0 +1,1736 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>CommandLineFluent</name>
+    </assembly>
+    <members>
+        <member name="T:CommandLineFluent.Arguments.ArgumentRequired">
+            <summary>
+            Defines if a partiular argument is required or not. Or, if it's only sometimes required because it has dependencies.
+            </summary>
+        </member>
+        <member name="F:CommandLineFluent.Arguments.ArgumentRequired.Required">
+            <summary>
+            Argument must be provided
+            </summary>
+        </member>
+        <member name="F:CommandLineFluent.Arguments.ArgumentRequired.Optional">
+            <summary>
+            Argument may or may not be provided
+            </summary>
+        </member>
+        <member name="F:CommandLineFluent.Arguments.ArgumentRequired.HasDependencies">
+            <summary>
+            Argument may be required to appear, be optional, or be required to not appear, depending on other arguments
+            </summary>
+        </member>
+        <member name="T:CommandLineFluent.Arguments.ArgumentType">
+            <summary>
+            The type of an argument
+            </summary>
+        </member>
+        <member name="F:CommandLineFluent.Arguments.ArgumentType.Option">
+            <summary>
+            e.g. -o Value or --option Value
+            </summary>
+        </member>
+        <member name="F:CommandLineFluent.Arguments.ArgumentType.Switch">
+            <summary>
+            e.g. -s or --switch
+            </summary>
+        </member>
+        <member name="F:CommandLineFluent.Arguments.ArgumentType.Value">
+            <summary>
+            A lone value
+            </summary>
+        </member>
+        <member name="F:CommandLineFluent.Arguments.ArgumentType.MultiValue">
+            <summary>
+            Many lone values
+            </summary>
+        </member>
+        <member name="T:CommandLineFluent.Arguments.ArgUtils">
+            <summary>
+            Some utilities for arguments
+            </summary>
+        </member>
+        <member name="M:CommandLineFluent.Arguments.ArgUtils.ShortAndLongName(System.String,System.String,System.Boolean)">
+            <summary>
+            Returns a string which has the <paramref name="shortName"/> and <paramref name="longName"/> separated by a pipe, like this: shortName|longName.
+            If <paramref name="encloseInBrackets"/> is true, it'll be like this: [shortName|longName].
+            If shortName or longName is null, it will just show only the non-null name.
+            </summary>
+            <param name="shortName">The short name.</param>
+            <param name="longName">The long name.</param>
+            <param name="encloseInBrackets">If true, the string will be enclosed in [].</param>
+            <returns>A string with short and long name, separated by a pipe. Or if one is null, only the non-null name.</returns>
+        </member>
+        <member name="M:CommandLineFluent.Arguments.ArgUtils.ShortAndLongName(System.String,System.String,System.String,System.Boolean)">
+            <summary>
+            Returns a string which has the <paramref name="shortName"/> and <paramref name="longName"/> separated by a pipe, followed by the <paramref name="valueName"/>, like this: shortName|longName valueName.
+            If <paramref name="encloseInBrackets"/> is true, it'll be like this: [shortName|longName valueName].
+            If shortName or longName is null, it will just show only the non-null name.
+            </summary>
+            <param name="shortName">The short name.</param>
+            <param name="longName">The long name.</param>
+            <param name="valueName">The name of the value.</param>
+            <param name="encloseInBrackets">If true, the string will be enclosed in [].</param>
+            <returns>A string with short and long name, separated by a pipe. Or if one is null, only the non-null name.</returns>
+        </member>
+        <member name="M:CommandLineFluent.Arguments.ArgUtils.PropertyInfoFromExpression``2(System.Linq.Expressions.Expression{System.Func{``0,``1}})">
+            <summary>
+            Given an Expression, returns the corresponding Property. The <paramref name="expression"/> must be a <see cref="T:System.Linq.Expressions.MemberExpression"/>, whose Member is a
+            <see cref="T:System.Reflection.PropertyInfo"/>. If not, throws an ArgumentException.
+            </summary>
+            <typeparam name="TClass">Argument which is passed to the expression.</typeparam>
+            <typeparam name="TProp">What the expression returns.</typeparam>
+            <param name="expression">The expression which must be a property.</param>
+        </member>
+        <member name="T:CommandLineFluent.Arguments.Config.MultiValueConfig`2">
+            <summary>
+            Configures a MultiValue.
+            </summary>
+            <typeparam name="TClass">The type of the target class.</typeparam>
+            <typeparam name="TProp">The type of the target property.</typeparam>
+        </member>
+        <member name="M:CommandLineFluent.Arguments.Config.MultiValueConfig`2.#ctor(System.Func{System.String,CommandLineFluent.Converted{`1,System.String}})">
+            <summary>
+            Creates a new <see cref="T:CommandLineFluent.Arguments.Config.MultiValueConfig`2"/>. You shouldn't need to create this manually.
+            </summary>
+            <param name="converter">The converter to use to convert from string to <typeparamref name="TProp"/>.</param>
+        </member>
+        <member name="M:CommandLineFluent.Arguments.Config.MultiValueConfig`2.ForProperty(System.Linq.Expressions.Expression{System.Func{`0,`1[]}})">
+            <summary>
+            Configures this to set the provided property of <typeparamref name="TClass"/>.
+            </summary>
+            <param name="expression">The property to set.</param>
+        </member>
+        <member name="M:CommandLineFluent.Arguments.Config.MultiValueConfig`2.ForProperty(System.Linq.Expressions.Expression{System.Func{`0,System.Collections.Generic.IList{`1}}})">
+            <summary>
+            Configures this to set the provided property of <typeparamref name="TClass"/>.
+            </summary>
+            <param name="expression">The property to set.</param>
+        </member>
+        <member name="M:CommandLineFluent.Arguments.Config.MultiValueConfig`2.ForProperty(System.Linq.Expressions.Expression{System.Func{`0,System.Collections.Generic.IReadOnlyList{`1}}})">
+            <summary>
+            Configures this to set the provided property of <typeparamref name="TClass"/>.
+            </summary>
+            <param name="expression">The property to set.</param>
+        </member>
+        <member name="M:CommandLineFluent.Arguments.Config.MultiValueConfig`2.ForProperty(System.Linq.Expressions.Expression{System.Func{`0,System.Collections.Generic.ICollection{`1}}})">
+            <summary>
+            Configures this to set the provided property of <typeparamref name="TClass"/>.
+            </summary>
+            <param name="expression">The property to set.</param>
+        </member>
+        <member name="M:CommandLineFluent.Arguments.Config.MultiValueConfig`2.ForProperty(System.Linq.Expressions.Expression{System.Func{`0,System.Collections.Generic.IReadOnlyCollection{`1}}})">
+            <summary>
+            Configures this to set the provided property of <typeparamref name="TClass"/>.
+            </summary>
+            <param name="expression">The property to set.</param>
+        </member>
+        <member name="M:CommandLineFluent.Arguments.Config.MultiValueConfig`2.ForProperty(System.Linq.Expressions.Expression{System.Func{`0,System.Collections.Generic.IEnumerable{`1}}})">
+            <summary>
+            Configures this to set the provided property of <typeparamref name="TClass"/>.
+            </summary>
+            <param name="expression">The property to set.</param>
+        </member>
+        <member name="M:CommandLineFluent.Arguments.Config.MultiValueConfig`2.ForProperty(System.Linq.Expressions.Expression{System.Func{`0,System.Collections.Generic.List{`1}}})">
+            <summary>
+            Configures this to set the provided property of <typeparamref name="TClass"/>.
+            </summary>
+            <param name="expression">The property to set.</param>
+        </member>
+        <member name="M:CommandLineFluent.Arguments.Config.MultiValueConfig`2.ForProperty(System.Linq.Expressions.Expression{System.Func{`0,System.Collections.Generic.HashSet{`1}}})">
+            <summary>
+            Configures this to set the provided property of <typeparamref name="TClass"/>.
+            Any duplicate values are ignored.
+            </summary>
+            <param name="expression">The property to set.</param>
+        </member>
+        <member name="M:CommandLineFluent.Arguments.Config.MultiValueConfig`2.ForProperty(System.Linq.Expressions.Expression{System.Func{`0,System.Collections.Generic.Stack{`1}}})">
+            <summary>
+            Configures this to set the provided property of <typeparamref name="TClass"/>.
+            </summary>
+            <param name="expression">The property to set.</param>
+        </member>
+        <member name="M:CommandLineFluent.Arguments.Config.MultiValueConfig`2.ForProperty(System.Linq.Expressions.Expression{System.Func{`0,System.Collections.Generic.Queue{`1}}})">
+            <summary>
+            Configures this to set the provided property of <typeparamref name="TClass"/>.
+            </summary>
+            <param name="expression">The property to set.</param>
+        </member>
+        <member name="M:CommandLineFluent.Arguments.Config.MultiValueConfig`2.ForProperty``1(System.Linq.Expressions.Expression{System.Func{`0,``0}},System.Func{`1[],System.Collections.Generic.IEnumerable{`1}})">
+            <summary>
+            Configures this to set the provided property of <typeparamref name="TClass"/>.
+            The property must be a collection of <typeparamref name="TProp"/>.
+            </summary>
+            <param name="expression">The property to set.</param>
+            <param name="createCollection">A delegate which accepts an array of <typeparamref name="TProp"/>, and creates a new <typeparamref name="TPropCollection"/>.</param>
+        </member>
+        <member name="M:CommandLineFluent.Arguments.Config.MultiValueConfig`2.IsRequired">
+            <summary>
+            Configures this to be required. By default, MultiValues are required.
+            </summary>
+        </member>
+        <member name="M:CommandLineFluent.Arguments.Config.MultiValueConfig`2.IsOptional(`1[])">
+            <summary>
+            Configures this as optional, with default values when not provided.
+            </summary>
+            <param name="defaultValues">The values to use as a default value when this is not provided.</param>
+        </member>
+        <member name="M:CommandLineFluent.Arguments.Config.MultiValueConfig`2.IsOptional(System.Collections.Generic.IEnumerable{`1})">
+            <summary>
+            Configures this as optional, with default values when not provided.
+            </summary>
+            <param name="defaultValues">The values to use as a default value when this is not provided.</param>
+        </member>
+        <member name="M:CommandLineFluent.Arguments.Config.MultiValueConfig`2.WithDependencies(System.Collections.Generic.IEnumerable{`1},System.Action{CommandLineFluent.Arguments.Dependencies{`0,`1}})">
+            <summary>
+            Configures this to only be required or must not appear under certain circumstances.
+            If any rule is violated, parsing is considered to have failed. If all rules pass, then parsing is considered to have succeeded.
+            You can specify that the user has to provide this depending upon the value of other properties (after parsing and conversion)
+            </summary>
+            <param name="defaultValues">The default values to use when the rules allow this to not be provided.</param>
+            <param name="config">An action to configure the dependencies.</param>
+        </member>
+        <member name="M:CommandLineFluent.Arguments.Config.MultiValueConfig`2.WithHelpText(System.String)">
+            <summary>
+            Configures this to show the provided Help Text.
+            </summary>
+            <param name="helpText">The help text.</param>
+        </member>
+        <member name="M:CommandLineFluent.Arguments.Config.MultiValueConfig`2.WithName(System.String)">
+            <summary>
+            Configures this to have the provided human-readable name.
+            </summary>
+            <param name="name">The human-readable name.</param>
+        </member>
+        <member name="M:CommandLineFluent.Arguments.Config.MultiValueConfig`2.WithConverter(System.Func{System.String,CommandLineFluent.Converted{`1,System.String}})">
+            <summary>
+            The converter to invoke on the provided strings before assigning them to the property of <typeparamref name="TClass"/>.
+            If not provided, no converter will be used; this is only valid to do if <typeparamref name="TProp"/> is string.
+            If the user doesn't provide any values, the converter isn't invoked, instead the default values provided are used.
+            </summary>
+            <param name="converter">A convert that converts a string to <typeparamref name="TProp"/>.</param>
+        </member>
+        <member name="T:CommandLineFluent.Arguments.Config.OptionConfig`2">
+            <summary>
+            Configures an Option.
+            </summary>
+            <typeparam name="TClass">The type of the target class.</typeparam>
+            <typeparam name="TProp">The type of the target property.</typeparam>
+        </member>
+        <member name="M:CommandLineFluent.Arguments.Config.OptionConfig`2.#ctor(System.String,System.String,System.Func{System.String,CommandLineFluent.Converted{`1,System.String}})">
+            <summary>
+            Creates a new <see cref="T:CommandLineFluent.Arguments.Config.OptionConfig`2"/>. You shouldn't need to create this manually.
+            </summary>
+            <param name="shortName">The short name the user can use to provide this.</param>
+            <param name="shortName">The long name the user can use to provide this.</param>
+            <param name="converter">The converter to use to convert from string to <typeparamref name="TProp"/>.</param>
+        </member>
+        <member name="M:CommandLineFluent.Arguments.Config.OptionConfig`2.ForProperty(System.Linq.Expressions.Expression{System.Func{`0,`1}})">
+            <summary>
+            Configures this to set the provided property of <typeparamref name="TClass"/>.
+            The property must be a <typeparamref name="TProp"/>.
+            </summary>
+            <param name="expression">The property to set.</param>
+        </member>
+        <member name="M:CommandLineFluent.Arguments.Config.OptionConfig`2.IsRequired">
+            <summary>
+            Configures this to be required. By default, Options are required.
+            </summary>
+        </member>
+        <member name="M:CommandLineFluent.Arguments.Config.OptionConfig`2.IsOptional(`1)">
+            <summary>
+            Configures this as optional, with a default value when not provided.
+            </summary>
+            <param name="defaultValue">The values to use as a default value when this is not provided.</param>
+        </member>
+        <member name="M:CommandLineFluent.Arguments.Config.OptionConfig`2.WithDependencies(`1,System.Action{CommandLineFluent.Arguments.Dependencies{`0,`1}})">
+            <summary>
+            Configures this to only be required or must not appear under certain circumstances.
+            If any rule is violated, parsing is considered to have failed. If all rules pass, then parsing is considered to have succeeded.
+            You can specify that the user has to provide this depending upon the value of other properties (after parsing and conversion)
+            </summary>
+            <param name="defaultValue">The default value to use when the rules allow this to not be provided.</param>
+            <param name="config">An action to configure the dependencies.</param>
+        </member>
+        <member name="M:CommandLineFluent.Arguments.Config.OptionConfig`2.WithHelpText(System.String)">
+            <summary>
+            Configures this to show the provided Help Text.
+            </summary>
+            <param name="helpText">The help text.</param>
+        </member>
+        <member name="M:CommandLineFluent.Arguments.Config.OptionConfig`2.WithName(System.String)">
+            <summary>
+            Configures this to have the provided human-readable name.
+            </summary>
+            <param name="name">The human-readable name</param>
+        </member>
+        <member name="M:CommandLineFluent.Arguments.Config.OptionConfig`2.WithConverter(System.Func{System.String,CommandLineFluent.Converted{`1,System.String}})">
+            <summary>
+            The converter to invoke on the provided string before assigning it to the property of <typeparamref name="TClass"/>.
+            If not provided, no converter will be used; this is only valid to do if <typeparamref name="TProp"/> is string.
+            If the user doesn't provide any value, the converter isn't invoked, instead the default value provided is used.
+            </summary>
+            <param name="converter">A convert that converts a string to <typeparamref name="TProp"/>.</param>
+        </member>
+        <member name="T:CommandLineFluent.Arguments.Config.SwitchConfig`2">
+            <summary>
+            Configures a Switch.
+            </summary>
+            <typeparam name="TClass">The type of the target class.</typeparam>
+            <typeparam name="TProp">The type of the target property.</typeparam>
+        </member>
+        <member name="M:CommandLineFluent.Arguments.Config.SwitchConfig`2.#ctor(System.String,System.String,System.Func{System.Boolean,CommandLineFluent.Converted{`1,System.String}})">
+            <summary>
+            Creates a new <see cref="T:CommandLineFluent.Arguments.Config.SwitchConfig`2"/>. You shouldn't need to create this manually.
+            </summary>
+            <param name="shortName">The short name the user can use to provide this.</param>
+            <param name="shortName">The long name the user can use to provide this.</param>
+            <param name="converter">The converter to use to convert from bool to <typeparamref name="TProp"/>.</param>
+        </member>
+        <member name="M:CommandLineFluent.Arguments.Config.SwitchConfig`2.ForProperty(System.Linq.Expressions.Expression{System.Func{`0,`1}})">
+            <summary>
+            Configures this to set the provided property of <typeparamref name="TClass"/>.
+            The property must be a <typeparamref name="TProp"/>.
+            </summary>
+            <param name="expression">The property to set.</param>
+        </member>
+        <member name="M:CommandLineFluent.Arguments.Config.SwitchConfig`2.IsRequired">
+            <summary>
+            Configures this to be required.
+            </summary>
+        </member>
+        <member name="M:CommandLineFluent.Arguments.Config.SwitchConfig`2.IsOptional(`1)">
+            <summary>
+            Configures this as optional, with a default value when not provided. By default, switches are optional, with the default value of <typeparamref name="TProp"/>.
+            </summary>
+            <param name="defaultValue">The values to use as a default value when this is not provided.</param>
+        </member>
+        <member name="M:CommandLineFluent.Arguments.Config.SwitchConfig`2.WithDependencies(`1,System.Action{CommandLineFluent.Arguments.Dependencies{`0,`1}})">
+            <summary>
+            Configures this to only be required or must not appear under certain circumstances.
+            If any rule is violated, parsing is considered to have failed. If all rules pass, then parsing is considered to have succeeded.
+            You can specify that the user has to provide this depending upon the value of other properties (after parsing and conversion)
+            </summary>
+            <param name="defaultValue">The default value to use when the rules allow this to not be provided.</param>
+            <param name="config">An action to configure the dependencies.</param>
+        </member>
+        <member name="M:CommandLineFluent.Arguments.Config.SwitchConfig`2.WithHelpText(System.String)">
+            <summary>
+            Configures this to show the provided Help Text.
+            </summary>
+            <param name="helpText">The help text.</param>
+        </member>
+        <member name="M:CommandLineFluent.Arguments.Config.SwitchConfig`2.WithName(System.String)">
+            <summary>
+            Configures this to have the provided human-readable name.
+            </summary>
+            <param name="name">The human-readable name</param>
+        </member>
+        <member name="M:CommandLineFluent.Arguments.Config.SwitchConfig`2.WithConverter(System.Func{System.Boolean,CommandLineFluent.Converted{`1,System.String}})">
+            <summary>
+            The converter to invoke on the provided string before assigning it to the property of <typeparamref name="TClass"/>.
+            If not provided, no converter will be used; this is only valid to do if <typeparamref name="TProp"/> is string.
+            If the user doesn't provide any value, the converter isn't invoked, instead the default value provided is used.
+            </summary>
+            <param name="converter">A convert that converts a string to <typeparamref name="TProp"/>.</param>
+        </member>
+        <member name="T:CommandLineFluent.Arguments.Config.ValueConfig`2">
+            <summary>
+            Configures a Value.
+            </summary>
+            <typeparam name="TClass">The type of the target class.</typeparam>
+            <typeparam name="TProp">The type of the target property.</typeparam>
+        </member>
+        <member name="M:CommandLineFluent.Arguments.Config.ValueConfig`2.#ctor(System.Func{System.String,CommandLineFluent.Converted{`1,System.String}})">
+            <summary>
+            Creates a new <see cref="T:CommandLineFluent.Arguments.Config.ValueConfig`2"/>. You shouldn't need to create this manually.
+            </summary>
+            <param name="converter">The converter to use to convert from string to <typeparamref name="TProp"/>.</param>
+        </member>
+        <member name="M:CommandLineFluent.Arguments.Config.ValueConfig`2.ForProperty(System.Linq.Expressions.Expression{System.Func{`0,`1}})">
+            <summary>
+            Configures this to set the provided property of <typeparamref name="TClass"/>.
+            </summary>
+            <param name="expression">The property to set.</param>
+        </member>
+        <member name="M:CommandLineFluent.Arguments.Config.ValueConfig`2.IsRequired">
+            <summary>
+            Configures this to be required. By default, Values are required.
+            </summary>
+        </member>
+        <member name="M:CommandLineFluent.Arguments.Config.ValueConfig`2.IsOptional(`1)">
+            <summary>
+            Configures this as optional, with a default value when not provided.
+            </summary>
+            <param name="defaultValue">The values to use as a default value when this is not provided.</param>
+        </member>
+        <member name="M:CommandLineFluent.Arguments.Config.ValueConfig`2.WithDependencies(`1,System.Action{CommandLineFluent.Arguments.Dependencies{`0,`1}})">
+            <summary>
+            Configures this to only be required or must not appear under certain circumstances.
+            If any rule is violated, parsing is considered to have failed. If all rules pass, then parsing is considered to have succeeded.
+            You can specify that the user has to provide this depending upon the value of other properties (after parsing and conversion)
+            </summary>
+            <param name="defaultValue">The default values to use when the rules allow this to not be provided.</param>
+            <param name="config">An action to configure the dependencies.</param>
+        </member>
+        <member name="M:CommandLineFluent.Arguments.Config.ValueConfig`2.WithHelpText(System.String)">
+            <summary>
+            Configures this to show the provided Help Text.
+            </summary>
+            <param name="helpText">The help text.</param>
+        </member>
+        <member name="M:CommandLineFluent.Arguments.Config.ValueConfig`2.WithName(System.String)">
+            <summary>
+            Configures this to have the provided human-readable name.
+            </summary>
+            <param name="name">The human-readable name.</param>
+        </member>
+        <member name="M:CommandLineFluent.Arguments.Config.ValueConfig`2.WithConverter(System.Func{System.String,CommandLineFluent.Converted{`1,System.String}})">
+            <summary>
+            The converter to invoke on the provided string before assigning it to the property of <typeparamref name="TClass"/>.
+            If not provided, no converter will be used; this is only valid to do if <typeparamref name="TProp"/> is string.
+            If the user doesn't provide any value, the converter isn't invoked, instead the default value provided are used.
+            </summary>
+            <param name="converter">A convert that converts a string to <typeparamref name="TProp"/>.</param>
+        </member>
+        <member name="T:CommandLineFluent.Arguments.Dependencies`2">
+            <summary>
+            Defines a relationship between an Argument and a property of the target object.
+            It allows you to specify that certain Arguments are only required under certain circumstances.
+            </summary>
+            <typeparam name="TClass">The class of the property which this set of Dependencies is for.</typeparam>
+            <typeparam name="TProp">The type of the property.</typeparam>
+        </member>
+        <member name="P:CommandLineFluent.Arguments.Dependencies`2.Rules">
+            <summary>
+            The rules which make up this relationship
+            </summary>
+        </member>
+        <member name="M:CommandLineFluent.Arguments.Dependencies`2.RequiredIf``1(System.Linq.Expressions.Expression{System.Func{`0,``0}})">
+            <summary>
+            Specifies that the property <paramref name="property"/> of an object of type <typeparamref name="TClass"/>
+            is required to be provided under specific circumstances.
+            </summary>
+            <typeparam name="TOtherProp">The type of the <paramref name="property"/>.</typeparam>
+            <param name="property">The rule stipulates this Argument is required if <paramref name="property"/> has a certain value.</param>
+        </member>
+        <member name="M:CommandLineFluent.Arguments.Dependencies`2.MustNotAppearIf``1(System.Linq.Expressions.Expression{System.Func{`0,``0}})">
+            <summary>
+            Specifies that a property of type <typeparamref name="TOtherProp"/> of an object of type <typeparamref name="TClass"/>
+            is required to NOT be provided under specific circumstances.
+            </summary>
+            <typeparam name="TOtherProp">The type of the property</typeparam>
+            <param name="property">The rule stipulates this Argument must not appear if <paramref name="property"/> has a certain value.</param>
+        </member>
+        <member name="M:CommandLineFluent.Arguments.Dependencies`2.Validate">
+            <summary>
+            Validates this rule. Throws an exception when something's wrong.
+            </summary>
+        </member>
+        <member name="M:CommandLineFluent.Arguments.Dependencies`2.EvaluateRelationship(`0,System.Boolean,CommandLineFluent.Arguments.ArgumentType)">
+            <summary>
+            Returns null if all rules of the relationship have been respected, and an Error otherwise.
+            </summary>
+            <param name="obj">The object to check</param>
+            <param name="wasValueProvided">Whether or not the FluentArgument received a value from parsing</param>
+            <param name="fluentArgumentType">The type of argument, used to return the correct error code</param>
+        </member>
+        <member name="F:CommandLineFluent.Arguments.DependencyRequiredness.Required">
+            <summary>
+            Required to appear
+            </summary>
+        </member>
+        <member name="F:CommandLineFluent.Arguments.DependencyRequiredness.MustNotAppear">
+            <summary>
+            Required to NOT appear
+            </summary>
+        </member>
+        <member name="T:CommandLineFluent.Arguments.DependencyRule`2">
+            <summary>
+            Defines a single rule of a Dependency.
+            </summary>
+            <typeparam name="TClass">The class.</typeparam>
+            <typeparam name="TOtherProp">The type of the other property.</typeparam>
+        </member>
+        <member name="P:CommandLineFluent.Arguments.DependencyRule`2.Requiredness">
+            <summary>
+            When this rule applies, the requiredness; either required or must not appear.
+            </summary>
+        </member>
+        <member name="P:CommandLineFluent.Arguments.DependencyRule`2.TargetProperty">
+            <summary>
+            The target property to use when evaluating this rule.
+            </summary>
+        </member>
+        <member name="P:CommandLineFluent.Arguments.DependencyRule`2.Predicate">
+            <summary>
+            The predicate used for this rule
+            </summary>
+        </member>
+        <member name="P:CommandLineFluent.Arguments.DependencyRule`2.AppliesWhenPredicate">
+            <summary>
+            This rule applies when the predicate returns this value.
+            </summary>
+        </member>
+        <member name="P:CommandLineFluent.Arguments.DependencyRule`2.ErrorMessage">
+            <summary>
+            The error message when this rule is violated.
+            </summary>
+        </member>
+        <member name="M:CommandLineFluent.Arguments.DependencyRule`2.ThrowIfPredicateNotNull">
+            <summary>
+            A helper validation method that throws an exception if a DependencyRule gets configured twice
+            </summary>
+        </member>
+        <member name="M:CommandLineFluent.Arguments.DependencyRule`2.IsEqualTo(`1)">
+            <summary>
+            Configures the dependency rule to apply when the property specified prior is equal to the provided value
+            </summary>
+            <param name="value">The value to which the property value has to equal for the rule to apply</param>
+        </member>
+        <member name="M:CommandLineFluent.Arguments.DependencyRule`2.IsNotEqualTo(`1)">
+            <summary>
+            Configures the dependency rule to apply when the property specified prior is not equal to the provided value
+            </summary>
+            <param name="value">The value to which the property value must not equal for the rule to apply</param>
+        </member>
+        <member name="M:CommandLineFluent.Arguments.DependencyRule`2.IsNull">
+            <summary>
+            Configures the dependency rule to apply when the property specified prior is null
+            </summary>
+        </member>
+        <member name="M:CommandLineFluent.Arguments.DependencyRule`2.IsNotNull">
+            <summary>
+            Configures the dependency rule to apply when the property specified prior is not null
+            </summary>
+        </member>
+        <member name="M:CommandLineFluent.Arguments.DependencyRule`2.When(System.Func{`1,System.Boolean})">
+            <summary>
+            Configures the dependency rule to apply when the provided predicate evaluates to true
+            </summary>
+            <param name="predicate">The predicate which determines whether or not this rule applies</param>
+        </member>
+        <member name="M:CommandLineFluent.Arguments.DependencyRule`2.WithErrorMessage(System.String)">
+            <summary>
+            Configures the error message to show when this rule is violated.
+            </summary>
+        </member>
+        <member name="M:CommandLineFluent.Arguments.DependencyRule`2.DoesSatifyRule(`0,System.Boolean)">
+            <summary>
+            You don't need to call this; but this checks that the specified property of an object
+            of type T satisfies the rule, given whether or not the Argument on which this rule was configured
+            had a value appear during parsing or not.
+            </summary>
+            <param name="obj">The object.</param>
+            <param name="didAppear">If a value appeared during parsing.</param>
+        </member>
+        <member name="M:CommandLineFluent.Arguments.DependencyRule`2.Validate">
+            <summary>
+            Validates this rule. Returns an Error if something is invalid, or null otherwise.
+            </summary>
+        </member>
+        <member name="T:CommandLineFluent.Arguments.IDependencyRule`1">
+            <summary>
+            Defines a single rule of a Dependency.
+            </summary>
+            <typeparam name="TClass">The class.</typeparam>
+        </member>
+        <member name="M:CommandLineFluent.Arguments.IDependencyRule`1.DoesSatifyRule(`0,System.Boolean)">
+            <summary>
+            You don't need to call this; but this checks that the specified property of an object
+            of type T satisfies the rule, given whether or not the Argument on which this rule was configured
+            had a value appear during parsing or not.
+            </summary>
+            <param name="obj">The object.</param>
+            <param name="didAppear">If a value appeared during parsing.</param>
+        </member>
+        <member name="P:CommandLineFluent.Arguments.IDependencyRule`1.ErrorMessage">
+            <summary>
+            The error message when this rule is violated.
+            </summary>
+        </member>
+        <member name="P:CommandLineFluent.Arguments.IDependencyRule`1.Requiredness">
+            <summary>
+            When this rule applies, the requiredness; either required or must not appear.
+            </summary>
+        </member>
+        <member name="M:CommandLineFluent.Arguments.IDependencyRule`1.Validate">
+            <summary>
+            Validates this rule. Throws an exception if something is invalid.
+            </summary>
+        </member>
+        <member name="T:CommandLineFluent.Arguments.IMultiArgument`1">
+            <summary>
+            An argument which has multiple values on the command line.
+            </summary>
+        </member>
+        <member name="P:CommandLineFluent.Arguments.IMultiArgument`1.Name">
+            <summary>
+            A human-readable name which describes this.
+            </summary>
+        </member>
+        <member name="P:CommandLineFluent.Arguments.IMultiArgument`1.HelpText">
+            <summary>
+            Text that describes this.
+            </summary>
+        </member>
+        <member name="P:CommandLineFluent.Arguments.IMultiArgument`1.ArgumentRequired">
+            <summary>
+            If the argument is required or not, or if it's sometimes required based on dependencies.
+            </summary>
+        </member>
+        <member name="P:CommandLineFluent.Arguments.IMultiArgument`1.TargetProperty">
+            <summary>
+            The property that this argument maps to.
+            </summary>
+        </member>
+        <member name="M:CommandLineFluent.Arguments.IMultiArgument`1.SetValue(`0,System.Collections.Generic.IReadOnlyCollection{System.String})">
+            <summary>
+            Sets a property of <paramref name="obj"/> to <paramref name="rawValues"/>, after conversion.
+            There may or may not be a converter set up to translate <paramref name="rawValues"/> into something else.
+            </summary>
+            <param name="obj">The object on which to set a property</param>
+            <param name="rawValues">The value to set the property to (before any conversion)</param>
+        </member>
+        <member name="T:CommandLineFluent.Arguments.IMultiValue`1">
+            <summary>
+            Captures all lone values, such as: Foo.exe Value1 -t someswitch Value2 Value3. All 3 values there would be captured as an array: [Value1, Value2, Value3].
+            Use this when you want to consume an indeterminate number of values, regardless of their position.
+            </summary>
+        </member>
+        <member name="T:CommandLineFluent.Arguments.IOption`1">
+            <summary>
+            An option with one value, supplied like -t Value
+            </summary>
+        </member>
+        <member name="P:CommandLineFluent.Arguments.IOption`1.ShortName">
+            <summary>
+            The Short Name for this
+            </summary>
+        </member>
+        <member name="P:CommandLineFluent.Arguments.IOption`1.LongName">
+            <summary>
+            The Long Name for this
+            </summary>
+        </member>
+        <member name="M:CommandLineFluent.Arguments.IOption`1.ShortAndLongName">
+            <summary>
+            The short and long name joined with a |
+            </summary>
+        </member>
+        <member name="T:CommandLineFluent.Arguments.ISingleArgument`1">
+            <summary>
+            An argument which a single value on the command line.
+            </summary>
+        </member>
+        <member name="P:CommandLineFluent.Arguments.ISingleArgument`1.Name">
+            <summary>
+            A human-readable name which describes this.
+            </summary>
+        </member>
+        <member name="P:CommandLineFluent.Arguments.ISingleArgument`1.HelpText">
+            <summary>
+            Text that describes this.
+            </summary>
+        </member>
+        <member name="P:CommandLineFluent.Arguments.ISingleArgument`1.ArgumentRequired">
+            <summary>
+            If the argument is required or not, or if it's sometimes required based on dependencies.
+            </summary>
+        </member>
+        <member name="P:CommandLineFluent.Arguments.ISingleArgument`1.TargetProperty">
+            <summary>
+            The property that this argument maps to.
+            </summary>
+        </member>
+        <member name="M:CommandLineFluent.Arguments.ISingleArgument`1.SetValue(`0,System.String)">
+            <summary>
+            Sets a property of <paramref name="obj"/> to <paramref name="rawValue"/>, after conversion.
+            There may or may not be a converter set up to translate <paramref name="rawValue"/> into something else.
+            </summary>
+            <param name="obj">The object on which to set a property</param>
+            <param name="rawValue">The value to set the property to (before any conversion)</param>
+        </member>
+        <member name="T:CommandLineFluent.Arguments.ISwitch`1">
+            <summary>
+            A switch toggled on or off, supplied like -s
+            </summary>
+        </member>
+        <member name="P:CommandLineFluent.Arguments.ISwitch`1.ShortName">
+            <summary>
+            The Short Name for this
+            </summary>
+        </member>
+        <member name="P:CommandLineFluent.Arguments.ISwitch`1.LongName">
+            <summary>
+            The Long Name for this
+            </summary>
+        </member>
+        <member name="M:CommandLineFluent.Arguments.ISwitch`1.ShortAndLongName">
+            <summary>
+            The short and long name joined with a |
+            </summary>
+        </member>
+        <member name="T:CommandLineFluent.Arguments.IValue`1">
+            <summary>
+            A value that is supplied like foo.exe MyValue
+            </summary>
+        </member>
+        <member name="T:CommandLineFluent.Arguments.MultiValue`2">
+            <summary>
+            Captures all lone values, such as: Foo.exe Value1 -t someswitch Value2 Value3. All 3 values there would be captured as an array: [Value1, Value2, Value3].
+            Use this when you want to consume an indeterminate number of values, regardless of their position.
+            </summary>
+        </member>
+        <member name="P:CommandLineFluent.Arguments.MultiValue`2.DefaultValues">
+            <summary>
+            The default values to use when nothing is provided.
+            </summary>
+        </member>
+        <member name="P:CommandLineFluent.Arguments.MultiValue`2.Dependencies">
+            <summary>
+            Any dependencies upon other properties, if some have been set up. Otherwise, null.
+            </summary>
+        </member>
+        <member name="P:CommandLineFluent.Arguments.MultiValue`2.Converter">
+            <summary>
+            Converts from a string into <typeparamref name="TProp"/>, or returns an error message.
+            </summary>
+        </member>
+        <member name="P:CommandLineFluent.Arguments.MultiValue`2.CreateCollection">
+            <summary>
+            Creates a new collection, filled with the values provided.
+            </summary>
+        </member>
+        <member name="M:CommandLineFluent.Arguments.MultiValue`2.EvaluateDependencies(`0,System.Boolean)">
+            <summary>
+            Checks to make sure that all dependencies are respected. If they are not, returns an Error
+            describing the first dependency that was violated.
+            If no dependencies have been set up, returns null.
+            </summary>
+            <param name="obj">The object to check</param>
+        </member>
+        <member name="T:CommandLineFluent.Arguments.Option`2">
+            <summary>
+            An argument with a single value
+            </summary>
+        </member>
+        <member name="P:CommandLineFluent.Arguments.Option`2.DefaultValue">
+            <summary>
+            The default value to use when nothing is provided.
+            </summary>
+        </member>
+        <member name="P:CommandLineFluent.Arguments.Option`2.Dependencies">
+            <summary>
+            Any dependencies upon other properties, if some have been set up. Otherwise, null.
+            </summary>
+        </member>
+        <member name="P:CommandLineFluent.Arguments.Option`2.Converter">
+            <summary>
+            Converts from a string into <typeparamref name="TProp"/>, or returns an error message.
+            </summary>
+        </member>
+        <member name="M:CommandLineFluent.Arguments.Option`2.EvaluateDependencies(`0,System.Boolean)">
+            <summary>
+            Checks to make sure that all dependencies are respected. If they are not, returns an Error
+            describing the first dependency that was violated.
+            If no dependencies have been set up, returns null.
+            </summary>
+            <param name="obj">The object to check</param>
+        </member>
+        <member name="M:CommandLineFluent.Arguments.Option`2.ShortAndLongName">
+            <summary>
+            The short and long name joined with a |
+            </summary>
+        </member>
+        <member name="T:CommandLineFluent.Arguments.Switch`2">
+            <summary>
+            A switch that can be toggled on or off
+            </summary>
+        </member>
+        <member name="P:CommandLineFluent.Arguments.Switch`2.DefaultValue">
+            <summary>
+            The default value to use when nothing is provided.
+            </summary>
+        </member>
+        <member name="P:CommandLineFluent.Arguments.Switch`2.Dependencies">
+            <summary>
+            Any dependencies upon other properties, if some have been set up. Otherwise, null.
+            </summary>
+        </member>
+        <member name="P:CommandLineFluent.Arguments.Switch`2.Converter">
+            <summary>
+            Converts from a bool into <typeparamref name="TProp"/>, or returns an error message.
+            </summary>
+        </member>
+        <member name="M:CommandLineFluent.Arguments.Switch`2.ShortAndLongName">
+            <summary>
+            The short and long name joined with a |
+            </summary>
+        </member>
+        <member name="M:CommandLineFluent.Arguments.Switch`2.EvaluateDependencies(`0,System.Boolean)">
+            <summary>
+            Checks to make sure that all dependencies are respected. If they are not, returns an Error
+            describing the first dependency that was violated.
+            If no dependencies have been set up, returns null.
+            </summary>
+            <param name="obj">The object to check</param>
+        </member>
+        <member name="T:CommandLineFluent.Arguments.Value`2">
+            <summary>
+            An argument with a single value
+            </summary>
+        </member>
+        <member name="P:CommandLineFluent.Arguments.Value`2.DefaultValue">
+            <summary>
+            The default value to use when nothing is provided.
+            </summary>
+        </member>
+        <member name="P:CommandLineFluent.Arguments.Value`2.Dependencies">
+            <summary>
+            Any dependencies upon other properties, if some have been set up. Otherwise, null.
+            </summary>
+        </member>
+        <member name="P:CommandLineFluent.Arguments.Value`2.Converter">
+            <summary>
+            Converts from a string into <typeparamref name="TProp"/>, or returns an error message.
+            </summary>
+        </member>
+        <member name="M:CommandLineFluent.Arguments.Value`2.EvaluateDependencies(`0,System.Boolean)">
+            <summary>
+            Checks to make sure that all dependencies are respected. If they are not, returns an Error
+            describing the first dependency that was violated.
+            If no dependencies have been set up, returns null.
+            </summary>
+            <param name="obj">The object to check</param>
+        </member>
+        <member name="T:CommandLineFluent.CliParser">
+            <summary>
+            Parses arguments into classes.
+            Create this class using a CliParserBuilder.
+            </summary>
+        </member>
+        <member name="M:CommandLineFluent.CliParser.#ctor(CommandLineFluent.IConsole,CommandLineFluent.ITokenizer,CommandLineFluent.IMessageFormatter,System.Collections.Generic.Dictionary{System.String,CommandLineFluent.IVerb},CommandLineFluent.CliParserConfig)">
+            <summary>
+            Create this class using a CliParserBuilder.
+            </summary>
+            <param name="console"></param>
+            <param name="tokenizer"></param>
+            <param name="msgFormatter"></param>
+            <param name="verbs"></param>
+            <param name="config"></param>
+        </member>
+        <member name="P:CommandLineFluent.CliParser.Console">
+            <summary>
+            Used to write to the console. Mostly just exists to simplify unit testing.
+            </summary>
+        </member>
+        <member name="P:CommandLineFluent.CliParser.Tokenizer">
+            <summary>
+            Only used if you call <see cref="M:CommandLineFluent.CliParser.Parse(System.String)"/>. It splits up the string into arguments.
+            </summary>
+        </member>
+        <member name="P:CommandLineFluent.CliParser.MsgFormatter">
+            <summary>
+            Used to create messages for the user.
+            </summary>
+        </member>
+        <member name="M:CommandLineFluent.CliParser.Shell(System.String,System.String,System.ConsoleColor,System.ConsoleColor)">
+            <summary>
+            Starts a loop that reads input from <see cref="P:CommandLineFluent.CliParser.Console"/>, splits it into tokens using <see cref="P:CommandLineFluent.CliParser.Tokenizer"/>, and then parses and invokes it synchronously (using <see cref="M:CommandLineFluent.CliParser.Handle(CommandLineFluent.IParseResult)"/>).
+            Writes <paramref name="prompt"/> to the console as a prompt when it is ready for input, and will stop looping once it encounters the string <paramref name="exitKeyword"/>.
+            Compares with <paramref name="exitKeyword"/> using <see cref="P:CommandLineFluent.CliParserConfig.StringComparer"/>.
+            </summary>
+            <param name="prompt">The prompt to write, e.g. MyShell>.</param>
+            <param name="exitKeyword">The keyword to use to stop the loop. Cannot be the same as a Verb name.</param>
+            <param name="promptColor">The foreground color of <paramref name="prompt"/>.</param>
+            <param name="commandColor">The foreground color of the text that the user enters after <paramref name="prompt"/> is written.</param>
+        </member>
+        <member name="M:CommandLineFluent.CliParser.ShellAsync(System.String,System.String,System.ConsoleColor,System.ConsoleColor)">
+            <summary>
+            Starts a loop that reads input from <see cref="P:CommandLineFluent.CliParser.Console"/>, splits it into tokens using <see cref="P:CommandLineFluent.CliParser.Tokenizer"/>, and then parses and invokes it synchronously (using <see cref="M:CommandLineFluent.CliParser.HandleAsync(CommandLineFluent.IParseResult)"/>).
+            Writes <paramref name="prompt"/> to the console as a prompt when it is ready for input, and will stop looping once it encounters the string <paramref name="exitKeyword"/>.
+            Compares with <paramref name="exitKeyword"/> using <see cref="P:CommandLineFluent.CliParserConfig.StringComparer"/>.
+            </summary>
+            <param name="prompt">The prompt to write, e.g. MyShell>.</param>
+            <param name="exitKeyword">The keyword to use to stop the loop. Cannot be the same as a Verb name.</param>
+            <param name="promptColor">The foreground color of <paramref name="prompt"/>.</param>
+            <param name="commandColor">The foreground color of the text that the user enters after <paramref name="prompt"/> is written.</param>
+        </member>
+        <member name="M:CommandLineFluent.CliParser.Parse(System.String)">
+            <summary>
+            Parses the provided args, after splitting them into tokens using <see cref="P:CommandLineFluent.CliParser.Tokenizer"/>, and turns them into a class.
+            </summary>
+            <param name="args">The args to split into tokens and parse.</param>
+            <returns>An IParseResult. You can call <see cref="M:CommandLineFluent.CliParser.Handle(CommandLineFluent.IParseResult)"/>, to handle it automatically.</returns>
+        </member>
+        <member name="M:CommandLineFluent.CliParser.Parse(System.Collections.Generic.IEnumerable{System.String})">
+            <summary>
+            Parses the provided args and turns them into a class.
+            </summary>
+            <param name="args">The args to parse.</param>
+            <returns>An IParseResult. You can call <see cref="M:CommandLineFluent.CliParser.Handle(CommandLineFluent.IParseResult)"/>, to handle it automatically.</returns>
+        </member>
+        <member name="M:CommandLineFluent.CliParser.Handle(CommandLineFluent.IParseResult)">
+            <summary>
+            Handles <paramref name="result"/>. If parsing was successful, calls <see cref="M:CommandLineFluent.IParseResult.Invoke"/>.
+            If parsing failed, any errors are written using <see cref="P:CommandLineFluent.CliParser.MsgFormatter"/>. Then, help is written. If a verb and a help switch was specified, specific
+            help for that verb is written. Otherwise, overall help is written.
+            </summary>
+            <param name="result">The result to handle.</param>
+        </member>
+        <member name="M:CommandLineFluent.CliParser.HandleAsync(CommandLineFluent.IParseResult)">
+            <summary>
+            Handles <paramref name="result"/>. If parsing was successful, calls <see cref="M:CommandLineFluent.IParseResult.InvokeAsync"/>.
+            If parsing failed, any errors are written using <see cref="P:CommandLineFluent.CliParser.MsgFormatter"/>. Then, help is written. If a verb and a help switch was specified, specific
+            help for that verb is written. Otherwise, overall help is written.
+            </summary>
+            <param name="result">The result to handle.</param>
+        </member>
+        <member name="M:CommandLineFluent.CliParser.WriteErrors(System.Collections.Generic.IEnumerable{CommandLineFluent.Error})">
+            <summary>
+            Writes the provided Errors using <see cref="M:CommandLineFluent.IMessageFormatter.WriteErrors(CommandLineFluent.IConsole,System.Collections.Generic.IEnumerable{CommandLineFluent.Error})"/>.
+            </summary>
+            <param name="errors">The errors to write.</param>
+        </member>
+        <member name="M:CommandLineFluent.CliParser.WriteOverallHelp">
+            <summary>
+            Writes overall help, i.e. using <see cref="M:CommandLineFluent.IMessageFormatter.WriteOverallHelp(CommandLineFluent.IConsole,System.Collections.Generic.IReadOnlyCollection{CommandLineFluent.IVerb},CommandLineFluent.CliParserConfig)"/>.
+            </summary>
+        </member>
+        <member name="M:CommandLineFluent.CliParser.WriteHelp(CommandLineFluent.IVerb)">
+            <summary>
+            Writes help for a specific verb; i.e. using <see cref="!:IMessageFormatter.WriteSpecificHelp&lt;TClass&gt;(IConsole, Verb&lt;TClass&gt;, CliParserConfig)"/>.
+            </summary>
+            <param name="verb">The verb to write detailed usage/help for.</param>
+        </member>
+        <member name="M:CommandLineFluent.CliParserBuilder.#ctor">
+            <summary>
+            Creates a new CliParserBuilder, using and a default <see cref="T:CommandLineFluent.CliParserConfig"/>.
+            </summary>
+        </member>
+        <member name="M:CommandLineFluent.CliParserBuilder.#ctor(CommandLineFluent.CliParserConfig)">
+            <summary>
+            Creates a new CliParserBuilder.
+            </summary>
+        </member>
+        <member name="M:CommandLineFluent.CliParserBuilder.UseConsole(CommandLineFluent.IConsole)">
+            <summary>
+            Specifies the IConsole to use.
+            By default, this is <see cref="T:CommandLineFluent.StandardConsole"/>, which just uses the static class <see cref="T:System.Console"/>.
+            </summary>
+            <param name="console">The console to use.</param>
+        </member>
+        <member name="M:CommandLineFluent.CliParserBuilder.UseTokenizer(CommandLineFluent.ITokenizer)">
+            <summary>
+            Specifies the ITokenizer to use.
+            By default, this is <see cref="T:CommandLineFluent.QuotedStringTokenizer"/>, which splits strings into tokens based on single or double quotes, or spaces.
+            </summary>
+            <param name="tokenizer">The tokenizer to use.</param>
+        </member>
+        <member name="M:CommandLineFluent.CliParserBuilder.UseMessageFormatter(CommandLineFluent.IMessageFormatter)">
+            <summary>
+            Specifies the IMessageFormatter to use.
+            By default, this is <see cref="T:CommandLineFluent.StandardMessageFormatter"/>.
+            </summary>
+            <param name="msgFormatter">The tokenizer to use.</param>
+        </member>
+        <member name="M:CommandLineFluent.CliParserBuilder.AddVerb``1(System.String,System.Action{CommandLineFluent.Verb{``0}})">
+            <summary>
+            Adds a verb for this parser. To invoke it, the user has to enter <paramref name="name"/> on the command line.
+            e.g. "foo.exe add" invokes the verb with the name "add".
+            </summary>
+            <typeparam name="TClass">The type of the class which will be created when arguments for that verb are parsed successfully</typeparam>
+            <param name="name">The name of the verb</param>
+            <param name="config">The action to configure the verb</param>
+        </member>
+        <member name="M:CommandLineFluent.CliParserBuilder.AddVerb``2(System.String,System.Action{CommandLineFluent.Verb{``0}})">
+            <summary>
+            Adds a verb for this parser. To invoke it, the user has to enter <paramref name="name"/> on the command line.
+            e.g. "foo.exe add" invokes the verb with the name "add".
+            </summary>
+            <typeparam name="TClass">The type of the class which will be created when arguments for that verb are parsed successfully</typeparam>
+            <param name="name">The name of the verb</param>
+            <param name="config">The action to configure the verb</param>
+        </member>
+        <member name="M:CommandLineFluent.CliParserBuilder.Build">
+            <summary>
+            Creates a <see cref="T:CommandLineFluent.CliParser"/>.
+            Throws a <see cref="T:CommandLineFluent.CliParserBuilderException"/> if anything is improperly configured.
+            </summary>
+        </member>
+        <member name="M:CommandLineFluent.CliParserBuilderException.#ctor">
+            <summary>
+            Creates a new instance of BuildParserException
+            </summary>
+        </member>
+        <member name="M:CommandLineFluent.CliParserBuilderException.#ctor(System.String)">
+            <summary>
+            Creates a new instance of BuildParserException
+            </summary>
+            <param name="message">The message that describes the error.</param>
+        </member>
+        <member name="M:CommandLineFluent.CliParserBuilderException.#ctor(System.String,System.Collections.Generic.ICollection{CommandLineFluent.Error})">
+            <summary>
+            Creates a new instance of BuildParserException
+            </summary>
+            <param name="message">The message that describes the error.</param>
+            <param name="errors">The errors encountered upon validation</param>
+        </member>
+        <member name="M:CommandLineFluent.CliParserBuilderException.#ctor(System.String,System.Exception)">
+            <summary>
+            Creates a new instance of BuildParserException
+            </summary>
+            <param name="message">The message that describes the error.</param>
+            <param name="innerException">The exception that is the cause of the current exception</param>
+        </member>
+        <member name="M:CommandLineFluent.CliParserBuilderException.#ctor(System.String,System.Collections.Generic.ICollection{CommandLineFluent.Error},System.Exception)">
+            <summary>
+            Creates a new instance of BuildParserException
+            </summary>
+            <param name="message">The message that describes the error.</param>
+            <param name="errors">The errors encountered upon validation</param>
+            <param name="innerException">The exception that is the cause of the current exception</param>
+        </member>
+        <member name="P:CommandLineFluent.CliParserConfig.DefaultShortPrefix">
+            <summary>
+            The default prefix to use for any short names. If short names don't start with this, it'll automatically be prepended.
+            By default: -
+            </summary>
+        </member>
+        <member name="P:CommandLineFluent.CliParserConfig.DefaultLongPrefix">
+            <summary>
+            The default prefix to use for any long names. If long names don't start with this, it'll automatically be prepended.
+            By default: --
+            </summary>
+        </member>
+        <member name="P:CommandLineFluent.CliParserConfig.ShortHelpSwitch">
+            <summary>
+            The default short switch to use to request help.
+            By default: -?
+            </summary>
+        </member>
+        <member name="P:CommandLineFluent.CliParserConfig.LongHelpSwitch">
+            <summary>
+            The default long switch to use to request help.
+            By default: --help
+            </summary>
+        </member>
+        <member name="P:CommandLineFluent.CliParserConfig.StringComparer">
+            <summary>
+            The string comparer to use when parsing argument short/long names and verb names.
+            By default: StringComparer.OrdinalIgnoreCase.
+            </summary>
+        </member>
+        <member name="T:CommandLineFluent.Converted`2">
+            <summary>
+            A way of returning either a Value or an Error. Provides methods to safely get either the Value or Error.
+            You can also use this type directly if an if statement; it evaluates to true/false based on the value of <see cref="P:CommandLineFluent.Converted`2.Ok"/>.
+            If <see cref="P:CommandLineFluent.Converted`2.Ok"/> is true, then only <typeparamref name="TVal"/> is valid.
+            If <see cref="P:CommandLineFluent.Converted`2.Ok"/> is false, then only <typeparamref name="TErr"/> is valid.
+            </summary>
+            <typeparam name="TVal">The Type on success.</typeparam>
+            <typeparam name="TErr">The Type on failure.</typeparam>
+        </member>
+        <member name="M:CommandLineFluent.Converted`2.#ctor(`0,`1,System.Boolean)">
+            <summary>
+            Creates a new instance. Either <paramref name="value"/> or <paramref name="error"/> may be null, but not both.
+            You don't need to use this; this struct can be implicitly cast from objects of either <typeparamref name="TErr"/> or <typeparamref name="TVal"/>.
+            </summary>
+            <param name="value">The success value.</param>
+            <param name="error">The failure value.</param>
+            <param name="ok">If true, success. If false, failure.</param>
+        </member>
+        <member name="P:CommandLineFluent.Converted`2.Ok">
+            <summary>
+            If true, has a <typeparamref name="TVal"/>, otherwise has a <typeparamref name="TErr"/>.
+            When this instance is used in an If statement, it produces this value.
+            </summary>
+        </member>
+        <member name="M:CommandLineFluent.Converted`2.ValueOr(`0)">
+            <summary>
+            Gets the value, or <paramref name="ifNone"/> if <see cref="P:CommandLineFluent.Converted`2.Ok"/> is false.
+            </summary>
+        </member>
+        <member name="M:CommandLineFluent.Converted`2.ErrorOr(`1)">
+            <summary>
+            Gets the error, or <paramref name="ifNone"/> if <see cref="P:CommandLineFluent.Converted`2.Ok"/> is true.
+            </summary>
+        </member>
+        <member name="M:CommandLineFluent.Converted`2.HasValue(`0@)">
+            <summary>
+            If <see cref="P:CommandLineFluent.Converted`2.Ok"/> is true, sets <paramref name="val"/> to the Value for this instance and returns true.
+            Otherwise, val is set to the default value for <typeparamref name="TVal"/> and returns false.
+            </summary>
+            <param name="val"></param>
+        </member>
+        <member name="M:CommandLineFluent.Converted`2.HasError(`1@)">
+            <summary>
+            If <see cref="P:CommandLineFluent.Converted`2.Ok"/> is false, sets <paramref name="error"/> to the Value for this instance and returns true.
+            Otherwise, val is set to the default value for <typeparamref name="TErr"/> and returns false.
+            </summary>
+            <param name="val"></param>
+        </member>
+        <member name="M:CommandLineFluent.Converted`2.Success(`0@,`1@)">
+            <summary>
+            Returns the value of <see cref="P:CommandLineFluent.Converted`2.Ok"/>. If true, then <paramref name="val"/> is set. Otherwise, <paramref name="error"/> is set.
+            </summary>
+            <param name="val">If <see cref="P:CommandLineFluent.Converted`2.Ok"/> is true, the value. Otherwise, the default value for <typeparamref name="TVal"/>.</param>
+            <param name="error">If <see cref="P:CommandLineFluent.Converted`2.Ok"/> is false, the error. Otherwise, the default value for <typeparamref name="TErr"/>.</param>
+        </member>
+        <member name="M:CommandLineFluent.Converted`2.op_Implicit(`0)~CommandLineFluent.Converted{`0,`1}">
+            <summary>
+            Equivalent to new Converted(<paramref name="value"/>, default, true);
+            </summary>
+        </member>
+        <member name="M:CommandLineFluent.Converted`2.op_Implicit(`1)~CommandLineFluent.Converted{`0,`1}">
+            <summary>
+            Equivalent to new Converted(default, <paramref name="error"/>, true);
+            </summary>
+        </member>
+        <member name="M:CommandLineFluent.Converted`2.ToString">
+            <summary>
+            Calls ToString() on the value if <see cref="P:CommandLineFluent.Converted`2.Ok"/> is true, otherwise calls ToString() on the error.
+            </summary>
+        </member>
+        <member name="M:CommandLineFluent.Converters.ToChar(System.String)">
+            <summary>
+            If <paramref name="s"/> is 1 character, returns that. Otherwise, error.
+            </summary>
+            <param name="s">The string to convert</param>
+        </member>
+        <member name="M:CommandLineFluent.Converters.ToNullableChar(System.String)">
+            <summary>
+            If <paramref name="s"/> is 1 character, returns that. Otherwise, error.
+            </summary>
+            <param name="s">The string to convert</param>
+        </member>
+        <member name="M:CommandLineFluent.Converters.ToShort(System.String)">
+            <summary>
+            Converts the provided string to short.
+            </summary>
+            <param name="s">The string to convert</param>
+        </member>
+        <member name="M:CommandLineFluent.Converters.ToNullableShort(System.String)">
+            <summary>
+            Converts the provided string to short?.
+            </summary>
+            <param name="s">The string to convert</param>
+        </member>
+        <member name="M:CommandLineFluent.Converters.ToUShort(System.String)">
+            <summary>
+            Converts the provided string to ushort.
+            </summary>
+            <param name="s">The string to convert</param>
+        </member>
+        <member name="M:CommandLineFluent.Converters.ToNullableUShort(System.String)">
+            <summary>
+            Converts the provided string to ushort?.
+            </summary>
+            <param name="s">The string to convert</param>
+        </member>
+        <member name="M:CommandLineFluent.Converters.ToInt(System.String)">
+            <summary>
+            Converts the provided string to int.
+            </summary>
+            <param name="s">The string to convert</param>
+        </member>
+        <member name="M:CommandLineFluent.Converters.ToNullableInt(System.String)">
+            <summary>
+            Converts the provided string to int?.
+            </summary>
+            <param name="s">The string to convert</param>
+        </member>
+        <member name="M:CommandLineFluent.Converters.ToUInt(System.String)">
+            <summary>
+            Converts the provided string to uint.
+            </summary>
+            <param name="s">The string to convert</param>
+        </member>
+        <member name="M:CommandLineFluent.Converters.ToNullableUInt(System.String)">
+            <summary>
+            Converts the provided string to uint?.
+            </summary>
+            <param name="s">The string to convert</param>
+        </member>
+        <member name="M:CommandLineFluent.Converters.ToLong(System.String)">
+            <summary>
+            Converts the provided string to long.
+            </summary>
+            <param name="s">The string to convert</param>
+        </member>
+        <member name="M:CommandLineFluent.Converters.ToNullableLong(System.String)">
+            <summary>
+            Converts the provided string to long?.
+            </summary>
+            <param name="s">The string to convert</param>
+        </member>
+        <member name="M:CommandLineFluent.Converters.ToULong(System.String)">
+            <summary>
+            Converts the provided string to ulong.
+            </summary>
+            <param name="s">The string to convert</param>
+        </member>
+        <member name="M:CommandLineFluent.Converters.ToNullableULong(System.String)">
+            <summary>
+            Converts the provided string to ulong?.
+            </summary>
+            <param name="s">The string to convert</param>
+        </member>
+        <member name="M:CommandLineFluent.Converters.ToFloat(System.String)">
+            <summary>
+            Converts the provided string to float.
+            </summary>
+            <param name="s">The string to convert</param>
+        </member>
+        <member name="M:CommandLineFluent.Converters.ToNullableFloat(System.String)">
+            <summary>
+            Converts the provided string to float?.
+            </summary>
+            <param name="s">The string to convert</param>
+        </member>
+        <member name="M:CommandLineFluent.Converters.ToDouble(System.String)">
+            <summary>
+            Converts the provided string to double.
+            </summary>
+            <param name="s">The string to convert</param>
+        </member>
+        <member name="M:CommandLineFluent.Converters.ToNullableDouble(System.String)">
+            <summary>
+            Converts the provided string to double?.
+            </summary>
+            <param name="s">The string to convert</param>
+        </member>
+        <member name="M:CommandLineFluent.Converters.ToDecimal(System.String)">
+            <summary>
+            Converts the provided string to decimal.
+            </summary>
+            <param name="s">The string to convert</param>
+        </member>
+        <member name="M:CommandLineFluent.Converters.ToNullableDecimal(System.String)">
+            <summary>
+            Converts the provided string to decimal?.
+            </summary>
+            <param name="s">The string to convert</param>
+        </member>
+        <member name="M:CommandLineFluent.Converters.ToEnum``1(System.String)">
+            <summary>
+            Converts the provided string to the Enum <typeparamref name="TEnum"/>.
+            </summary>
+            <typeparam name="TEnum">The type of the enum to parse</typeparam>
+            <param name="s">The string to convert</param>
+        </member>
+        <member name="M:CommandLineFluent.Converters.ToNullableEnum``1(System.String)">
+            <summary>
+            Converts the provided string to the Enum <typeparamref name="TEnum"/>?.
+            </summary>
+            <typeparam name="TEnum">The type of the enum to parse</typeparam>
+            <param name="s">The string to convert</param>
+        </member>
+        <member name="M:CommandLineFluent.Converters.ToDateTime(System.String)">
+            <summary>
+            Converts the provided string to DateTime.
+            </summary>
+            <param name="s">The string to convert</param>
+        </member>
+        <member name="M:CommandLineFluent.Converters.ToNullableDateTime(System.String)">
+            <summary>
+            Converts the provided string to DateTime?.
+            </summary>
+            <param name="s">The string to convert</param>
+        </member>
+        <member name="M:CommandLineFluent.Converters.ToTimeSpan(System.String)">
+            <summary>
+            Converts the provided string to TimeSpan.
+            </summary>
+            <param name="s">The string to convert</param>
+        </member>
+        <member name="M:CommandLineFluent.Converters.ToNullableTimeSpan(System.String)">
+            <summary>
+            Converts the provided string to TimeSpan?.
+            </summary>
+            <param name="s">The string to convert</param>
+        </member>
+        <member name="M:CommandLineFluent.Converters.ToGuid(System.String)">
+            <summary>
+            Converts the provided string to Guid.
+            </summary>
+            <param name="s">The string to convert</param>
+        </member>
+        <member name="M:CommandLineFluent.Converters.ToNullableGuid(System.String)">
+            <summary>
+            Converts the provided string to Guid?.
+            </summary>
+            <param name="s">The string to convert</param>
+        </member>
+        <member name="M:CommandLineFluent.Converters.ToUri(System.String)">
+            <summary>
+            Converts the provided string to Uri.
+            </summary>
+            <param name="s">The string to convert</param>
+        </member>
+        <member name="M:CommandLineFluent.Converters.ToNullableUri(System.String)">
+            <summary>
+            Converts the provided string to Uri?.
+            </summary>
+            <param name="s">The string to convert</param>
+        </member>
+        <member name="M:CommandLineFluent.Converters.Split(System.String,System.Char[])">
+            <summary>
+            Splits the string into multiple strings based on separators.
+            Uses s.Split()
+            </summary>
+            <param name="s">The string to split</param>
+            <param name="separator">The separators to use</param>
+        </member>
+        <member name="M:CommandLineFluent.Converters.Split(System.String,System.Char[],System.Int32)">
+            <summary>
+            Splits the string into multiple strings based on separators.
+            Uses s.Split()
+            </summary>
+            <param name="s">The string to split</param>
+            <param name="separator">The separators to use</param>
+            <param name="count">The maximum number of substrings to return</param>
+        </member>
+        <member name="M:CommandLineFluent.Converters.Split(System.String,System.Char[],System.StringSplitOptions)">
+            <summary>
+            Splits the string into multiple strings based on separators.
+            Uses s.Split()
+            </summary>
+            <param name="s">The string to split</param>
+            <param name="separator">The separators to use</param>
+            <param name="options">System.StringSplitOptions.RemoveEmptyEntries to omit empty array elements from the array returned; or System.StringSplitOptions.None to include empty array
+            elements in the array returned.</param>
+        </member>
+        <member name="M:CommandLineFluent.Converters.Split(System.String,System.String[],System.StringSplitOptions)">
+            <summary>
+            Splits the string into multiple strings based on separators.
+            Uses s.Split()
+            </summary>
+            <param name="s">The string to split</param>
+            <param name="separator">The separators to use</param>
+            <param name="options">System.StringSplitOptions.RemoveEmptyEntries to omit empty array elements from the array returned; or System.StringSplitOptions.None to include empty array
+            elements in the array returned.</param>
+        </member>
+        <member name="M:CommandLineFluent.Converters.Split(System.String,System.Char[],System.Int32,System.StringSplitOptions)">
+            <summary>
+            Splits the string into multiple strings based on separators.
+            Uses s.Split()
+            </summary>
+            <param name="s">The string to split</param>
+            <param name="separator">The separators to use</param>
+            <param name="count">The maximum number of substrings to return</param>
+            <param name="options">System.StringSplitOptions.RemoveEmptyEntries to omit empty array elements from the array returned; or System.StringSplitOptions.None to include empty array
+            elements in the array returned.</param>
+        </member>
+        <member name="M:CommandLineFluent.Converters.Split(System.String,System.String[],System.Int32,System.StringSplitOptions)">
+            <summary>
+            Splits the string into multiple strings based on separators.
+            Uses s.Split()
+            </summary>
+            <param name="s">The string to split</param>
+            <param name="separator">The separators to use</param>
+            <param name="count">The maximum number of substrings to return</param>
+            <param name="options">System.StringSplitOptions.RemoveEmptyEntries to omit empty array elements from the array returned; or System.StringSplitOptions.None to include empty array
+            elements in the array returned.</param>
+        </member>
+        <member name="T:CommandLineFluent.Error">
+            <summary>
+            Represents an error which was encountered when parsing the command line arguments provided
+            </summary>
+        </member>
+        <member name="P:CommandLineFluent.Error.Message">
+            <summary>
+            A human-readable error message
+            </summary>
+        </member>
+        <member name="P:CommandLineFluent.Error.ErrorCode">
+            <summary>
+            What exactly went wrong
+            </summary>
+        </member>
+        <member name="M:CommandLineFluent.Error.#ctor(CommandLineFluent.ErrorCode,System.String)">
+            <summary>
+            Creates a new instance of Error
+            </summary>
+            <param name="errorCode">The error code</param>
+            <param name="message">The message for this error</param>
+        </member>
+        <member name="M:CommandLineFluent.Error.ToString">
+            <summary>
+            Returns <see cref="P:CommandLineFluent.Error.ErrorCode"/> - <see cref="P:CommandLineFluent.Error.Message"/>
+            </summary>
+            <returns><see cref="P:CommandLineFluent.Error.ErrorCode"/> - <see cref="P:CommandLineFluent.Error.Message"/></returns>
+        </member>
+        <member name="T:CommandLineFluent.ErrorCode">
+            <summary>
+            Represents an error case
+            </summary>
+        </member>
+        <member name="F:CommandLineFluent.ErrorCode.Ok">
+            <summary>
+            All is well, nothing went wrong
+            </summary>
+        </member>
+        <member name="F:CommandLineFluent.ErrorCode.MissingRequiredOption">
+            <summary>
+            User did not provide a required option
+            </summary>
+        </member>
+        <member name="F:CommandLineFluent.ErrorCode.OptionNotAllowed">
+            <summary>
+            An option is disallowed due to a dependency rule
+            </summary>
+        </member>
+        <member name="F:CommandLineFluent.ErrorCode.DuplicateOption">
+            <summary>
+            The user provided an option multiple times
+            </summary>
+        </member>
+        <member name="F:CommandLineFluent.ErrorCode.OptionMissingValue">
+            <summary>
+            The user provided an option's short or long name, but no value after it
+            </summary>
+        </member>
+        <member name="F:CommandLineFluent.ErrorCode.OptionFailedConversion">
+            <summary>
+            The value that the user provided for an option failed conversion
+            </summary>
+        </member>
+        <member name="F:CommandLineFluent.ErrorCode.MissingRequiredSwitch">
+            <summary>
+            User did not provide a required switch
+            </summary>
+        </member>
+        <member name="F:CommandLineFluent.ErrorCode.SwitchNotAllowed">
+            <summary>
+            A switch is disallowed due to a dependency rule
+            </summary>
+        </member>
+        <member name="F:CommandLineFluent.ErrorCode.DuplicateSwitch">
+            <summary>
+            The user provided a switch multiple times
+            </summary>
+        </member>
+        <member name="F:CommandLineFluent.ErrorCode.SwitchFailedConversion">
+            <summary>
+            The switch that the user specified failed conversion
+            </summary>
+        </member>
+        <member name="F:CommandLineFluent.ErrorCode.MissingRequiredValue">
+            <summary>
+            User did not provide a required value
+            </summary>
+        </member>
+        <member name="F:CommandLineFluent.ErrorCode.ValueNotAllowed">
+            <summary>
+            A value is disallowed due to a dependency rule
+            </summary>
+        </member>
+        <member name="F:CommandLineFluent.ErrorCode.ValueFailedConversion">
+            <summary>
+            The value that the user provided for a value failed conversion
+            </summary>
+        </member>
+        <member name="F:CommandLineFluent.ErrorCode.MissingRequiredMultiValue">
+            <summary>
+            User did not provide a required multivalue
+            </summary>
+        </member>
+        <member name="F:CommandLineFluent.ErrorCode.MultiValueNotAllowed">
+            <summary>
+            A multivalue is disallowed due to a dependency rule
+            </summary>
+        </member>
+        <member name="F:CommandLineFluent.ErrorCode.MultiValueFailedConversion">
+            <summary>
+            One of the values provided for a multivalue failed conversion
+            </summary>
+        </member>
+        <member name="F:CommandLineFluent.ErrorCode.UnexpectedArgument">
+            <summary>
+            The user provided an argument we were not expecting
+            </summary>
+        </member>
+        <member name="F:CommandLineFluent.ErrorCode.InvalidVerb">
+            <summary>
+            The verb that the user specified was not a defined verb
+            </summary>
+        </member>
+        <member name="F:CommandLineFluent.ErrorCode.NoVerbFound">
+            <summary>
+            The user didn't specify a verb, but we were expecting one
+            </summary>
+        </member>
+        <member name="F:CommandLineFluent.ErrorCode.HelpRequested">
+            <summary>
+            The user requested help
+            </summary>
+        </member>
+        <member name="T:CommandLineFluent.IMessageFormatter">
+            <summary>
+            Provides ways for certain messages to be formatted.
+            </summary>
+        </member>
+        <member name="M:CommandLineFluent.IMessageFormatter.WriteErrors(CommandLineFluent.IConsole,System.Collections.Generic.IEnumerable{CommandLineFluent.Error})">
+            <summary>
+            Writes the provided <paramref name="errors"/> to <paramref name="console"/>.
+            </summary>
+            <param name="console">The console to write to.</param>
+            <param name="errors">The errors to write.</param>
+        </member>
+        <member name="M:CommandLineFluent.IMessageFormatter.WriteOverallHelp(CommandLineFluent.IConsole,System.Collections.Generic.IReadOnlyCollection{CommandLineFluent.IVerb},CommandLineFluent.CliParserConfig)">
+            <summary>
+            Should be used when the user enters a help switch with no verb.
+            Writes a summary of help to <paramref name="console"/> on the provided <paramref name="verbs"/>.
+            The <paramref name="config"/> is provided so it can also write the short/long help switches,
+            so the user can be told they can do: "verb -?" for specific help.
+            </summary>
+            <param name="console">The console to write to.</param>
+            <param name="verbs">The verbs to write help for.</param>
+            <param name="config">The current config, in particular, it has short/long help switches.</param>
+        </member>
+        <member name="M:CommandLineFluent.IMessageFormatter.WriteSpecificHelp``1(CommandLineFluent.IConsole,CommandLineFluent.Verb{``0})">
+            <summary>
+            Should be used when the user enters a help switch and a verb: "verb -?".
+            Writes specific help to <paramref name="console"/> on the provided <paramref name="verb"/>.
+            </summary>
+            <typeparam name="TClass">The class that this Verb parses arguments into.</typeparam>
+            <param name="console">The console to write to.</param>
+            <param name="verb">The verb to write help for.</param>
+        </member>
+        <member name="T:CommandLineFluent.ITokenizer">
+            <summary>
+            Provides an interface to split a string into multiple tokens. Useful when making a shell-like interface,
+            and you need to split the user-provided string into arguments.
+            </summary>
+        </member>
+        <member name="M:CommandLineFluent.ITokenizer.Tokenize(System.String)">
+            <summary>
+            Splits a string into a collection of tokens.
+            </summary>
+            <param name="args">The string to split.</param>
+            <returns>The tokens.</returns>
+        </member>
+        <member name="T:CommandLineFluent.IVerb">
+            <summary>
+            A single verb, for example, foo.exe add.
+            Verbs have their own Options, Values, and Switches which they can parse and create an instance of a particular class.
+            </summary>
+        </member>
+        <member name="P:CommandLineFluent.IVerb.Name">
+            <summary>
+            The name of this verb. This is what the user must enter to invoke this verb. This must be unique.
+            </summary>
+        </member>
+        <member name="P:CommandLineFluent.IVerb.HelpText">
+            <summary>
+            Human-readable help for this verb.
+            </summary>
+        </member>
+        <member name="M:CommandLineFluent.IVerb.Parse(System.Collections.Generic.IEnumerable{System.String})">
+            <summary>
+            Parses the provided arguments using this verb's rules. You shouldn't need to use this directly. But if you do,
+            the first argument should not be this verb's name; if it is, make sure to use .Skip(1) first.
+            </summary>
+            <param name="args">The arguments to parse</param>
+        </member>
+        <member name="M:CommandLineFluent.IVerb.WriteSpecificHelp(CommandLineFluent.IConsole,CommandLineFluent.IMessageFormatter)">
+            <summary>
+            Calls <see cref="M:CommandLineFluent.IMessageFormatter.WriteSpecificHelp``1(CommandLineFluent.IConsole,CommandLineFluent.Verb{``0})"/>, passing this verb as a parameter.
+            </summary>
+        </member>
+        <member name="T:CommandLineFluent.QuotedStringTokenizer">
+            <summary>
+            Splits a string into tokens. Splits based on spaces, or "double quotes" or 'single quotes'.
+            </summary>
+        </member>
+        <member name="M:CommandLineFluent.QuotedStringTokenizer.Tokenize(System.String)">
+            <summary>
+            Turns the string into tokens. Delimited based on spaces, "double quotes", or 'single quotes'.
+            If you don't terminate the last pair of quotes ("like this), then the last token will be to the end of the string, including any whitespace or newlines
+            </summary>
+            <param name="line">The string to split into tokens</param>
+        </member>
+        <member name="T:CommandLineFluent.StandardConsole">
+            <summary>
+            This class simply calls Console methods.
+            </summary>
+        </member>
+        <member name="P:CommandLineFluent.StandardConsole.DefaultWidth">
+            <summary>
+            The default width to use, if the CurrentWidth can't be ascertained.
+            </summary>
+        </member>
+        <member name="P:CommandLineFluent.StandardConsole.CurrentWidth">
+            <summary>
+            Returns <see cref="P:System.Console.WindowWidth"/>. If that throws an exception, uses <see cref="P:CommandLineFluent.StandardConsole.DefaultWidth"/> instead.
+            </summary>
+        </member>
+        <member name="P:CommandLineFluent.StandardConsole.BackgroundColor">
+            <summary>
+            Gets or sets <see cref="P:System.Console.BackgroundColor"/>.
+            </summary>
+        </member>
+        <member name="P:CommandLineFluent.StandardConsole.ForegroundColor">
+            <summary>
+            Gets or sets <see cref="P:System.Console.ForegroundColor"/>.
+            </summary>
+        </member>
+        <member name="T:CommandLineFluent.StandardMessageFormatter">
+            <summary>
+            Provides default usage and help formatting
+            </summary>
+        </member>
+        <member name="P:CommandLineFluent.StandardMessageFormatter.KeywordColor">
+            <summary>
+            The color that keywords are written in, such as verb names and short/long names for options/switches
+            </summary>
+        </member>
+        <member name="M:CommandLineFluent.StandardMessageFormatter.WriteOverallHelp(CommandLineFluent.IConsole,System.Collections.Generic.IReadOnlyCollection{CommandLineFluent.IVerb},CommandLineFluent.CliParserConfig)">
+            <summary>
+            Writes the overall help.
+            Lists all verbs and their help text.
+            </summary>
+            <param name="console">The console help is written to.</param>
+        </member>
+        <member name="M:CommandLineFluent.StandardMessageFormatter.WriteSpecificHelp``1(CommandLineFluent.IConsole,CommandLineFluent.Verb{``0})">
+            <summary>
+            Writes specific help for <paramref name="verb"/> to <paramref name="console"/>. Shows all of the possible arguments and their help text.
+            Any arguments that aren't required are shown in [brackets].
+            </summary>
+            <typeparam name="TClass">The class that this verb parses input into.</typeparam>
+            <param name="console">The console help is written to.</param>
+            <param name="verb">The verb to write help for.</param>
+        </member>
+        <member name="M:CommandLineFluent.StandardMessageFormatter.WriteErrors(CommandLineFluent.IConsole,System.Collections.Generic.IEnumerable{CommandLineFluent.Error})">
+            <summary>
+            Writes each error's Message property to the console
+            </summary>
+            <param name="console">The console errors are written to.</param>
+            <param name="errors">The errors to write.</param>
+        </member>
+        <member name="P:CommandLineFluent.Verb`1.MultiValue">
+            <summary>
+            If not null, the MultiValue for this verb which picks up all extra arguments.
+            </summary>
+        </member>
+        <member name="P:CommandLineFluent.Verb`1.AllSwitches">
+            <summary>
+            All the Switches that this Verb has.
+            </summary>
+        </member>
+        <member name="P:CommandLineFluent.Verb`1.AllOptions">
+            <summary>
+            All the Options that this Verb has.
+            </summary>
+        </member>
+        <member name="P:CommandLineFluent.Verb`1.AllValues">
+            <summary>
+            All the Values that this Verb has.
+            </summary>
+        </member>
+        <member name="P:CommandLineFluent.Verb`1.Invoke">
+            <summary>
+            The action that's invoked when parsing is successful and this verb was provided.
+            </summary>
+        </member>
+        <member name="P:CommandLineFluent.Verb`1.InvokeAsync">
+            <summary>
+            The asynchronous action that's invoked when parsing is successful and this verb was provided.
+            </summary>
+        </member>
+        <member name="M:CommandLineFluent.Verb`1.AddOption``1(System.String,System.String,System.Action{CommandLineFluent.Arguments.Config.OptionConfig{`0,``0}})">
+            <summary>
+            Adds a new Option, without any predefined converter. If you're calling this, make sure you set a converter in <paramref name="optionConfig"/>!
+            Alternatively, you can also create an extension method for this property, which calls <see cref="M:CommandLineFluent.Verb`1.AddOptionWithConverter``1(System.String,System.String,System.Action{CommandLineFluent.Arguments.Config.OptionConfig{`0,``0}},System.Func{System.String,CommandLineFluent.Converted{``0,System.String}})"/>.
+            </summary>
+            <typeparam name="TProp">The type of the target property.</typeparam>
+            <param name="shortName">The short name used to specify this option. If it lacks the configured default short prefix, it's automatically prepended.</param>
+            <param name="longName">The long name used to specify this option. If it lacks the configured default long prefix, it's automatically prepended.</param>
+            <param name="optionConfig">The action used to configure the option.</param>
+            <returns>The created option.</returns>
+        </member>
+        <member name="M:CommandLineFluent.Verb`1.AddOptionWithConverter``1(System.String,System.String,System.Action{CommandLineFluent.Arguments.Config.OptionConfig{`0,``0}},System.Func{System.String,CommandLineFluent.Converted{``0,System.String}})">
+            <summary>
+            Adds a new Option, setting the <paramref name="converter"/>.
+            Not intended that you call this directly (you can call WithConverter in the <paramref name="optionConfig"/>), it's provided for you to create extension methods
+            which take specific types of <typeparamref name="TProp"/>, and call this method, providing the correct converter.
+            </summary>
+            <typeparam name="TProp">The type of the target property.</typeparam>
+            <param name="shortName">The short name used to specify this option. If it lacks the configured default short prefix, it's automatically prepended.</param>
+            <param name="longName">The long name used to specify this option. If it lacks the configured default long prefix, it's automatically prepended.</param>
+            <param name="optionConfig">The action used to configure the option.</param>
+            <param name="converter">The converter that the <paramref name="optionConfig"/> will be configured to use.</param>
+            <returns>The created option.</returns>
+        </member>
+        <member name="M:CommandLineFluent.Verb`1.AddValue``1(System.Action{CommandLineFluent.Arguments.Config.ValueConfig{`0,``0}})">
+            <summary>
+            Adds a new Value, without any predefined converter. If you're calling this, make sure you set a converter in <paramref name="valueConfig"/>!
+            Alternatively, you can also create an extension method for this property, which calls <see cref="M:CommandLineFluent.Verb`1.AddValueWithConverter``1(System.Action{CommandLineFluent.Arguments.Config.ValueConfig{`0,``0}},System.Func{System.String,CommandLineFluent.Converted{``0,System.String}})"/>.
+            </summary>
+            <typeparam name="TProp">The type of the target property.</typeparam>
+            <param name="valueConfig">The action used to configure the value.</param>
+            <returns>The created value.</returns>
+        </member>
+        <member name="M:CommandLineFluent.Verb`1.AddValueWithConverter``1(System.Action{CommandLineFluent.Arguments.Config.ValueConfig{`0,``0}},System.Func{System.String,CommandLineFluent.Converted{``0,System.String}})">
+            <summary>
+            Adds a new Value, setting the <paramref name="converter"/>.
+            Not intended that you call this directly (you can call WithConverter in the <paramref name="valueConfig"/>), it's provided for you to create extension methods
+            which take specific types of <typeparamref name="TProp"/>, and call this method, providing the correct converter.
+            </summary>
+            <typeparam name="TProp">The type of the target property.</typeparam>
+            <param name="valueConfig">The action used to configure the value.</param>
+            <param name="converter">The converter that the <paramref name="valueConfig"/> will be configured to use.</param>
+            <returns>The created value.</returns>
+        </member>
+        <member name="M:CommandLineFluent.Verb`1.AddSwitch``1(System.String,System.String,System.Action{CommandLineFluent.Arguments.Config.SwitchConfig{`0,``0}})">
+            <summary>
+            Adds a new Switch, without any predefined converter. If you're calling this, make sure you set a converter in <paramref name="switchConfig"/>!
+            Alternatively, you can also create an extension method for this property, which calls <see cref="M:CommandLineFluent.Verb`1.AddSwitchWithConverter``1(System.String,System.String,System.Action{CommandLineFluent.Arguments.Config.SwitchConfig{`0,``0}},System.Func{System.Boolean,CommandLineFluent.Converted{``0,System.String}})"/>.
+            </summary>
+            <typeparam name="TProp">The type of the target property.</typeparam>
+            <param name="shortName">The short name used to specify this switch. If it lacks the configured default short prefix, it's automatically prepended.</param>
+            <param name="longName">The long name used to specify this switch. If it lacks the configured default long prefix, it's automatically prepended.</param>
+            <param name="switchConfig">The action used to configure the switch.</param>
+            <returns>The created switch.</returns>
+        </member>
+        <member name="M:CommandLineFluent.Verb`1.AddSwitchWithConverter``1(System.String,System.String,System.Action{CommandLineFluent.Arguments.Config.SwitchConfig{`0,``0}},System.Func{System.Boolean,CommandLineFluent.Converted{``0,System.String}})">
+            <summary>
+            Adds a new Switch, setting the <paramref name="converter"/>.
+            Not intended that you call this directly (you can call WithConverter in the <paramref name="switchConfig"/>), it's provided for you to create extension methods
+            which take specific types of <typeparamref name="TProp"/>, and call this method, providing the correct converter.
+            </summary>
+            <typeparam name="TProp">The type of the target property.</typeparam>
+            <param name="shortName">The short name used to specify this switch. If it lacks the configured default short prefix, it's automatically prepended.</param>
+            <param name="longName">The long name used to specify this switch. If it lacks the configured default long prefix, it's automatically prepended.</param>
+            <param name="switchConfig">The action used to configure the switch.</param>
+            <param name="converter">The converter that the <paramref name="switchConfig"/> will be configured to use.</param>
+            <returns>The created switch.</returns>
+        </member>
+        <member name="M:CommandLineFluent.Verb`1.AddMultiValue``1(System.Action{CommandLineFluent.Arguments.Config.MultiValueConfig{`0,``0}})">
+            <summary>
+            Adds a new MultiValue, without any predefined converter. If you're calling this, make sure you set a converter in <paramref name="multivalueConfig"/>!
+            Alternatively, you can also create an extension method for this property, which calls <see cref="M:CommandLineFluent.Verb`1.AddMultiValueWithConverter``1(System.Action{CommandLineFluent.Arguments.Config.MultiValueConfig{`0,``0}},System.Func{System.String,CommandLineFluent.Converted{``0,System.String}})"/>.
+            </summary>
+            <typeparam name="TProp">The type of the target property.</typeparam>
+            <param name="multivalueConfig">The action used to configure the multivalue.</param>
+            <returns>The created multivalue.</returns>
+        </member>
+        <member name="M:CommandLineFluent.Verb`1.AddMultiValueWithConverter``1(System.Action{CommandLineFluent.Arguments.Config.MultiValueConfig{`0,``0}},System.Func{System.String,CommandLineFluent.Converted{``0,System.String}})">
+            <summary>
+            Adds a new MultiValue, setting the <paramref name="converter"/>.
+            Not intended that you call this directly (you can call WithConverter in the <paramref name="multivalueConfig"/>), it's provided for you to create extension methods
+            which take specific types of <typeparamref name="TProp"/>, and call this method, providing the correct converter.
+            </summary>
+            <typeparam name="TProp">The type of the target property.</typeparam>
+            <param name="multivalueConfig">The action used to configure the multivalue.</param>
+            <param name="converter">The converter that the <paramref name="multivalueConfig"/> will be configured to use.</param>
+            <returns>The created multivalue.</returns>
+        </member>
+    </members>
+</doc>

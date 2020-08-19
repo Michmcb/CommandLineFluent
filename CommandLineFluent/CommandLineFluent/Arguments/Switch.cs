@@ -25,9 +25,9 @@
 		/// <summary>
 		/// Converts from a bool into <typeparamref name="TProp"/>, or returns an error message.
 		/// </summary>
-		public Func<bool, Maybe<TProp, string>>? Converter { get; }
+		public Func<bool, Converted<TProp, string>>? Converter { get; }
 		internal Switch(string? shortName, string? longName, string? name, string helpText, ArgumentRequired argumentRequired, PropertyInfo targetProperty,
-			TProp defaultValue, Dependencies<TClass, TProp>? dependencies, Func<bool, Maybe<TProp, string>>? converter)
+			TProp defaultValue, Dependencies<TClass, TProp>? dependencies, Func<bool, Converted<TProp, string>>? converter)
 		{
 			ShortName = shortName;
 			LongName = longName;
@@ -45,7 +45,7 @@
 			{
 				if (Converter != null)
 				{
-					Maybe<TProp, string> converted;
+					Converted<TProp, string> converted;
 					try
 					{
 						converted = Converter.Invoke(true);

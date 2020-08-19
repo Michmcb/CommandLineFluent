@@ -64,7 +64,7 @@
 		}
 		/// <summary>
 		/// Adds a new Option, without any predefined converter. If you're calling this, make sure you set a converter in <paramref name="optionConfig"/>!
-		/// Alternatively, you can also create an extension method for this property, which calls <see cref="AddOptionWithConverter{TProp}(string?, string?, Action{OptionConfig{TClass, TProp}}, Func{string, Maybe{TProp, string}}?)"/>.
+		/// Alternatively, you can also create an extension method for this property, which calls <see cref="AddOptionWithConverter{TProp}(string?, string?, Action{OptionConfig{TClass, TProp}}, Func{string, Converted{TProp, string}}?)"/>.
 		/// </summary>
 		/// <typeparam name="TProp">The type of the target property.</typeparam>
 		/// <param name="shortName">The short name used to specify this option. If it lacks the configured default short prefix, it's automatically prepended.</param>
@@ -86,7 +86,7 @@
 		/// <param name="optionConfig">The action used to configure the option.</param>
 		/// <param name="converter">The converter that the <paramref name="optionConfig"/> will be configured to use.</param>
 		/// <returns>The created option.</returns>
-		public Option<TClass, TProp> AddOptionWithConverter<TProp>(string? shortName, string? longName, Action<OptionConfig<TClass, TProp>> optionConfig, Func<string, Maybe<TProp, string>>? converter)
+		public Option<TClass, TProp> AddOptionWithConverter<TProp>(string? shortName, string? longName, Action<OptionConfig<TClass, TProp>> optionConfig, Func<string, Converted<TProp, string>>? converter)
 		{
 			if (optionConfig == null)
 			{
@@ -114,7 +114,7 @@
 		}
 		/// <summary>
 		/// Adds a new Value, without any predefined converter. If you're calling this, make sure you set a converter in <paramref name="valueConfig"/>!
-		/// Alternatively, you can also create an extension method for this property, which calls <see cref="AddValueWithConverter{TProp}(Action{ValueConfig{TClass, TProp}}, Func{string, Maybe{TProp, string}}?)"/>.
+		/// Alternatively, you can also create an extension method for this property, which calls <see cref="AddValueWithConverter{TProp}(Action{ValueConfig{TClass, TProp}}, Func{string, Converted{TProp, string}}?)"/>.
 		/// </summary>
 		/// <typeparam name="TProp">The type of the target property.</typeparam>
 		/// <param name="valueConfig">The action used to configure the value.</param>
@@ -132,7 +132,7 @@
 		/// <param name="valueConfig">The action used to configure the value.</param>
 		/// <param name="converter">The converter that the <paramref name="valueConfig"/> will be configured to use.</param>
 		/// <returns>The created value.</returns>
-		public Value<TClass, TProp> AddValueWithConverter<TProp>(Action<ValueConfig<TClass, TProp>> valueConfig, Func<string, Maybe<TProp, string>>? converter)
+		public Value<TClass, TProp> AddValueWithConverter<TProp>(Action<ValueConfig<TClass, TProp>> valueConfig, Func<string, Converted<TProp, string>>? converter)
 		{
 			if (valueConfig == null)
 			{
@@ -146,7 +146,7 @@
 		}
 		/// <summary>
 		/// Adds a new Switch, without any predefined converter. If you're calling this, make sure you set a converter in <paramref name="switchConfig"/>!
-		/// Alternatively, you can also create an extension method for this property, which calls <see cref="AddSwitchWithConverter{TProp}(string?, string?, Action{SwitchConfig{TClass, TProp}}, Func{bool, Maybe{TProp, string}}?)"/>.
+		/// Alternatively, you can also create an extension method for this property, which calls <see cref="AddSwitchWithConverter{TProp}(string?, string?, Action{SwitchConfig{TClass, TProp}}, Func{bool, Converted{TProp, string}}?)"/>.
 		/// </summary>
 		/// <typeparam name="TProp">The type of the target property.</typeparam>
 		/// <param name="shortName">The short name used to specify this switch. If it lacks the configured default short prefix, it's automatically prepended.</param>
@@ -166,9 +166,9 @@
 		/// <param name="shortName">The short name used to specify this switch. If it lacks the configured default short prefix, it's automatically prepended.</param>
 		/// <param name="longName">The long name used to specify this switch. If it lacks the configured default long prefix, it's automatically prepended.</param>
 		/// <param name="switchConfig">The action used to configure the switch.</param>
-		/// <param name="converter">The converter that the <paramref name="optionConfig"/> will be configured to use.</param>
+		/// <param name="converter">The converter that the <paramref name="switchConfig"/> will be configured to use.</param>
 		/// <returns>The created switch.</returns>
-		public Switch<TClass, TProp> AddSwitchWithConverter<TProp>(string? shortName, string? longName, Action<SwitchConfig<TClass, TProp>> switchConfig, Func<bool, Maybe<TProp, string>>? converter)
+		public Switch<TClass, TProp> AddSwitchWithConverter<TProp>(string? shortName, string? longName, Action<SwitchConfig<TClass, TProp>> switchConfig, Func<bool, Converted<TProp, string>>? converter)
 		{
 			if (switchConfig == null)
 			{
@@ -196,7 +196,7 @@
 		}
 		/// <summary>
 		/// Adds a new MultiValue, without any predefined converter. If you're calling this, make sure you set a converter in <paramref name="multivalueConfig"/>!
-		/// Alternatively, you can also create an extension method for this property, which calls <see cref="AddMultiValueWithConverter{TProp}(Action{MultiValueConfig{TClass, TProp}}, Func{string, Maybe{TProp, string}}?)"/>.
+		/// Alternatively, you can also create an extension method for this property, which calls <see cref="AddMultiValueWithConverter{TProp}(Action{MultiValueConfig{TClass, TProp}}, Func{string, Converted{TProp, string}}?)"/>.
 		/// </summary>
 		/// <typeparam name="TProp">The type of the target property.</typeparam>
 		/// <param name="multivalueConfig">The action used to configure the multivalue.</param>
@@ -214,7 +214,7 @@
 		/// <param name="multivalueConfig">The action used to configure the multivalue.</param>
 		/// <param name="converter">The converter that the <paramref name="multivalueConfig"/> will be configured to use.</param>
 		/// <returns>The created multivalue.</returns>
-		public MultiValue<TClass, TProp> AddMultiValueWithConverter<TProp>(Action<MultiValueConfig<TClass, TProp>> multivalueConfig, Func<string, Maybe<TProp, string>>? converter)
+		public MultiValue<TClass, TProp> AddMultiValueWithConverter<TProp>(Action<MultiValueConfig<TClass, TProp>> multivalueConfig, Func<string, Converted<TProp, string>>? converter)
 		{
 			if (multivalueConfig == null)
 			{
