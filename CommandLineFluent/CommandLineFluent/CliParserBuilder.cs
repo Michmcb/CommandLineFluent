@@ -1,0 +1,149 @@
+﻿namespace CommandLineFluent
+{
+	using System;
+	using System.Collections.Generic;
+	using System.ComponentModel;
+
+	public sealed class CliParserBuilder
+	{
+		private readonly Dictionary<string, IVerb> verbs;
+		private readonly CliParserConfig config;
+		private IConsole? console;
+		private ITokenizer? tokenizer;
+		private IMessageFormatter? msgFormatter;
+		/// <summary>
+		/// Creates a new CliParserBuilder, using and a default <see cref="CliParserConfig"/>.
+		/// </summary>
+		public CliParserBuilder()
+		{
+			verbs = new Dictionary<string, IVerb>(StringComparer.OrdinalIgnoreCase);
+			config = new CliParserConfig();
+		}
+		/// <summary>
+		/// Creates a new CliParserBuilder.
+		/// </summary>
+		public CliParserBuilder(CliParserConfig config)
+		{
+			this.config = config ?? new CliParserConfig();
+			verbs = new Dictionary<string, IVerb>(this.config.StringComparer);
+		}
+		/// <summary>
+		/// Specifies the IConsole to use.
+		/// By default, this is <see cref="StandardConsole"/>, which just uses the static class <see cref="Console"/>.
+		/// </summary>
+		/// <param name="console">The console to use.</param>
+		public CliParserBuilder UseConsole(IConsole console)
+		{
+			this.console = console;
+			return this;
+		}
+		/// <summary>
+		/// Specifies the ITokenizer to use.
+		/// By default, this is <see cref="QuotedStringTokenizer"/>, which splits strings into tokens based on single or double quotes, or spaces.
+		/// </summary>
+		/// <param name="tokenizer">The tokenizer to use.</param>
+		public CliParserBuilder UseTokenizer(ITokenizer tokenizer)
+		{
+			this.tokenizer = tokenizer;
+			return this;
+		}
+		/// <summary>
+		/// Specifies the IMessageFormatter to use.
+		/// By default, this is <see cref="StandardMessageFormatter"/>.
+		/// </summary>
+		/// <param name="msgFormatter">The tokenizer to use.</param>
+		public CliParserBuilder UseMessageFormatter(IMessageFormatter msgFormatter)
+		{
+			this.msgFormatter = msgFormatter;
+			return this;
+		}
+		/// <summary>
+		/// Adds a verb for this parser. To invoke it, the user has to enter <paramref name="name"/> on the command line.
+		/// e.g. "foo.exe add" invokes the verb with the name "add".
+		/// </summary>
+		/// <typeparam name="TClass">The type of the class which will be created when arguments for that verb are parsed successfully</typeparam>
+		/// <param name="name">The name of the verb</param>
+		/// <param name="config">The action to configure the verb</param>
+		public CliParserBuilder AddVerb<TClass>(string name, Action<Verb<TClass>> config) where TClass : class, new()
+		{
+			if (config == null)
+			{
+				throw new ArgumentNullException(nameof(config), "You need to configure the verb");
+			}
+			if (string.IsNullOrEmpty(name))
+			{
+				throw new ArgumentNullException(nameof(name), "Verb Name cannot be null or an empty string");
+			}
+			if (verbs.ContainsKey(name))
+			{
+				throw new CliParserBuilderException("That verb name has already been used, you may only use unique verb names");
+			}
+			Verb<TClass> v = new Verb<TClass>(name, this.config);
+			verbs.Add(name, v);
+			config.Invoke(v);
+			return this;
+		}
+		/// <summary>
+		/// Adds a verb for this parser. To invoke it, the user has to enter <paramref name="name"/> on the command line.
+		/// e.g. "foo.exe add" invokes the verb with the name "add".
+		/// </summary>
+		/// <typeparam name="TClass">The type of the class which will be created when arguments for that verb are parsed successfully</typeparam>
+		/// <param name="name">The name of the verb</param>
+		/// <param name="config">The action to configure the verb</param>
+		public CliParserBuilder AddVerb<TClass, TState1>(string name, Action<Verb<TClass>> config) where TClass : class, new()
+		{
+			if (config == null)
+			{
+				throw new ArgumentNullException(nameof(config), "You need to configure the verb");
+			}
+			if (string.IsNullOrEmpty(name))
+			{
+				throw new ArgumentNullException(nameof(name), "Verb Name cannot be null or an empty string");
+			}
+			if (verbs.ContainsKey(name))
+			{
+				throw new CliParserBuilderException("That verb name has already been used, you may only use unique verb names");
+			}
+			Verb<TClass> v = new Verb<TClass>(name, this.config);
+			verbs.Add(name, v);
+			config.Invoke(v);
+			return this;
+		}
+		/// <summary>
+		/// Creates a <see cref="CliParser"/>.
+		/// Throws a <see cref="CliParserBuilderException"/> if anything is improperly configured.
+		/// </summary>
+		public CliParser Build()
+		{
+			List<Error> errors = new List<Error>();
+			if (verbs.Values.Count <= 0)
+			{
+				throw new CliParserBuilderException("The parser has no verbs, use AddVerb<TClass> to add some verbs");
+			}
+			if (errors.Count == 0)
+			{
+				return new CliParser(console ?? new StandardConsole(), tokenizer ?? new QuotedStringTokenizer(), msgFormatter ?? new StandardMessageFormatter(), verbs, config);
+			}
+			else
+			{
+				throw new CliParserBuilderException("CliParserBuilder has not been configured correctly", errors);
+			}
+		}
+		// This stuff is useless and just adds clutter, so hide it
+		[EditorBrowsable(EditorBrowsableState.Never)]
+		public override bool Equals(object obj)
+		{
+			return base.Equals(obj);
+		}
+		[EditorBrowsable(EditorBrowsableState.Never)]
+		public override int GetHashCode()
+		{
+			return base.GetHashCode();
+		}
+		[EditorBrowsable(EditorBrowsableState.Never)]
+		public override string ToString()
+		{
+			return base.ToString();
+		}
+	}
+}
