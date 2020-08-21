@@ -6,7 +6,7 @@
 	/// An argument on the command line, which can have a single or multiple values.
 	/// </summary>
 	/// <typeparam name="TClass"></typeparam>
-	public interface IArgument<TClass>
+	public interface IArgument<TClass> where TClass : class, new()
 	{
 		/// <summary>
 		/// A human-readable name which describes this.
@@ -24,6 +24,7 @@
 		/// The property that this argument maps to.
 		/// </summary>
 		PropertyInfo TargetProperty { get; }
+		Dependencies<TClass>? Dependencies { get; }
 		Error EvaluateDependencies(TClass obj, bool gotValue);
 	}
 }

@@ -3,7 +3,7 @@
 	/// <summary>
 	/// A switch toggled on or off, supplied like -s
 	/// </summary>
-	public interface ISwitch<TClass> : ISingleArgument<TClass>
+	public interface ISwitch<TClass> : ISingleArgument<TClass> where TClass : class, new()
 	{
 		/// <summary>
 		/// The Short Name for this

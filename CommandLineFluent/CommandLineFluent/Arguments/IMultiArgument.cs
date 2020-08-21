@@ -4,7 +4,7 @@
 	/// <summary>
 	/// An argument which has multiple values on the command line.
 	/// </summary>
-	public interface IMultiArgument<TClass> : IArgument<TClass>
+	public interface IMultiArgument<TClass> : IArgument<TClass> where TClass : class, new()
 	{
 		/// <summary>
 		/// Sets a property of <paramref name="obj"/> to <paramref name="rawValues"/>, after conversion.

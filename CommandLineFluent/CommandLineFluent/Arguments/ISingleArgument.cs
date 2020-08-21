@@ -3,7 +3,7 @@
 	/// <summary>
 	/// An argument which a single value on the command line.
 	/// </summary>
-	public interface ISingleArgument<TClass> : IArgument<TClass>
+	public interface ISingleArgument<TClass> : IArgument<TClass> where TClass : class, new()
 	{
 		/// <summary>
 		/// Sets a property of <paramref name="obj"/> to <paramref name="rawValue"/>, after conversion.

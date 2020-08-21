@@ -3,7 +3,7 @@
 	/// <summary>
 	/// An option with one value, supplied like -t Value
 	/// </summary>
-	public interface IOption<TClass> : ISingleArgument<TClass>
+	public interface IOption<TClass> : ISingleArgument<TClass> where TClass : class, new()
 	{
 		/// <summary>
 		/// The Short Name for this
