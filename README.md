@@ -246,3 +246,8 @@ CliParser parser = new CliParserBuilder()
 
 	parser.Handle(parser.Parse(args));
 ```
+
+### Multi-Arguments
+A Multivalue picks up any lone arguments, like a Value. However it will collect a list, instead.
+They're almost identical to set up. The only difference is that when calling `.ForProperty(x => x.MyProperty)` for a recognized collection type, it will also set up a callback that creates that collection.
+For example if you have a Stack<string>, then `.ForProperty(x => x.MyStack)` will set up a callback that turns the IReadOnlyCollection<string> into a Stack<string>. You can define your own collection creator as the second argument passed to ForProperty.

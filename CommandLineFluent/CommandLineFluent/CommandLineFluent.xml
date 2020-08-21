@@ -160,7 +160,7 @@
             </summary>
             <param name="expression">The property to set.</param>
         </member>
-        <member name="M:CommandLineFluent.Arguments.Config.MultiValueConfig`2.ForProperty``1(System.Linq.Expressions.Expression{System.Func{`0,``0}},System.Func{`1[],System.Collections.Generic.IEnumerable{`1}})">
+        <member name="M:CommandLineFluent.Arguments.Config.MultiValueConfig`2.ForProperty``1(System.Linq.Expressions.Expression{System.Func{`0,``0}},System.Func{System.Collections.Generic.IReadOnlyCollection{`1},System.Collections.Generic.IEnumerable{`1}})">
             <summary>
             Configures this to set the provided property of <typeparamref name="TClass"/>.
             The property must be a collection of <typeparamref name="TProp"/>.
@@ -185,7 +185,7 @@
             </summary>
             <param name="defaultValues">The values to use as a default value when this is not provided.</param>
         </member>
-        <member name="M:CommandLineFluent.Arguments.Config.MultiValueConfig`2.WithDependencies(System.Collections.Generic.IEnumerable{`1},System.Action{CommandLineFluent.Arguments.Dependencies{`0,`1}})">
+        <member name="M:CommandLineFluent.Arguments.Config.MultiValueConfig`2.WithDependencies(System.Collections.Generic.IEnumerable{`1},System.Action{CommandLineFluent.Arguments.Dependencies{`0}})">
             <summary>
             Configures this to only be required or must not appear under certain circumstances.
             If any rule is violated, parsing is considered to have failed. If all rules pass, then parsing is considered to have succeeded.
@@ -247,7 +247,7 @@
             </summary>
             <param name="defaultValue">The values to use as a default value when this is not provided.</param>
         </member>
-        <member name="M:CommandLineFluent.Arguments.Config.OptionConfig`2.WithDependencies(`1,System.Action{CommandLineFluent.Arguments.Dependencies{`0,`1}})">
+        <member name="M:CommandLineFluent.Arguments.Config.OptionConfig`2.WithDependencies(`1,System.Action{CommandLineFluent.Arguments.Dependencies{`0}})">
             <summary>
             Configures this to only be required or must not appear under certain circumstances.
             If any rule is violated, parsing is considered to have failed. If all rules pass, then parsing is considered to have succeeded.
@@ -309,7 +309,7 @@
             </summary>
             <param name="defaultValue">The values to use as a default value when this is not provided.</param>
         </member>
-        <member name="M:CommandLineFluent.Arguments.Config.SwitchConfig`2.WithDependencies(`1,System.Action{CommandLineFluent.Arguments.Dependencies{`0,`1}})">
+        <member name="M:CommandLineFluent.Arguments.Config.SwitchConfig`2.WithDependencies(`1,System.Action{CommandLineFluent.Arguments.Dependencies{`0}})">
             <summary>
             Configures this to only be required or must not appear under certain circumstances.
             If any rule is violated, parsing is considered to have failed. If all rules pass, then parsing is considered to have succeeded.
@@ -368,7 +368,7 @@
             </summary>
             <param name="defaultValue">The values to use as a default value when this is not provided.</param>
         </member>
-        <member name="M:CommandLineFluent.Arguments.Config.ValueConfig`2.WithDependencies(`1,System.Action{CommandLineFluent.Arguments.Dependencies{`0,`1}})">
+        <member name="M:CommandLineFluent.Arguments.Config.ValueConfig`2.WithDependencies(`1,System.Action{CommandLineFluent.Arguments.Dependencies{`0}})">
             <summary>
             Configures this to only be required or must not appear under certain circumstances.
             If any rule is violated, parsing is considered to have failed. If all rules pass, then parsing is considered to have succeeded.
@@ -397,20 +397,19 @@
             </summary>
             <param name="converter">A convert that converts a string to <typeparamref name="TProp"/>.</param>
         </member>
-        <member name="T:CommandLineFluent.Arguments.Dependencies`2">
+        <member name="T:CommandLineFluent.Arguments.Dependencies`1">
             <summary>
             Defines a relationship between an Argument and a property of the target object.
             It allows you to specify that certain Arguments are only required under certain circumstances.
             </summary>
             <typeparam name="TClass">The class of the property which this set of Dependencies is for.</typeparam>
-            <typeparam name="TProp">The type of the property.</typeparam>
         </member>
-        <member name="P:CommandLineFluent.Arguments.Dependencies`2.Rules">
+        <member name="P:CommandLineFluent.Arguments.Dependencies`1.Rules">
             <summary>
             The rules which make up this relationship
             </summary>
         </member>
-        <member name="M:CommandLineFluent.Arguments.Dependencies`2.RequiredIf``1(System.Linq.Expressions.Expression{System.Func{`0,``0}})">
+        <member name="M:CommandLineFluent.Arguments.Dependencies`1.RequiredIf``1(System.Linq.Expressions.Expression{System.Func{`0,``0}})">
             <summary>
             Specifies that the property <paramref name="property"/> of an object of type <typeparamref name="TClass"/>
             is required to be provided under specific circumstances.
@@ -418,7 +417,7 @@
             <typeparam name="TOtherProp">The type of the <paramref name="property"/>.</typeparam>
             <param name="property">The rule stipulates this Argument is required if <paramref name="property"/> has a certain value.</param>
         </member>
-        <member name="M:CommandLineFluent.Arguments.Dependencies`2.MustNotAppearIf``1(System.Linq.Expressions.Expression{System.Func{`0,``0}})">
+        <member name="M:CommandLineFluent.Arguments.Dependencies`1.MustNotAppearIf``1(System.Linq.Expressions.Expression{System.Func{`0,``0}})">
             <summary>
             Specifies that a property of type <typeparamref name="TOtherProp"/> of an object of type <typeparamref name="TClass"/>
             is required to NOT be provided under specific circumstances.
@@ -426,12 +425,12 @@
             <typeparam name="TOtherProp">The type of the property</typeparam>
             <param name="property">The rule stipulates this Argument must not appear if <paramref name="property"/> has a certain value.</param>
         </member>
-        <member name="M:CommandLineFluent.Arguments.Dependencies`2.Validate">
+        <member name="M:CommandLineFluent.Arguments.Dependencies`1.Validate">
             <summary>
             Validates this rule. Throws an exception when something's wrong.
             </summary>
         </member>
-        <member name="M:CommandLineFluent.Arguments.Dependencies`2.EvaluateRelationship(`0,System.Boolean,CommandLineFluent.Arguments.ArgumentType)">
+        <member name="M:CommandLineFluent.Arguments.Dependencies`1.EvaluateRelationship(`0,System.Boolean,CommandLineFluent.Arguments.ArgumentType)">
             <summary>
             Returns null if all rules of the relationship have been respected, and an Error otherwise.
             </summary>
@@ -533,6 +532,32 @@
             Validates this rule. Returns an Error if something is invalid, or null otherwise.
             </summary>
         </member>
+        <member name="T:CommandLineFluent.Arguments.IArgument`1">
+            <summary>
+            An argument on the command line, which can have a single or multiple values.
+            </summary>
+            <typeparam name="TClass"></typeparam>
+        </member>
+        <member name="P:CommandLineFluent.Arguments.IArgument`1.Name">
+            <summary>
+            A human-readable name which describes this.
+            </summary>
+        </member>
+        <member name="P:CommandLineFluent.Arguments.IArgument`1.HelpText">
+            <summary>
+            Text that describes this.
+            </summary>
+        </member>
+        <member name="P:CommandLineFluent.Arguments.IArgument`1.ArgumentRequired">
+            <summary>
+            If the argument is required or not, or if it's sometimes required based on dependencies.
+            </summary>
+        </member>
+        <member name="P:CommandLineFluent.Arguments.IArgument`1.TargetProperty">
+            <summary>
+            The property that this argument maps to.
+            </summary>
+        </member>
         <member name="T:CommandLineFluent.Arguments.IDependencyRule`1">
             <summary>
             Defines a single rule of a Dependency.
@@ -566,26 +591,6 @@
         <member name="T:CommandLineFluent.Arguments.IMultiArgument`1">
             <summary>
             An argument which has multiple values on the command line.
-            </summary>
-        </member>
-        <member name="P:CommandLineFluent.Arguments.IMultiArgument`1.Name">
-            <summary>
-            A human-readable name which describes this.
-            </summary>
-        </member>
-        <member name="P:CommandLineFluent.Arguments.IMultiArgument`1.HelpText">
-            <summary>
-            Text that describes this.
-            </summary>
-        </member>
-        <member name="P:CommandLineFluent.Arguments.IMultiArgument`1.ArgumentRequired">
-            <summary>
-            If the argument is required or not, or if it's sometimes required based on dependencies.
-            </summary>
-        </member>
-        <member name="P:CommandLineFluent.Arguments.IMultiArgument`1.TargetProperty">
-            <summary>
-            The property that this argument maps to.
             </summary>
         </member>
         <member name="M:CommandLineFluent.Arguments.IMultiArgument`1.SetValue(`0,System.Collections.Generic.IReadOnlyCollection{System.String})">
@@ -625,26 +630,6 @@
         <member name="T:CommandLineFluent.Arguments.ISingleArgument`1">
             <summary>
             An argument which a single value on the command line.
-            </summary>
-        </member>
-        <member name="P:CommandLineFluent.Arguments.ISingleArgument`1.Name">
-            <summary>
-            A human-readable name which describes this.
-            </summary>
-        </member>
-        <member name="P:CommandLineFluent.Arguments.ISingleArgument`1.HelpText">
-            <summary>
-            Text that describes this.
-            </summary>
-        </member>
-        <member name="P:CommandLineFluent.Arguments.ISingleArgument`1.ArgumentRequired">
-            <summary>
-            If the argument is required or not, or if it's sometimes required based on dependencies.
-            </summary>
-        </member>
-        <member name="P:CommandLineFluent.Arguments.ISingleArgument`1.TargetProperty">
-            <summary>
-            The property that this argument maps to.
             </summary>
         </member>
         <member name="M:CommandLineFluent.Arguments.ISingleArgument`1.SetValue(`0,System.String)">
@@ -704,6 +689,7 @@
         <member name="P:CommandLineFluent.Arguments.MultiValue`2.CreateCollection">
             <summary>
             Creates a new collection, filled with the values provided.
+            If you don't provide one, the specific type isn't guaranteed,
             </summary>
         </member>
         <member name="M:CommandLineFluent.Arguments.MultiValue`2.EvaluateDependencies(`0,System.Boolean)">
@@ -913,7 +899,7 @@
             Creates a new CliParserBuilder, using and a default <see cref="T:CommandLineFluent.CliParserConfig"/>.
             </summary>
         </member>
-        <member name="M:CommandLineFluent.CliParserBuilder.#ctor(CommandLineFluent.CliParserConfig)">
+        <member name="M:CommandLineFluent.CliParserBuilder.#ctor(CommandLineFluent.CliParserConfig,CommandLineFluent.IConsole,CommandLineFluent.ITokenizer,CommandLineFluent.IMessageFormatter)">
             <summary>
             Creates a new CliParserBuilder.
             </summary>
@@ -940,15 +926,6 @@
             <param name="msgFormatter">The tokenizer to use.</param>
         </member>
         <member name="M:CommandLineFluent.CliParserBuilder.AddVerb``1(System.String,System.Action{CommandLineFluent.Verb{``0}})">
-            <summary>
-            Adds a verb for this parser. To invoke it, the user has to enter <paramref name="name"/> on the command line.
-            e.g. "foo.exe add" invokes the verb with the name "add".
-            </summary>
-            <typeparam name="TClass">The type of the class which will be created when arguments for that verb are parsed successfully</typeparam>
-            <param name="name">The name of the verb</param>
-            <param name="config">The action to configure the verb</param>
-        </member>
-        <member name="M:CommandLineFluent.CliParserBuilder.AddVerb``2(System.String,System.Action{CommandLineFluent.Verb{``0}})">
             <summary>
             Adds a verb for this parser. To invoke it, the user has to enter <paramref name="name"/> on the command line.
             e.g. "foo.exe add" invokes the verb with the name "add".
