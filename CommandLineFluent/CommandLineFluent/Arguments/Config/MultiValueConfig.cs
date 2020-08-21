@@ -15,10 +15,10 @@
 	public sealed class MultiValueConfig<TClass, TProp> where TClass : class, new()
 	{
 		private PropertyInfo? targetProperty;
-		private Func<TProp[], IEnumerable<TProp>> createCollection;
+		private Func<IReadOnlyCollection<TProp>, IEnumerable<TProp>> createCollection;
 		private ArgumentRequired argumentRequired;
 		private IEnumerable<TProp>? defaultValues;
-		private Dependencies<TClass, TProp>? dependencies;
+		private Dependencies<TClass>? dependencies;
 		private string? helpText;
 		private string? name;
 		//private IReadOnlyCollection<string> ignoredPrefixes;
@@ -120,7 +120,7 @@
 		/// </summary>
 		/// <param name="expression">The property to set.</param>
 		/// <param name="createCollection">A delegate which accepts an array of <typeparamref name="TProp"/>, and creates a new <typeparamref name="TPropCollection"/>.</param>
-		public MultiValueConfig<TClass, TProp> ForProperty<TPropCollection>(Expression<Func<TClass, TPropCollection>> expression, Func<TProp[], IEnumerable<TProp>> createCollection) where TPropCollection : IEnumerable<TProp>
+		public MultiValueConfig<TClass, TProp> ForProperty<TPropCollection>(Expression<Func<TClass, TPropCollection>> expression, Func<IReadOnlyCollection<TProp>, IEnumerable<TProp>> createCollection) where TPropCollection : IEnumerable<TProp>
 		{
 			Guard.ThrowIfNull(expression, nameof(expression));
 			Guard.ThrowIfNull(createCollection, nameof(createCollection));
@@ -167,12 +167,12 @@
 		/// </summary>
 		/// <param name="defaultValues">The default values to use when the rules allow this to not be provided.</param>
 		/// <param name="config">An action to configure the dependencies.</param>
-		public MultiValueConfig<TClass, TProp> WithDependencies(IEnumerable<TProp> defaultValues, Action<Dependencies<TClass, TProp>> config)
+		public MultiValueConfig<TClass, TProp> WithDependencies(IEnumerable<TProp> defaultValues, Action<Dependencies<TClass>> config)
 		{
 			Guard.ThrowIfNull(config, nameof(config));
 			argumentRequired = ArgumentRequired.HasDependencies;
 			this.defaultValues = defaultValues;
-			config.Invoke(dependencies = new Dependencies<TClass, TProp>());
+			config.Invoke(dependencies = new Dependencies<TClass>());
 			return this;
 		}
 		/// <summary>

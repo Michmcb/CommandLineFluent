@@ -21,13 +21,13 @@
 		/// <summary>
 		/// Any dependencies upon other properties, if some have been set up. Otherwise, null.
 		/// </summary>
-		public Dependencies<TClass, TProp>? Dependencies { get; }
+		public Dependencies<TClass>? Dependencies { get; }
 		/// <summary>
 		/// Converts from a string into <typeparamref name="TProp"/>, or returns an error message.
 		/// </summary>
 		public Func<string, Converted<TProp, string>>? Converter { get; }
 		internal Option(string? shortName, string? longName, string? name, string helpText, ArgumentRequired argumentRequired, PropertyInfo targetProperty,
-			TProp defaultValue, Dependencies<TClass, TProp>? dependencies, Func<string, Converted<TProp, string>>? converter)
+			TProp defaultValue, Dependencies<TClass>? dependencies, Func<string, Converted<TProp, string>>? converter)
 		{
 			ShortName = shortName;
 			LongName = longName;

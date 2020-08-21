@@ -9,8 +9,7 @@
 	/// It allows you to specify that certain Arguments are only required under certain circumstances.
 	/// </summary>
 	/// <typeparam name="TClass">The class of the property which this set of Dependencies is for.</typeparam>
-	/// <typeparam name="TProp">The type of the property.</typeparam>
-	public sealed class Dependencies<TClass, TProp> where TClass : new()
+	public sealed class Dependencies<TClass> where TClass : new()
 	{
 		private readonly List<IDependencyRule<TClass>> rules;
 		/// <summary>

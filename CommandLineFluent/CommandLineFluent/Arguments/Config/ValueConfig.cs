@@ -15,7 +15,7 @@
 		private PropertyInfo? targetProperty;
 		private ArgumentRequired argumentRequired;
 		private TProp defaultValue;
-		private Dependencies<TClass, TProp>? dependencies;
+		private Dependencies<TClass>? dependencies;
 		private string? helpText;
 		private string? name;
 		private Func<string, Converted<TProp, string>>? converter;
@@ -65,7 +65,7 @@
 		/// </summary>
 		/// <param name="defaultValue">The default values to use when the rules allow this to not be provided.</param>
 		/// <param name="config">An action to configure the dependencies.</param>
-		public ValueConfig<TClass, TProp> WithDependencies(TProp defaultValue, Action<Dependencies<TClass, TProp>> config)
+		public ValueConfig<TClass, TProp> WithDependencies(TProp defaultValue, Action<Dependencies<TClass>> config)
 		{
 			if (config == null)
 			{
@@ -73,7 +73,7 @@
 			}
 			argumentRequired = ArgumentRequired.HasDependencies;
 			this.defaultValue = defaultValue;
-			config.Invoke(dependencies = new Dependencies<TClass, TProp>());
+			config.Invoke(dependencies = new Dependencies<TClass>());
 			return this;
 		}
 		/// <summary>

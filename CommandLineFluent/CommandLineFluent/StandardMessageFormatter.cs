@@ -11,7 +11,7 @@
 	public sealed class StandardMessageFormatter : IMessageFormatter
 	{
 		public const string ThreeSpaces = "   ";
-		// TODO allow telling the StandardMessageFormatter how to order values/switches/options
+		// TODO Write help for arguments in the same order as the user added them to the Verb. To do this, make a new List<IArgument<TClass>> in the Verb classes and stuff it full of all the Arguments
 		// TODO wrap on >80 chars
 		public StandardMessageFormatter()
 		{

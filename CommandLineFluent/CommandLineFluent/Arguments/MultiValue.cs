@@ -20,18 +20,19 @@
 		/// <summary>
 		/// Any dependencies upon other properties, if some have been set up. Otherwise, null.
 		/// </summary>
-		public Dependencies<TClass, TProp>? Dependencies { get; }
+		public Dependencies<TClass>? Dependencies { get; }
 		/// <summary>
 		/// Converts from a string into <typeparamref name="TProp"/>, or returns an error message.
 		/// </summary>
 		public Func<string, Converted<TProp, string>>? Converter { get; }
 		/// <summary>
 		/// Creates a new collection, filled with the values provided.
+		/// If you don't provide one, the specific type isn't guaranteed,
 		/// </summary>
-		public Func<TProp[], IEnumerable<TProp>> CreateCollection { get; }
+		public Func<IReadOnlyCollection<TProp>, IEnumerable<TProp>> CreateCollection { get; }
 		//public ICollection<string> IgnoredPrefixes { get; }
 		public MultiValue(string? name, string helpText, ArgumentRequired argumentRequired, PropertyInfo targetProperty, IEnumerable<TProp> defaultValues,
-			Dependencies<TClass, TProp>? dependencies, Func<string, Converted<TProp, string>>? converter, Func<TProp[], IEnumerable<TProp>> createCollection)//, ICollection<string> ignoredPrefixes)
+			Dependencies<TClass>? dependencies, Func<string, Converted<TProp, string>>? converter, Func<IReadOnlyCollection<TProp>, IEnumerable<TProp>> createCollection)//, ICollection<string> ignoredPrefixes)
 		{
 			Name = name;
 			HelpText = helpText;
@@ -50,7 +51,7 @@
 				if (Converter != null)
 				{
 					int i = 0;
-					TProp[] convertedValues = new TProp[rawValue.Count];
+					List<TProp> convertedValues = new List<TProp>(rawValue.Count);
 					try
 					{
 						foreach (string rv in rawValue)
