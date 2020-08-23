@@ -166,7 +166,7 @@
             The property must be a collection of <typeparamref name="TProp"/>.
             </summary>
             <param name="expression">The property to set.</param>
-            <param name="createCollection">A delegate which accepts an array of <typeparamref name="TProp"/>, and creates a new <typeparamref name="TPropCollection"/>.</param>
+            <param name="createCollection">A delegate which accepts a ReadOnlyCollection of <typeparamref name="TProp"/>, and creates a new <typeparamref name="TPropCollection"/>.</param>
         </member>
         <member name="M:CommandLineFluent.Arguments.Config.MultiValueConfig`2.IsRequired">
             <summary>
