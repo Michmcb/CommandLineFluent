@@ -4,6 +4,7 @@
 	using System.Collections.Generic;
 	using System.ComponentModel;
 	using System.Diagnostics;
+	using System.Linq;
 	using System.Linq.Expressions;
 	using System.Reflection;
 
@@ -39,7 +40,7 @@
 		/// <param name="expression">The property to set.</param>
 		public MultiValueConfig<TClass, TProp> ForProperty(Expression<Func<TClass, TProp[]>> expression)
 		{
-			return ForProperty(expression, x => x);
+			return ForProperty(expression, x => x.ToArray());
 		}
 		/// <summary>
 		/// Configures this to set the provided property of <typeparamref name="TClass"/>.
@@ -119,7 +120,7 @@
 		/// The property must be a collection of <typeparamref name="TProp"/>.
 		/// </summary>
 		/// <param name="expression">The property to set.</param>
-		/// <param name="createCollection">A delegate which accepts an array of <typeparamref name="TProp"/>, and creates a new <typeparamref name="TPropCollection"/>.</param>
+		/// <param name="createCollection">A delegate which accepts a ReadOnlyCollection of <typeparamref name="TProp"/>, and creates a new <typeparamref name="TPropCollection"/>.</param>
 		public MultiValueConfig<TClass, TProp> ForProperty<TPropCollection>(Expression<Func<TClass, TPropCollection>> expression, Func<IReadOnlyCollection<TProp>, IEnumerable<TProp>> createCollection) where TPropCollection : IEnumerable<TProp>
 		{
 			Guard.ThrowIfNull(expression, nameof(expression));
