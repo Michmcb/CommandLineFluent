@@ -800,14 +800,14 @@
             Create this class using a CliParserBuilder.
             </summary>
         </member>
-        <member name="M:CommandLineFluent.CliParser.#ctor(CommandLineFluent.IConsole,CommandLineFluent.ITokenizer,CommandLineFluent.IMessageFormatter,System.Collections.Generic.Dictionary{System.String,CommandLineFluent.IVerb},CommandLineFluent.CliParserConfig)">
+        <member name="M:CommandLineFluent.CliParser.#ctor(CommandLineFluent.IConsole,CommandLineFluent.ITokenizer,CommandLineFluent.IMessageFormatter,System.Collections.Generic.Dictionary{System.String,CommandLineFluent.IVerb},System.Collections.Generic.List{CommandLineFluent.IVerb},CommandLineFluent.CliParserConfig)">
             <summary>
             Create this class using a CliParserBuilder.
             </summary>
             <param name="console"></param>
             <param name="tokenizer"></param>
             <param name="msgFormatter"></param>
-            <param name="verbs"></param>
+            <param name="verbsByName"></param>
             <param name="config"></param>
         </member>
         <member name="P:CommandLineFluent.CliParser.Console">
@@ -927,11 +927,21 @@
         </member>
         <member name="M:CommandLineFluent.CliParserBuilder.AddVerb``1(System.String,System.Action{CommandLineFluent.Verb{``0}})">
             <summary>
-            Adds a verb for this parser. To invoke it, the user has to enter <paramref name="name"/> on the command line.
+            Adds a verb for this parser. To invoke it, the user has to enter <paramref name="longName"/> on the command line.
             e.g. "foo.exe add" invokes the verb with the name "add".
             </summary>
             <typeparam name="TClass">The type of the class which will be created when arguments for that verb are parsed successfully</typeparam>
-            <param name="name">The name of the verb</param>
+            <param name="longName">The long name of the verb</param>
+            <param name="config">The action to configure the verb</param>
+        </member>
+        <member name="M:CommandLineFluent.CliParserBuilder.AddVerb``1(System.String,System.String,System.Action{CommandLineFluent.Verb{``0}})">
+            <summary>
+            Adds a verb for this parser. To invoke it, the user has to enter <paramref name="longName"/> on the command line.
+            e.g. "foo.exe add" invokes the verb with the name "add".
+            </summary>
+            <typeparam name="TClass">The type of the class which will be created when arguments for that verb are parsed successfully</typeparam>
+            <param name="longName">The long name of the verb</param>
+            <param name="shortName">The short name of the verb</param>
             <param name="config">The action to configure the verb</param>
         </member>
         <member name="M:CommandLineFluent.CliParserBuilder.Build">
@@ -1499,9 +1509,14 @@
             Verbs have their own Options, Values, and Switches which they can parse and create an instance of a particular class.
             </summary>
         </member>
-        <member name="P:CommandLineFluent.IVerb.Name">
+        <member name="P:CommandLineFluent.IVerb.LongName">
             <summary>
-            The name of this verb. This is what the user must enter to invoke this verb. This must be unique.
+            The long name of this verb. This is what the user must enter to invoke this verb. This must be unique.
+            </summary>
+        </member>
+        <member name="P:CommandLineFluent.IVerb.ShortName">
+            <summary>
+            The short name of this verb. This is what the user must enter to invoke this verb. This must be unique.
             </summary>
         </member>
         <member name="P:CommandLineFluent.IVerb.HelpText">
@@ -1519,6 +1534,11 @@
         <member name="M:CommandLineFluent.IVerb.WriteSpecificHelp(CommandLineFluent.IConsole,CommandLineFluent.IMessageFormatter)">
             <summary>
             Calls <see cref="M:CommandLineFluent.IMessageFormatter.WriteSpecificHelp``1(CommandLineFluent.IConsole,CommandLineFluent.Verb{``0})"/>, passing this verb as a parameter.
+            </summary>
+        </member>
+        <member name="M:CommandLineFluent.IVerb.ShortAndLongName">
+            <summary>
+            The short and long name joined with a |
             </summary>
         </member>
         <member name="T:CommandLineFluent.QuotedStringTokenizer">
@@ -1560,7 +1580,11 @@
         </member>
         <member name="T:CommandLineFluent.StandardMessageFormatter">
             <summary>
-            Provides default usage and help formatting
+            Provides default usage and help formatting.
+            It will write the keywords on the left, and descriptions on the right.
+            Descriptions are padded with the length of the longest keyword, plus 3 spaces.
+            If the descriptions are too long to fit on one line, they will wrap to the next line. Wrapped lines are all lined up.
+            If help text defined has explicit newlines, it will make sure that descriptions are still aligned.
             </summary>
         </member>
         <member name="P:CommandLineFluent.StandardMessageFormatter.KeywordColor">
@@ -1571,7 +1595,7 @@
         <member name="M:CommandLineFluent.StandardMessageFormatter.WriteOverallHelp(CommandLineFluent.IConsole,System.Collections.Generic.IReadOnlyCollection{CommandLineFluent.IVerb},CommandLineFluent.CliParserConfig)">
             <summary>
             Writes the overall help.
-            Lists all verbs and their help text.
+            Lists all verbs, their aliases, and their help text.
             </summary>
             <param name="console">The console help is written to.</param>
         </member>
@@ -1590,6 +1614,28 @@
             </summary>
             <param name="console">The console errors are written to.</param>
             <param name="errors">The errors to write.</param>
+        </member>
+        <member name="M:CommandLineFluent.StandardMessageFormatter.WritePaddedKeywordDescriptions(CommandLineFluent.IConsole,System.ConsoleColor,System.Collections.Generic.IEnumerable{CommandLineFluent.KeywordAndDescription})">
+            <summary>
+            Writes keywords and descriptions to <paramref name="console"/>. All keywords written with <paramref name="keywordColor"/>, are padded on the right with 3 spaces,
+            and descriptions are broken into lines so they don't exceed the width of <paramref name="console"/>. Each line is left-padded so the descriptions all line up.
+            If there are any newlines included, those are also taken into account.
+            If the length of the longest keyword (plus 3 spaces) leaves at least 20 chars for the description, the descriptions are written so the lines are all left-aligned.
+            </summary>
+            <param name="console">The console to write the keywords and descriptions to.</param>
+            <param name="keywordColor">The color to use for the keywords.</param>
+            <param name="keywordsAndDescriptions">A sequence of keywords, and their descriptions</param>
+        </member>
+        <member name="M:CommandLineFluent.StandardMessageFormatter.GetLineBreaks(System.String,System.Int32)">
+            <summary>
+            Gets a list of from/length pairs. You can iterate through this list and take substrings of <paramref name="str"/> to produce lines,
+            each of which is no longer than <paramref name="maxLineLength"/>.
+            Each line is as long as possible, preferring to break on a whitespace character. If there's no whitespace character to break on, it simply breaks in the middle of the word.
+            If there are any newlines in <paramref name="str"/>, it will consider those as breaks, as well.
+            </summary>
+            <param name="str">The line to find breaks.</param>
+            <param name="maxLineLength">The maximum length each line should be.</param>
+            <returns></returns>
         </member>
         <member name="P:CommandLineFluent.Verb`1.MultiValue">
             <summary>
