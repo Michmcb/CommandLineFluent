@@ -378,7 +378,7 @@
 				args[1] = "Value";
 				IParseResult parsed = fp.Parse(args);
 				Assert.NotNull(parsed.Verb);
-				Assert.Equal(args[0], parsed.Verb!.Name);
+				Assert.Equal(args[0], parsed.Verb!.LongName);
 				i++;
 			}
 		}

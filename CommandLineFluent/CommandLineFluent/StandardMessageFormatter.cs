@@ -1,18 +1,22 @@
 ﻿namespace CommandLineFluent
 {
+	using CommandLineFluent.Arguments;
 	using System;
 	using System.Collections.Generic;
 	using System.Linq;
-	using CommandLineFluent.Arguments;
 
 	/// <summary>
-	/// Provides default usage and help formatting
+	/// Provides default usage and help formatting.
+	/// It will write the keywords on the left, and descriptions on the right.
+	/// Descriptions are padded with the length of the longest keyword, plus 3 spaces.
+	/// If the descriptions are too long to fit on one line, they will wrap to the next line. Wrapped lines are all lined up.
+	/// If help text defined has explicit newlines, it will make sure that descriptions are still aligned.
 	/// </summary>
 	public sealed class StandardMessageFormatter : IMessageFormatter
 	{
+		private static readonly char[] LineBreakChars = new char[] { '\n', '\r' };
 		public const string ThreeSpaces = "   ";
-		// TODO Write help for arguments in the same order as the user added them to the Verb. To do this, make a new List<IArgument<TClass>> in the Verb classes and stuff it full of all the Arguments
-		// TODO wrap on >80 chars
+		// TODO Write help for arguments in the same order the user added them to the Verb. To do this, make a new List<IArgument<TClass>> in the Verb classes and stuff it full of all the Arguments
 		public StandardMessageFormatter()
 		{
 			KeywordColor = ConsoleColor.Cyan;
@@ -23,21 +27,22 @@
 		public ConsoleColor KeywordColor { get; set; }
 		/// <summary>
 		/// Writes the overall help.
-		/// Lists all verbs and their help text.
+		/// Lists all verbs, their aliases, and their help text.
 		/// </summary>
 		/// <param name="console">The console help is written to.</param>
 		public void WriteOverallHelp(IConsole console, IReadOnlyCollection<IVerb> verbs, CliParserConfig config)
 		{
 			ConsoleColor original = console.ForegroundColor;
-			console.WriteLine($@"Usage: {string.Join("|", verbs.Select(x => x.Name))} options...{Environment.NewLine}{Environment.NewLine}");
+			int width = console.CurrentWidth;
+			console.WriteLine($@"Usage: {string.Join("|", verbs.Select(x => x.LongName))} options...{Environment.NewLine}{Environment.NewLine}");
 
 			// This is the number of characters we're reserving for the key text
 			// A few more spaces just so it's easier to read
-			foreach (IVerb verb in verbs)
-			{
-				console.WriteLine(string.Concat(verb.Name, ThreeSpaces, verb.HelpText));
-				console.WriteLine();
-			}
+
+			WritePaddedKeywordDescriptions(console,
+				KeywordColor,
+				verbs.Select(verb => new KeywordAndDescription(verb.ShortAndLongName(), verb.HelpText)));
+
 			console.Write("For detailed help, use: ");
 			console.ForegroundColor = KeywordColor;
 			console.WriteLine($"verbname {config.ShortHelpSwitch}|{config.LongHelpSwitch}");
@@ -55,7 +60,7 @@
 		{
 			ConsoleColor original = console.ForegroundColor;
 			console.WriteLine(verb.HelpText);
-			console.Write(verb.Name + " ");
+			console.Write(verb.ShortAndLongName() + " ");
 
 			int i = 1;
 			foreach (IOption<TClass> opt in verb.AllOptions)
@@ -80,55 +85,24 @@
 			console.WriteLine();
 			console.WriteLine();
 
+			List<KeywordAndDescription> stuffToWrite = new List<KeywordAndDescription>();
 			foreach (IOption<TClass> opt in verb.AllOptions)
 			{
-				console.ForegroundColor = KeywordColor;
-				console.Write(opt.ShortAndLongName() + ThreeSpaces);
-				console.ForegroundColor = original;
-				WriteRequiredness(console, opt.ArgumentRequired);
-				console.WriteLine(opt.HelpText);
-				console.WriteLine();
+				stuffToWrite.Add(new KeywordAndDescription(opt.ShortAndLongName(), GetRequiredness(opt.ArgumentRequired) + opt.HelpText));
 			}
 			foreach (ISwitch<TClass> sw in verb.AllSwitches)
 			{
-				console.ForegroundColor = KeywordColor;
-				console.Write(sw.ShortAndLongName() + ThreeSpaces);
-				console.ForegroundColor = original;
-				WriteRequiredness(console, sw.ArgumentRequired);
-				console.WriteLine(sw.HelpText);
-				console.WriteLine();
+				stuffToWrite.Add(new KeywordAndDescription(sw.ShortAndLongName(), GetRequiredness(sw.ArgumentRequired) + sw.HelpText));
 			}
 			foreach (IValue<TClass> val in verb.AllValues)
 			{
-				console.ForegroundColor = KeywordColor;
-				console.Write(val.Name + ThreeSpaces);
-				console.ForegroundColor = original;
-				WriteRequiredness(console, val.ArgumentRequired);
-				console.WriteLine(val.HelpText);
-				console.WriteLine();
+				stuffToWrite.Add(new KeywordAndDescription(val.Name ?? "", GetRequiredness(val.ArgumentRequired) + val.HelpText));
 			}
 			if (verb.MultiValue != null)
 			{
-				console.ForegroundColor = KeywordColor;
-				console.Write(verb.MultiValue.Name + ThreeSpaces);
-				console.ForegroundColor = original;
-				WriteRequiredness(console, verb.MultiValue.ArgumentRequired);
-				console.WriteLine(verb.MultiValue.HelpText);
-				console.WriteLine();
+				stuffToWrite.Add(new KeywordAndDescription(verb.MultiValue.Name ?? "", GetRequiredness(verb.MultiValue.ArgumentRequired) + verb.MultiValue.HelpText));
 			}
-
-			// A few more spaces just so it's easier to read
-			//foreach ((string key, string help) t in texts)
-			//{
-			//	sb.Append(t.key.PadRight(charsForKey));
-			//	sb.AppendLine(t.help);
-			//	// If we've wrapped a line, just shove an extra newline in there so it's still easyish to read
-			//	if (maxLineLength < t.key.Length + t.help.Length)
-			//	{
-			//		sb.AppendLine();
-			//	}
-			//}
-			//return sb.ToString();
+			WritePaddedKeywordDescriptions(console, KeywordColor, stuffToWrite);
 			console.ForegroundColor = original;
 		}
 		/// <summary>
@@ -148,16 +122,153 @@
 
 			console.ForegroundColor = original;
 		}
-		private static void WriteRequiredness(IConsole console, ArgumentRequired r)
+		/// <summary>
+		/// Writes keywords and descriptions to <paramref name="console"/>. All keywords written with <paramref name="keywordColor"/>, are padded on the right with 3 spaces,
+		/// and descriptions are broken into lines so they don't exceed the width of <paramref name="console"/>. Each line is left-padded so the descriptions all line up.
+		/// If there are any newlines included, those are also taken into account.
+		/// If the length of the longest keyword (plus 3 spaces) leaves at least 20 chars for the description, the descriptions are written so the lines are all left-aligned.
+		/// </summary>
+		/// <param name="console">The console to write the keywords and descriptions to.</param>
+		/// <param name="keywordColor">The color to use for the keywords.</param>
+		/// <param name="keywordsAndDescriptions">A sequence of keywords, and their descriptions</param>
+		public static void WritePaddedKeywordDescriptions(IConsole console, ConsoleColor keywordColor, IEnumerable<KeywordAndDescription> keywordsAndDescriptions)
+		{
+			ConsoleColor original = console.ForegroundColor;
+			int width = console.CurrentWidth;
+			// 3 extra spaces, so it's legible
+			int longestKeyword = keywordsAndDescriptions.Max(x => x.Keyword.Length) + 3;
+			int lengthForDescription = width - longestKeyword;
+
+			// 20 characters is way too thin to be legible, so if the keywords are too long, just don't bother padding
+			if (lengthForDescription >= 20)
+			{
+				string padding = new string(' ', longestKeyword);
+				foreach (KeywordAndDescription kd in keywordsAndDescriptions)
+				{
+					console.ForegroundColor = keywordColor;
+					console.Write(kd.Keyword.PadRight(longestKeyword));
+					console.ForegroundColor = original;
+					if (kd.Description.Length <= lengthForDescription)
+					{
+						console.WriteLine(kd.Description);
+					}
+					else
+					{
+						IList<(int from, int length)> breaks = GetLineBreaks(kd.Description, lengthForDescription);
+						(int from, int length) b = breaks[0];
+						string line = kd.Description.Substring(b.from, b.length);
+						console.WriteLine(line);
+						for (int i = 1; i < breaks.Count; i++)
+						{
+							b = breaks[i];
+							line = kd.Description.Substring(b.from, b.length);
+							console.Write(padding);
+							console.WriteLine(line);
+						}
+					}
+					console.WriteLine();
+				}
+			}
+			else
+			{
+				foreach (KeywordAndDescription kd in keywordsAndDescriptions)
+				{
+					console.ForegroundColor = keywordColor;
+					console.Write(kd.Keyword + ThreeSpaces);
+					console.ForegroundColor = original;
+					console.WriteLine(kd.Description);
+					console.WriteLine();
+				}
+			}
+		}
+		/// <summary>
+		/// Gets a list of from/length pairs. You can iterate through this list and take substrings of <paramref name="str"/> to produce lines,
+		/// each of which is no longer than <paramref name="maxLineLength"/>.
+		/// Each line is as long as possible, preferring to break on a whitespace character. If there's no whitespace character to break on, it simply breaks in the middle of the word.
+		/// If there are any newlines in <paramref name="str"/>, it will consider those as breaks, as well.
+		/// </summary>
+		/// <param name="str">The line to find breaks.</param>
+		/// <param name="maxLineLength">The maximum length each line should be.</param>
+		/// <returns></returns>
+		public static IList<(int from, int length)> GetLineBreaks(string str, int maxLineLength)
+		{
+			List<(int from, int length)> lineBreaks = new List<(int from, int length)>();
+			int currentIndex;
+			int prevIndex = 0;
+			while (str.Length >= prevIndex)
+			{
+				currentIndex = prevIndex + maxLineLength;
+				int newlineIndex = str.IndexOfAny(LineBreakChars, prevIndex, Math.Min(maxLineLength, str.Length - prevIndex));
+				if (newlineIndex != -1)
+				{
+					lineBreaks.Add((prevIndex, newlineIndex - prevIndex));
+					// There's a new line here, so find the first non-newline char, and consider that the start of the next line.
+					for (prevIndex = newlineIndex; prevIndex < str.Length; prevIndex++)
+					{
+						char c = str[prevIndex];
+						if (c != '\n' && c != '\r')
+						{
+							break;
+						}
+					}
+				}
+				else if (currentIndex < str.Length)
+				{
+					char c = str[currentIndex];
+					if (char.IsWhiteSpace(c))
+					{
+						// We can break at this char
+						lineBreaks.Add((prevIndex, currentIndex - prevIndex));
+						prevIndex = currentIndex + 1;
+					}
+					else
+					{
+						// If not, then we need to search backwards for a whitespace character.
+						// If we don't find any, then just split up this word.
+						currentIndex = LastIndexOfWhitespace(str, currentIndex, prevIndex);
+						if (currentIndex != -1)
+						{
+							lineBreaks.Add((prevIndex, currentIndex - prevIndex));
+							prevIndex = currentIndex + 1;
+						}
+						else
+						{
+							lineBreaks.Add((prevIndex, maxLineLength));
+							prevIndex += maxLineLength;
+						}
+					}
+				}
+				else
+				{
+					lineBreaks.Add((prevIndex, str.Length - prevIndex));
+					prevIndex = currentIndex;
+				}
+			}
+			return lineBreaks;
+		}
+		public static int LastIndexOfWhitespace(string str, int start, int finish)
+		{
+			for (int i = start; i >= finish; i--)
+			{
+				if (char.IsWhiteSpace(str[i]))
+				{
+					return i;
+				}
+			}
+			return -1;
+		}
+		public static string GetRequiredness(ArgumentRequired r)
 		{
 			switch (r)
 			{
 				case ArgumentRequired.Required:
-					console.Write("Required. ");
-					break;
+					return "Required. ";
 				case ArgumentRequired.Optional:
-					console.Write("Optional. ");
-					break;
+					return "Optional. ";
+				case ArgumentRequired.HasDependencies:
+					return "Sometimes required. ";
+				default:
+					return "";
 			}
 		}
 	}

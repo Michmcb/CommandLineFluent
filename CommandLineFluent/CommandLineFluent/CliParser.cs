@@ -10,7 +10,7 @@
 	/// </summary>
 	public sealed class CliParser
 	{
-		private readonly Dictionary<string, IVerb> verbs;
+		private readonly Dictionary<string, IVerb> verbsByName;
 		private readonly CliParserConfig config;
 		/// <summary>
 		/// Create this class using a CliParserBuilder.
@@ -18,14 +18,15 @@
 		/// <param name="console"></param>
 		/// <param name="tokenizer"></param>
 		/// <param name="msgFormatter"></param>
-		/// <param name="verbs"></param>
+		/// <param name="verbsByName"></param>
 		/// <param name="config"></param>
-		internal CliParser(IConsole console, ITokenizer tokenizer, IMessageFormatter msgFormatter, Dictionary<string, IVerb> verbs, CliParserConfig config)
+		internal CliParser(IConsole console, ITokenizer tokenizer, IMessageFormatter msgFormatter, Dictionary<string, IVerb> verbsByName, List<IVerb> verbs, CliParserConfig config)
 		{
 			Console = console;
 			Tokenizer = tokenizer;
 			MsgFormatter = msgFormatter;
-			this.verbs = verbs;
+			this.verbsByName = verbsByName;
+			Verbs = verbs;
 			this.config = config;
 		}
 		/// <summary>
@@ -40,6 +41,7 @@
 		/// Used to create messages for the user.
 		/// </summary>
 		public IMessageFormatter MsgFormatter { get; }
+		public IReadOnlyCollection<IVerb> Verbs { get; }
 		/// <summary>
 		/// Starts a loop that reads input from <see cref="Console"/>, splits it into tokens using <see cref="Tokenizer"/>, and then parses and invokes it synchronously (using <see cref="Handle(IParseResult)"/>).
 		/// Writes <paramref name="prompt"/> to the console as a prompt when it is ready for input, and will stop looping once it encounters the string <paramref name="exitKeyword"/>.
@@ -51,7 +53,7 @@
 		/// <param name="commandColor">The foreground color of the text that the user enters after <paramref name="prompt"/> is written.</param>
 		public void Shell(string prompt, string exitKeyword = "exit", ConsoleColor promptColor = ConsoleColor.White, ConsoleColor commandColor = ConsoleColor.Gray)
 		{
-			if (verbs.ContainsKey(exitKeyword))
+			if (verbsByName.ContainsKey(exitKeyword))
 			{
 				throw new ArgumentException("The keyword used to exit the loop is already used by a verb: " + exitKeyword, nameof(exitKeyword));
 			}
@@ -82,7 +84,7 @@
 		/// <param name="commandColor">The foreground color of the text that the user enters after <paramref name="prompt"/> is written.</param>
 		public async Task ShellAsync(string prompt, string exitKeyword = "exit", ConsoleColor promptColor = ConsoleColor.White, ConsoleColor commandColor = ConsoleColor.Gray)
 		{
-			if (verbs.ContainsKey(exitKeyword))
+			if (verbsByName.ContainsKey(exitKeyword))
 			{
 				throw new ArgumentException("The keyword used to exit the loop is already used by a verb: " + exitKeyword, nameof(exitKeyword));
 			}
@@ -129,7 +131,7 @@
 			string? firstArg = args.FirstOrDefault();
 			if (firstArg != null)
 			{
-				if (verbs.TryGetValue(firstArg, out IVerb? verb))
+				if (verbsByName.TryGetValue(firstArg, out IVerb? verb))
 				{
 					return verb.Parse(args.Skip(1));
 				}
@@ -166,7 +168,7 @@
 				}
 				else
 				{
-					MsgFormatter.WriteOverallHelp(Console, verbs.Values, config);
+					MsgFormatter.WriteOverallHelp(Console, Verbs, config);
 				}
 			}
 		}
@@ -194,7 +196,7 @@
 				}
 				else
 				{
-					MsgFormatter.WriteOverallHelp(Console, verbs.Values, config);
+					MsgFormatter.WriteOverallHelp(Console, Verbs, config);
 				}
 			}
 		}
@@ -211,7 +213,7 @@
 		/// </summary>
 		public void WriteOverallHelp()
 		{
-			MsgFormatter.WriteOverallHelp(Console, verbs.Values, config);
+			MsgFormatter.WriteOverallHelp(Console, Verbs, config);
 		}
 		/// <summary>
 		/// Writes help for a specific verb; i.e. using <see cref="IMessageFormatter.WriteSpecificHelp{TClass}(IConsole, Verb{TClass}, CliParserConfig)"/>.

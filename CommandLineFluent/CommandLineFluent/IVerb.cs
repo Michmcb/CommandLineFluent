@@ -9,9 +9,13 @@
 	public interface IVerb
 	{
 		/// <summary>
-		/// The name of this verb. This is what the user must enter to invoke this verb. This must be unique.
+		/// The long name of this verb. This is what the user must enter to invoke this verb. This must be unique.
 		/// </summary>
-		string Name { get; }
+		string LongName { get; }
+		/// <summary>
+		/// The short name of this verb. This is what the user must enter to invoke this verb. This must be unique.
+		/// </summary>
+		string? ShortName { get; }
 		/// <summary>
 		/// Human-readable help for this verb.
 		/// </summary>
@@ -26,5 +30,9 @@
 		/// Calls <see cref="IMessageFormatter.WriteSpecificHelp{TClass}(IConsole, Verb{TClass})"/>, passing this verb as a parameter.
 		/// </summary>
 		void WriteSpecificHelp(IConsole console, IMessageFormatter msgFormatter);
+		/// <summary>
+		/// The short and long name joined with a |
+		/// </summary>
+		string ShortAndLongName();
 	}
 }

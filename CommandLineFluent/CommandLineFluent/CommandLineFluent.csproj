@@ -7,7 +7,7 @@
     <Authors>Michael McBride</Authors>
     <Product />
     <Company />
-    <Version>2.0.2</Version>
+    <Version>2.1</Version>
     <PackageLicenseFile>LICENSE</PackageLicenseFile>
     <Description>A .NET Command Line Parsing library which is set up and parsed using fluent syntax. It parses command line arguments into strongly-typed classes which you define. Supports conditional dependencies between arguments, conversion, default values, a basic shell, and automatic help/usage text. It also supports invoking awaitable or asynchronous actions with the classes you define.</Description>
     <PackageTags>commandline, parsing, parser, option, command, line, argument, library, fluent, async</PackageTags>
@@ -17,10 +17,11 @@
     <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
     <RepositoryUrl>https://github.com/Michmcb/CommandLineFluent</RepositoryUrl>
     <RepositoryType>Github</RepositoryType>
-    <PackageReleaseNotes>- Actually really fixed the bug with MultiValue; it didn't convert the List to an Array for array properties, but now it does.</PackageReleaseNotes>
+    <PackageReleaseNotes>- Verbs can have a Long and a Short name now
+- Help Text is more nicely formatted. It writes key words on the left, help text on the right, and wraps help text when they're too long, keeping them aligned. Line breaks in the help text are taken into account, too.</PackageReleaseNotes>
     <PackageIcon>CommandLineFluent.png</PackageIcon>
-    <AssemblyVersion>2.0.2.0</AssemblyVersion>
-    <FileVersion>2.0.2.0</FileVersion>
+    <AssemblyVersion>2.1.0.0</AssemblyVersion>
+    <FileVersion>2.1.0.0</FileVersion>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">

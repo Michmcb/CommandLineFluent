@@ -6,7 +6,8 @@
 
 	public sealed class CliParserBuilder
 	{
-		private readonly Dictionary<string, IVerb> verbs;
+		private readonly Dictionary<string, IVerb> verbsByName;
+		private readonly List<IVerb> verbs;
 		private readonly CliParserConfig config;
 		private IConsole console;
 		private ITokenizer tokenizer;
@@ -16,7 +17,8 @@
 		/// </summary>
 		public CliParserBuilder()
 		{
-			verbs = new Dictionary<string, IVerb>(StringComparer.OrdinalIgnoreCase);
+			verbsByName = new Dictionary<string, IVerb>(StringComparer.OrdinalIgnoreCase);
+			verbs = new List<IVerb>();
 			config = new CliParserConfig();
 			console = new StandardConsole();
 			tokenizer = new QuotedStringTokenizer();
@@ -28,7 +30,8 @@
 		public CliParserBuilder(CliParserConfig config, IConsole? console = null, ITokenizer? tokenizer = null, IMessageFormatter? msgFormatter = null)
 		{
 			this.config = config ?? new CliParserConfig();
-			verbs = new Dictionary<string, IVerb>(this.config.StringComparer);
+			verbsByName = new Dictionary<string, IVerb>(this.config.StringComparer);
+			verbs = new List<IVerb>();
 			this.console = console ?? new StandardConsole();
 			this.tokenizer = tokenizer ?? new QuotedStringTokenizer();
 			this.msgFormatter = msgFormatter ?? new StandardMessageFormatter();
@@ -64,29 +67,67 @@
 			return this;
 		}
 		/// <summary>
-		/// Adds a verb for this parser. To invoke it, the user has to enter <paramref name="name"/> on the command line.
+		/// Adds a verb for this parser. To invoke it, the user has to enter <paramref name="longName"/> on the command line.
 		/// e.g. "foo.exe add" invokes the verb with the name "add".
 		/// </summary>
 		/// <typeparam name="TClass">The type of the class which will be created when arguments for that verb are parsed successfully</typeparam>
-		/// <param name="name">The name of the verb</param>
+		/// <param name="longName">The long name of the verb</param>
 		/// <param name="config">The action to configure the verb</param>
-		public CliParserBuilder AddVerb<TClass>(string name, Action<Verb<TClass>> config) where TClass : class, new()
+		public CliParserBuilder AddVerb<TClass>(string longName, Action<Verb<TClass>> config) where TClass : class, new()
 		{
 			if (config == null)
 			{
 				throw new ArgumentNullException(nameof(config), "You need to configure the verb");
 			}
-			if (string.IsNullOrEmpty(name))
+			if (string.IsNullOrEmpty(longName))
 			{
-				throw new ArgumentNullException(nameof(name), "Verb Name cannot be null or an empty string");
+				throw new ArgumentNullException(nameof(longName), "Verb Long Name cannot be null or an empty string");
 			}
-			if (verbs.ContainsKey(name))
+			if (verbsByName.ContainsKey(longName))
 			{
-				throw new CliParserBuilderException("That verb name has already been used, you may only use unique verb names");
+				throw new CliParserBuilderException(string.Concat("The verb name ", longName, " has already been used, you may only use unique verb names"));
 			}
-			Verb<TClass> v = new Verb<TClass>(name, this.config);
-			verbs.Add(name, v);
+			Verb<TClass> v = new Verb<TClass>(null, longName, this.config);
 			config.Invoke(v);
+			verbsByName.Add(longName, v);
+			verbs.Add(v);
+			return this;
+		}
+		/// <summary>
+		/// Adds a verb for this parser. To invoke it, the user has to enter <paramref name="longName"/> on the command line.
+		/// e.g. "foo.exe add" invokes the verb with the name "add".
+		/// </summary>
+		/// <typeparam name="TClass">The type of the class which will be created when arguments for that verb are parsed successfully</typeparam>
+		/// <param name="longName">The long name of the verb</param>
+		/// <param name="shortName">The short name of the verb</param>
+		/// <param name="config">The action to configure the verb</param>
+		public CliParserBuilder AddVerb<TClass>(string longName, string shortName, Action<Verb<TClass>> config) where TClass : class, new()
+		{
+			if (config == null)
+			{
+				throw new ArgumentNullException(nameof(config), "You need to configure the verb");
+			}
+			if (string.IsNullOrEmpty(longName))
+			{
+				throw new ArgumentNullException(nameof(longName), "Verb Long Name cannot be null or an empty string");
+			}
+			if (string.IsNullOrEmpty(shortName))
+			{
+				throw new ArgumentNullException(nameof(longName), "Verb Short Name cannot be null or an empty string");
+			}
+			if (verbsByName.ContainsKey(longName))
+			{
+				throw new CliParserBuilderException(string.Concat("The verb name ", longName, " has already been used, you may only use unique verb names"));
+			}
+			if (verbsByName.ContainsKey(shortName))
+			{
+				throw new CliParserBuilderException(string.Concat("The verb name ", shortName, " has already been used, you may only use unique verb names"));
+			}
+			Verb<TClass> v = new Verb<TClass>(shortName, longName, this.config);
+			config.Invoke(v);
+			verbsByName.Add(shortName, v);
+			verbsByName.Add(longName, v);
+			verbs.Add(v);
 			return this;
 		}
 		/// <summary>
@@ -96,13 +137,13 @@
 		public CliParser Build()
 		{
 			List<Error> errors = new List<Error>();
-			if (verbs.Values.Count <= 0)
+			if (verbsByName.Values.Count <= 0)
 			{
 				throw new CliParserBuilderException("The parser has no verbs, use AddVerb<TClass> to add some verbs");
 			}
 			if (errors.Count == 0)
 			{
-				return new CliParser(console ?? new StandardConsole(), tokenizer ?? new QuotedStringTokenizer(), msgFormatter ?? new StandardMessageFormatter(), verbs, config);
+				return new CliParser(console ?? new StandardConsole(), tokenizer ?? new QuotedStringTokenizer(), msgFormatter ?? new StandardMessageFormatter(), verbsByName, verbs, config);
 			}
 			else
 			{

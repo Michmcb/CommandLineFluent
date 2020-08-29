@@ -17,9 +17,10 @@
 		private readonly Dictionary<string, IOption<TClass>> allOptionsByShortName;
 		private readonly Dictionary<string, ISwitch<TClass>> allSwitchesByLongName;
 		private readonly Dictionary<string, IOption<TClass>> allOptionsByLongName;
-		internal Verb(string name, CliParserConfig config)
+		internal Verb(string? shortName, string longName, CliParserConfig config)
 		{
-			Name = name;
+			ShortName = shortName;
+			LongName = longName;
 			this.config = config;
 			allValues = new List<IValue<TClass>>();
 			allSwitches = new List<ISwitch<TClass>>();
@@ -29,8 +30,8 @@
 			allSwitchesByLongName = new Dictionary<string, ISwitch<TClass>>(config.StringComparer);
 			allOptionsByLongName = new Dictionary<string, IOption<TClass>>(config.StringComparer);
 			HelpText = "No help available.";
-			Invoke = x => throw new CliParserBuilderException(string.Concat("Invoke for verb ", Name, " has not been configured"));
-			InvokeAsync = x => throw new CliParserBuilderException(string.Concat("InvokeAsync for verb ", Name, " has not been configured"));
+			Invoke = x => throw new CliParserBuilderException(string.Concat("Invoke for verb ", LongName, " has not been configured"));
+			InvokeAsync = x => throw new CliParserBuilderException(string.Concat("InvokeAsync for verb ", LongName, " has not been configured"));
 		}
 		/// <summary>
 		/// If not null, the MultiValue for this verb which picks up all extra arguments.
@@ -56,7 +57,8 @@
 		/// The asynchronous action that's invoked when parsing is successful and this verb was provided.
 		/// </summary>
 		public Func<TClass, Task> InvokeAsync { get; set; }
-		public string Name { get; }
+		public string? ShortName { get; }
+		public string LongName { get; }
 		public string HelpText { get; set; }
 		public void WriteSpecificHelp(IConsole console, IMessageFormatter msgFormatter)
 		{
@@ -94,7 +96,7 @@
 			}
 			if (shortName == null && longName == null)
 			{
-				throw new ArgumentException(string.Concat("Short Name and Long Name for a new option for verb ", Name, " cannot both be null"));
+				throw new ArgumentException(string.Concat("Short Name and Long Name for a new option for verb ", LongName, " cannot both be null"));
 			}
 			if (shortName != null && string.IsNullOrWhiteSpace(shortName))
 			{
@@ -176,7 +178,7 @@
 			}
 			if (shortName == null && longName == null)
 			{
-				throw new ArgumentException(string.Concat("Short Name and Long Name for a new switch for verb ", Name, " cannot both be null"));
+				throw new ArgumentException(string.Concat("Short Name and Long Name for a new switch for verb ", LongName, " cannot both be null"));
 			}
 			if (shortName != null && shortName.Length == 0)
 			{
@@ -396,6 +398,10 @@
 			}
 			return new SuccessfulParse<TClass>(this, parsedClass);
 		}
+		public string ShortAndLongName()
+		{
+			return ArgUtils.ShortAndLongName(ShortName, LongName);
+		}
 		private void ApplyDefaultPrefixAndCheck<T>(ref string? shortName, ref string? longName, string type, Dictionary<string, T> shortNames, Dictionary<string, T> longNames)
 		{
 			if (shortName != null)
@@ -406,15 +412,15 @@
 				}
 				if (string.IsNullOrWhiteSpace(shortName))
 				{
-					throw new ArgumentException($"Short Name for {type} for verb {Name} was empty or entirely whitespace");
+					throw new ArgumentException($"Short Name for {type} for verb {LongName} was empty or entirely whitespace");
 				}
 				if (shortName == config.ShortHelpSwitch)
 				{
-					throw new ArgumentException($"Short Name for {type} for verb {Name} is already used by the short help switch ({config.ShortHelpSwitch})");
+					throw new ArgumentException($"Short Name for {type} for verb {LongName} is already used by the short help switch ({config.ShortHelpSwitch})");
 				}
 				if (shortNames.ContainsKey(shortName) || longNames.ContainsKey(shortName))
 				{
-					throw new ArgumentException($"The short name {shortName} for {type} for verb {Name} has already been used");
+					throw new ArgumentException($"The short name {shortName} for {type} for verb {LongName} has already been used");
 				}
 			}
 			if (longName != null)
@@ -425,15 +431,15 @@
 				}
 				if (string.IsNullOrWhiteSpace(longName))
 				{
-					throw new ArgumentException($"Short Name for {type} for verb {Name} was empty or entirely whitespace");
+					throw new ArgumentException($"Short Name for {type} for verb {LongName} was empty or entirely whitespace");
 				}
 				if (longName == config.LongHelpSwitch)
 				{
-					throw new ArgumentException($"Long Name for {type} for verb {Name} is already used by the long help switch ({config.LongHelpSwitch})");
+					throw new ArgumentException($"Long Name for {type} for verb {LongName} is already used by the long help switch ({config.LongHelpSwitch})");
 				}
 				if (shortNames.ContainsKey(longName) || longNames.ContainsKey(longName))
 				{
-					throw new ArgumentException($"The long name {longName} for {type} for verb {Name} has already been used");
+					throw new ArgumentException($"The long name {longName} for {type} for verb {LongName} has already been used");
 				}
 			}
 		}
