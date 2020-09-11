@@ -43,17 +43,27 @@
 		{
 			return Console.ReadLine();
 		}
-		public void Write(string s)
-		{
-			Console.Write(s);
-		}
-		public void WriteLine(string s)
-		{
-			Console.WriteLine(s);
-		}
 		public void WriteLine()
 		{
 			Console.WriteLine();
+		}
+		public void Write(string str)
+		{
+			Console.Write(str);
+		}
+		public void Write(ConsoleColor color, string str)
+		{
+			ForegroundColor = color;
+			Console.Write(str);
+		}
+		public void WriteLine(string str)
+		{
+			Console.WriteLine(str);
+		}
+		public void WriteLine(ConsoleColor color, string str)
+		{
+			ForegroundColor = color;
+			Console.WriteLine(str);
 		}
 	}
 }

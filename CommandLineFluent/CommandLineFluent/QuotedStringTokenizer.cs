@@ -1,6 +1,5 @@
 ﻿namespace CommandLineFluent
 {
-	using System;
 	using System.Collections.Generic;
 	/// <summary>
 	/// Splits a string into tokens. Splits based on spaces, or "double quotes" or 'single quotes'.

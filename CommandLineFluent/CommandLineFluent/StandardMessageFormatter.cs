@@ -133,9 +133,12 @@
 		/// <param name="keywordsAndDescriptions">A sequence of keywords, and their descriptions</param>
 		public static void WritePaddedKeywordDescriptions(IConsole console, ConsoleColor keywordColor, IEnumerable<KeywordAndDescription> keywordsAndDescriptions)
 		{
+			// Just bail out if there's nothing to do
+			if (!keywordsAndDescriptions.Any()) return;
 			ConsoleColor original = console.ForegroundColor;
 			int width = console.CurrentWidth;
 			// 3 extra spaces, so it's legible
+			// Max won't throw an exception since we exit if the sequence is empty
 			int longestKeyword = keywordsAndDescriptions.Max(x => x.Keyword.Length) + 3;
 			int lengthForDescription = width - longestKeyword;
 
