@@ -6,8 +6,6 @@
 	using static Converters;
 	public sealed partial class Verb<TClass> : IVerb where TClass : class, new()
 	{
-
-
 		// TODO add a converter from hexadecimal strings to byte arrays, and methods here for that converter
 		public Option<TClass, string> AddOptionString(string? shortName, string? longName, Action<OptionConfig<TClass, string>> optionConfig)
 		{

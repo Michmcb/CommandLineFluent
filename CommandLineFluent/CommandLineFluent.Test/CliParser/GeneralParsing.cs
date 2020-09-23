@@ -372,7 +372,7 @@
 			Check<Verb15>();
 			Check<Verb16>();
 
-			void Check<T>() where T : Verb, new()
+			void Check<T>() where T : Options.Verb, new()
 			{
 				args[0] = $"verb{i}";
 				args[1] = "Value";

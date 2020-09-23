@@ -3,11 +3,10 @@
 	using System;
 	using System.Collections.Generic;
 	using System.Threading.Tasks;
-
-	public sealed class FailedParseWithVerb : IParseResult
+	public sealed class FailedParseWithVerb<TClass> : IParseResult where TClass : class, new()
 	{
-		private readonly Verb? verb;
-		public FailedParseWithVerb(Verb? verb, IReadOnlyCollection<Error> errors)
+		private readonly Verb<TClass>? verb;
+		public FailedParseWithVerb(Verb<TClass>? verb, IReadOnlyCollection<Error> errors)
 		{
 			this.verb = verb;
 			Errors = errors;

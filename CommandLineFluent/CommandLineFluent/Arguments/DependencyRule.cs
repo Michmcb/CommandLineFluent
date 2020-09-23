@@ -23,10 +23,6 @@
 		/// </summary>
 		public Func<TOtherProp, bool> Predicate { get; private set; }
 		/// <summary>
-		/// This rule applies when the predicate returns this value.
-		/// </summary>
-		public bool AppliesWhenPredicate => true;
-		/// <summary>
 		/// The error message when this rule is violated.
 		/// </summary>
 		public string ErrorMessage { get; private set; }
@@ -73,7 +69,7 @@
 		public DependencyRule<TClass, TOtherProp> IsNull()
 		{
 			ThrowIfPredicateNotNull();
-			Predicate = PredicateNull;
+			Predicate = (x) => x == null;
 			return this;
 		}
 		/// <summary>
@@ -82,7 +78,7 @@
 		public DependencyRule<TClass, TOtherProp> IsNotNull()
 		{
 			ThrowIfPredicateNotNull();
-			Predicate = PredicateNotNull;
+			Predicate = (x) => x != null;
 			return this;
 		}
 		/// <summary>
@@ -129,26 +125,17 @@
 					// If mustNotAppear is false, we don't care if it appears or not. It doesn't mean "must appear", it just means the rule of "must not appear" does not apply.
 					return Predicate(propertyVal) ? !didAppear : true;
 			}
-			return AppliesWhenPredicate == Predicate(propertyVal);
+			return Predicate(propertyVal);
 		}
 		/// <summary>
 		/// Validates this rule. Returns an Error if something is invalid, or null otherwise.
 		/// </summary>
 		public void Validate()
 		{
-			// TODO DependencyRule.Validate() should instead be replaced with a Build() method, and that throws an exception instead
 			if (Predicate == null)
 			{
 				throw new CliParserBuilderException($@"A rule that is {Requiredness} for the property {TargetProperty.Name} has no predicate. Probably missing a When, IsEqualTo, or IsNull call.");
 			}
-		}
-		private bool PredicateNull(TOtherProp val)
-		{
-			return val == null;
-		}
-		private bool PredicateNotNull(TOtherProp val)
-		{
-			return val != null;
 		}
 		// This stuff is useless and just adds clutter, so hide it
 		[EditorBrowsable(EditorBrowsableState.Never)]

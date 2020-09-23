@@ -6,7 +6,7 @@
 	using System.Linq.Expressions;
 	/// <summary>
 	/// Defines a relationship between an Argument and a property of the target object.
-	/// It allows you to specify that certain Arguments are only required under certain circumstances.
+	/// It allows you to specify that certain Arguments are only required or allowed under certain circumstances.
 	/// </summary>
 	/// <typeparam name="TClass">The class of the property which this set of Dependencies is for.</typeparam>
 	public sealed class Dependencies<TClass> where TClass : new()
@@ -34,7 +34,7 @@
 		}
 		/// <summary>
 		/// Specifies that a property of type <typeparamref name="TOtherProp"/> of an object of type <typeparamref name="TClass"/>
-		/// is required to NOT be provided under specific circumstances.
+		/// MUST NOT be provided under specific circumstances.
 		/// </summary>
 		/// <typeparam name="TOtherProp">The type of the property</typeparam>
 		/// <param name="property">The rule stipulates this Argument must not appear if <paramref name="property"/> has a certain value.</param>
@@ -55,7 +55,7 @@
 			}
 		}
 		/// <summary>
-		/// Returns null if all rules of the relationship have been respected, and an Error otherwise.
+		/// Returns default if all rules of the relationship have been respected, and an Error otherwise.
 		/// </summary>
 		/// <param name="obj">The object to check</param>
 		/// <param name="wasValueProvided">Whether or not the FluentArgument received a value from parsing</param>
