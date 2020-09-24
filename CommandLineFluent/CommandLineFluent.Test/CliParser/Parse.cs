@@ -44,7 +44,7 @@
 					.WithName("Option")
 					.WithHelpText("Help me please"));
 
-				verb.AddMultiValueString(mv => mv
+				verb.AddMultiValueInt(mv => mv
 					.ForProperty(x => x.Values)
 					.WithHelpText("help"));
 			})
@@ -120,7 +120,7 @@
 		[Fact]
 		public void GoodArgs_MultiValue()
 		{
-			IParseResult ipr = parser.Parse(new string[] { "OptMulti", "-o1", "opt1", "value1", "value2", "--option2", "opt2", "value3" });
+			IParseResult ipr = parser.Parse(new string[] { "OptMulti", "-o1", "opt1", "1", "2", "--option2", "opt2", "3" });
 			Assert.True(ipr.Ok);
 			SuccessfulParse<OptMulti> pr = Assert.IsType<SuccessfulParse<OptMulti>>(ipr);
 			Assert.NotNull(pr);
@@ -130,7 +130,7 @@
 			OptMulti obj = pr.Object;
 			Assert.Equal("opt1", obj.Option1);
 			Assert.Equal("opt2", obj.Option2);
-			Assert.Collection(obj.Values, x => Assert.Equal("value1", x), x => Assert.Equal("value2", x), x => Assert.Equal("value3", x));
+			Assert.Collection(obj.Values, x => Assert.Equal(1, x), x => Assert.Equal(2, x), x => Assert.Equal(3, x));
 		}
 	}
 }

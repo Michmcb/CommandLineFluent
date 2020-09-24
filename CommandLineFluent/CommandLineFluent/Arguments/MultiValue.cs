@@ -58,7 +58,7 @@
 						{
 							if (Converter.Invoke(rv).Success(out TProp val, out string error))
 							{
-								convertedValues[i++] = val;
+								convertedValues.Add(val);
 							}
 							else
 							{
