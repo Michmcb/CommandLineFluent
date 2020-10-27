@@ -6,7 +6,7 @@
 	{
 		private static void Main()
 		{
-			// TODO fix this up a BIT at least, put the types into dictionaries for example and stuff...
+			// TODO fix this up at least a bit, put the types into dictionaries for example and stuff...
 			// Pretty bogan code generation here mate
 			Directory.SetCurrentDirectory(@"../../../../CommandLineFluent");
 			GenerateValues("Verb.Values.cs");
@@ -61,13 +61,21 @@
 			csOut.Write("\tusing static Converters;\n");
 			csOut.Write("\tpublic sealed partial class Verb<TClass> : IVerb where TClass : class, new()\n");
 			csOut.Write("\t{\n");
+
+			//csOut.Write("\t\tpublic Value<TClass, TProp> AddValue<TProp>(Expression<Func<TClass, TProp>> expression, Action<NamelessArgConfig<TClass, TProp>> config)\n");
+			//csOut.Write("\t\t{\n");
+			//csOut.Write("\t\t\tvar obj = new NamelessArgConfig<TClass, TProp>(true, null);\n");
+			//csOut.Write("\t\t\tconfig(obj);\n");
+			//csOut.Write("\t\t\treturn AddValueCore(expression, obj);\n");
+			//csOut.Write("\t\t}\n");
+
 			foreach ((string isRequired, string tProp, string converter, string methodName, string genericConstraint) in typesAndConverters)
 			{
 				csOut.Write($"\t\tpublic Value<TClass, {tProp}> {methodName}(Expression<Func<TClass, {tProp}>> expression, Action<NamelessArgConfig<TClass, {tProp}>> config){genericConstraint}\n");
 				csOut.Write("\t\t{\n");
 				csOut.Write($"\t\t\tvar obj = new NamelessArgConfig<TClass, {tProp}>({isRequired}, {converter});\n");
 				csOut.Write($"\t\t\tconfig(obj);\n");
-				csOut.Write("\t\t\treturn AddValueCore(obj, ArgUtils.PropertyInfoFromExpression(expression));\n");
+				csOut.Write("\t\t\treturn AddValueCore(expression, obj);\n");
 				csOut.Write("\t\t}\n");
 			}
 			csOut.Write("\t}\n");
@@ -119,13 +127,21 @@
 			csOut.Write("\tusing static Converters;\n");
 			csOut.Write("\tpublic sealed partial class Verb<TClass> : IVerb where TClass : class, new()\n");
 			csOut.Write("\t{\n");
+
+			//csOut.Write("\t\tpublic Option<TClass, TProp> AddOption<TProp>(Expression<Func<TClass, TProp>> expression, Action<NamedArgConfig<TClass, TProp, string>> config)\n");
+			//csOut.Write("\t\t{\n");
+			//csOut.Write("\t\t\tvar obj = new NamedArgConfig<TClass, TProp, string>(true, null);\n");
+			//csOut.Write("\t\t\tconfig(obj);\n");
+			//csOut.Write("\t\t\treturn AddOptionCore(expression, obj);\n");
+			//csOut.Write("\t\t}\n");
+
 			foreach ((string isRequired, string tProp, string converter, string methodName, string genericConstraint) in typesAndConverters)
 			{
 				csOut.Write($"\t\tpublic Option<TClass, {tProp}> {methodName}(Expression<Func<TClass, {tProp}>> expression, Action<NamedArgConfig<TClass, {tProp}, string>> config){genericConstraint}\n");
 				csOut.Write("\t\t{\n");
 				csOut.Write($"\t\t\tvar obj = new NamedArgConfig<TClass, {tProp}, string>({isRequired}, {converter});\n");
 				csOut.Write($"\t\t\tconfig(obj);\n");
-				csOut.Write("\t\t\treturn AddOptionCore(obj, ArgUtils.PropertyInfoFromExpression(expression));\n");
+				csOut.Write("\t\t\treturn AddOptionCore(expression, obj);\n");
 				csOut.Write("\t\t}\n");
 			}
 			csOut.Write("\t}\n");
@@ -200,7 +216,7 @@
 					csOut.Write("\t\t{\n");
 					csOut.Write($"\t\t\tvar obj = new NamelessMultiArgConfig<TClass, {tProp}, {tPropCollection}>(false, {converter}, {accumulator});\n");
 					csOut.Write($"\t\t\tconfig(obj);\n");
-					csOut.Write("\t\t\treturn AddMultiValueCore(obj, ArgUtils.PropertyInfoFromExpression(expression));\n");
+					csOut.Write("\t\t\treturn AddMultiValueCore(expression, obj);\n");
 					csOut.Write("\t\t}\n");
 				}
 			}

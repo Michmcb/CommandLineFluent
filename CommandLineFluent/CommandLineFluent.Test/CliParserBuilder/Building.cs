@@ -1,6 +1,7 @@
 ﻿namespace CommandLineFluent.Test.CliParserBuilder
 {
 	using CommandLineFluent;
+	using CommandLineFluent.Arguments.Config;
 	using CommandLineFluent.Arguments;
 	using CommandLineFluent.Test.Options;
 	using System;
@@ -11,12 +12,12 @@
 	public sealed class Building
 	{
 		[Fact]
-		public void AddingOptionsValuesSwitches()
+		public void AddingArguments()
 		{
 			CliParserBuilder fpb = new CliParserBuilder()
-				.AddVerb<Verb1>("default", verb =>
+				.AddVerb<OptOneOfEach>("default", verb =>
 				{
-					Option<Verb1, string> opt = verb.AddOption(x => x.Option, x =>
+					Option<OptOneOfEach, string> opt = verb.AddOption(x => x.Option, x =>
 					{
 						x.ShortName = "o";
 						x.LongName = "option";
@@ -32,7 +33,7 @@
 					Assert.Equal("defaultValue", opt.DefaultValue);
 					Assert.Equal(ArgumentRequired.Optional, opt.ArgumentRequired);
 
-					Value<Verb1, string> val = verb.AddValue(x => x.Value, x =>
+					Value<OptOneOfEach, string> val = verb.AddValue(x => x.Value, x =>
 					{
 						x.HelpText = "help";
 						x.DescriptiveName = "name";
@@ -43,7 +44,7 @@
 					Assert.Equal(default, val.DefaultValue);
 					Assert.Equal(ArgumentRequired.Required, val.ArgumentRequired);
 
-					Switch<Verb1, bool> sw = verb.AddSwitch(x => x.Switch, x =>
+					Switch<OptOneOfEach, bool> sw = verb.AddSwitch(x => x.Switch, x =>
 					{
 						x.ShortName = "s";
 						x.LongName = "switch";
@@ -54,15 +55,8 @@
 					Assert.Equal("help", sw.HelpText);
 					Assert.Equal(ArgumentRequired.Optional, sw.ArgumentRequired);
 					Assert.True(sw.DefaultValue);
-				});
-		}
-		[Fact]
-		public void AddingManyValues()
-		{
-			CliParser fp = new CliParserBuilder()
-				.AddVerb<ManyValuesVerb>("default", verb =>
-				{
-					MultiValue<ManyValuesVerb, string, IReadOnlyCollection<string>>? val =
+
+					MultiValue<OptOneOfEach, string, IReadOnlyCollection<string>> vals =
 					verb.AddMultiValue(x => x.ManyValues, x =>
 					{
 						x.IsRequired = true;
@@ -70,22 +64,48 @@
 						x.HelpText = "Help";
 					});
 
-					Assert.Equal(ArgumentRequired.Required, val.ArgumentRequired);
-					Assert.Equal("Help", val.HelpText);
-					Assert.Equal("Name", val.DescriptiveName);
-					Assert.Equal(ArgumentRequired.Required, val.ArgumentRequired);
-				}).Build();
+					Assert.Equal(ArgumentRequired.Required, vals.ArgumentRequired);
+					Assert.Equal("Help", vals.HelpText);
+					Assert.Equal("Name", vals.DescriptiveName);
+					Assert.Equal(ArgumentRequired.Required, vals.ArgumentRequired);
+				});
+		}
+		[Fact]
+		public void MissingConverter()
+		{
+			new CliParserBuilder()
+				.AddVerb<ComplexVerb1>("default", verb =>
+				{
+					Assert.Throws<ArgumentException>(() => verb.AddOptionCore(x => x.ConvertedOption, new NamedArgConfig<ComplexVerb1, int, string>(true, null){ ShortName = "-o", LongName = "--o" }));
+
+					Assert.Throws<ArgumentException>(() => verb.AddSwitchCore(x => x.ConvertedOption, new NamedArgConfig<ComplexVerb1, int, bool>(true, null){ ShortName = "-s", LongName = "--s" }));
+
+					Assert.Throws<ArgumentException>(() => verb.AddValueCore(x => x.ConvertedOption, new NamelessArgConfig<ComplexVerb1, int>(true, null)));
+				})
+				.Build();
 		}
 		[Fact]
 		public void AddingDuplicateShortLongNames()
 		{
-			new CliParserBuilder()
+			new CliParserBuilder(new CliParserConfig()
+			{
+				LongHelpSwitch = "--help",
+				ShortHelpSwitch = "-?"
+			})
 				.AddVerb<Verb1>("default", verb =>
 				{
-					verb.AddOptionString("-o", "--o", o => o.ForProperty(x => x.Option).WithHelpText("h"));
-					Assert.Throws<ArgumentException>(() => verb.AddOptionString("-o", "--o", o => o.ForProperty(x => x.Option).WithHelpText("h")));
-					Assert.Throws<ArgumentException>(() => verb.AddOptionString("--o", "-o", o => o.ForProperty(x => x.Option).WithHelpText("h")));
-				});
+					verb.AddOption(x => x.Option, x => { x.ShortName = "-o"; x.LongName = "--o"; });
+					Assert.Throws<ArgumentException>(() => verb.AddOption(x => x.Option, x => { x.ShortName = "-o"; x.LongName = "--o"; }));
+					Assert.Throws<ArgumentException>(() => verb.AddOption(x => x.Option, x => { x.ShortName = "--o"; x.LongName = "-o"; }));
+					Assert.Throws<ArgumentException>(() => verb.AddOption(x => x.Option, x => { x.ShortName = "-?"; x.LongName = "--help"; }));
+					Assert.Throws<ArgumentException>(() => verb.AddOption(x => x.Option, x => { x.ShortName = "--help"; x.LongName = "-?"; }));
+
+					Assert.Throws<ArgumentException>(() => verb.AddSwitch(x => x.Switch, x => { x.ShortName = "-o"; x.LongName = "--o"; }));
+					Assert.Throws<ArgumentException>(() => verb.AddSwitch(x => x.Switch, x => { x.ShortName = "--o"; x.LongName = "-o"; }));
+					Assert.Throws<ArgumentException>(() => verb.AddSwitch(x => x.Switch, x => { x.ShortName = "-?"; x.LongName = "--help"; }));
+					Assert.Throws<ArgumentException>(() => verb.AddSwitch(x => x.Switch, x => { x.ShortName = "--help"; x.LongName = "-?"; }));
+				})
+				.Build();
 		}
 		[Fact]
 		public void AddingNullOrWhitespaceShortLongNames()
@@ -93,12 +113,27 @@
 			CliParser fp = new CliParserBuilder()
 				.AddVerb<Verb1>("default", verb =>
 				{
-					Assert.Throws<ArgumentException>(() => verb.AddOptionString(null, null, o => { }));
-					Assert.Throws<CliParserBuilderException>(() => verb.AddOptionString("", null, o => { }));
-					Assert.Throws<CliParserBuilderException>(() => verb.AddOptionString(null, "", o => { }));
-					Assert.Throws<CliParserBuilderException>(() => verb.AddOptionString(" ", null, o => { }));
-					Assert.Throws<CliParserBuilderException>(() => verb.AddOptionString(null, " ", o => { }));
-				}).Build();
+					Assert.Throws<ArgumentException>(() => verb.AddOption(x => x.Option, x => { x.ShortName = null; x.LongName = null; }));
+					Assert.Throws<ArgumentException>(() => verb.AddOption(x => x.Option, x => { x.ShortName = ""; x.LongName = null; }));
+					Assert.Throws<ArgumentException>(() => verb.AddOption(x => x.Option, x => { x.ShortName = " "; x.LongName = null; }));
+					Assert.Throws<ArgumentException>(() => verb.AddOption(x => x.Option, x => { x.ShortName = null; x.LongName = ""; }));
+					Assert.Throws<ArgumentException>(() => verb.AddOption(x => x.Option, x => { x.ShortName = null; x.LongName = " "; }));
+					Assert.Throws<ArgumentException>(() => verb.AddOption(x => x.Option, x => { x.ShortName = ""; x.LongName = ""; }));
+					Assert.Throws<ArgumentException>(() => verb.AddOption(x => x.Option, x => { x.ShortName = " "; x.LongName = ""; }));
+					Assert.Throws<ArgumentException>(() => verb.AddOption(x => x.Option, x => { x.ShortName = ""; x.LongName = " "; }));
+					Assert.Throws<ArgumentException>(() => verb.AddOption(x => x.Option, x => { x.ShortName = " "; x.LongName = " "; }));
+
+					Assert.Throws<ArgumentException>(() => verb.AddSwitch(x => x.Switch, x => { x.ShortName = null; x.LongName = null; }));
+					Assert.Throws<ArgumentException>(() => verb.AddSwitch(x => x.Switch, x => { x.ShortName = ""; x.LongName = null; }));
+					Assert.Throws<ArgumentException>(() => verb.AddSwitch(x => x.Switch, x => { x.ShortName = " "; x.LongName = null; }));
+					Assert.Throws<ArgumentException>(() => verb.AddSwitch(x => x.Switch, x => { x.ShortName = null; x.LongName = ""; }));
+					Assert.Throws<ArgumentException>(() => verb.AddSwitch(x => x.Switch, x => { x.ShortName = null; x.LongName = " "; }));
+					Assert.Throws<ArgumentException>(() => verb.AddSwitch(x => x.Switch, x => { x.ShortName = ""; x.LongName = ""; }));
+					Assert.Throws<ArgumentException>(() => verb.AddSwitch(x => x.Switch, x => { x.ShortName = " "; x.LongName = ""; }));
+					Assert.Throws<ArgumentException>(() => verb.AddSwitch(x => x.Switch, x => { x.ShortName = ""; x.LongName = " "; }));
+					Assert.Throws<ArgumentException>(() => verb.AddSwitch(x => x.Switch, x => { x.ShortName = " "; x.LongName = " "; }));
+				})
+				.Build();
 		}
 	}
 }

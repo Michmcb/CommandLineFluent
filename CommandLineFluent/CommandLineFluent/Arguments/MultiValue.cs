@@ -46,8 +46,6 @@
 		{
 			if (rawValue.Count > 0)
 			{
-				//if (Converter != null)
-				//{
 				List<TProp> convertedValues = new List<TProp>(rawValue.Count);
 				try
 				{
@@ -67,13 +65,7 @@
 				{
 					return new Error(ErrorCode.MultiValueFailedConversion, $"Converter for MultiValue {DescriptiveName} threw an exception ({ex.Message})");
 				}
-				// TODO IEnumerable for convertion collection, maybe?
 				TargetProperty.SetValue(target, CreateCollection(convertedValues));
-				//}
-				//else
-				//{
-				//	TargetProperty.SetValue(target, rawValue);
-				//}
 			}
 			else
 			{

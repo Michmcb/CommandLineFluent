@@ -5,6 +5,7 @@
 	using System;
 	using System.Collections.Generic;
 	using System.ComponentModel;
+	using System.Linq.Expressions;
 	using System.Reflection;
 	using System.Threading.Tasks;
 
@@ -67,18 +68,22 @@
 		}
 		/// <summary>
 		/// Adds a new Value.
-		/// Not intended that you call this directly, it's provided for you to create extension methods
-		/// which take specific types of <typeparamref name="TProp"/>. That way the extension methods can call this method and provide the correct converter.
+		/// This is mainly useful to provide custom extension methods which take specific types of <typeparamref name="TProp"/>.
 		/// </summary>
 		/// <typeparam name="TProp">The type of the target property.</typeparam>
 		/// <param name="config">The configuration.</param>
 		/// <param name="property">The property to set.</param>
-		/// <returns>The created value.</returns>
-		public Value<TClass, TProp> AddValueCore<TProp>(NamelessArgConfig<TClass, TProp> config, PropertyInfo property)
+		/// <returns>The created Value.</returns>
+		public Value<TClass, TProp> AddValueCore<TProp>(Expression<Func<TClass, TProp>> expression, NamelessArgConfig<TClass, TProp> config)
 		{
 			if (config == null)
 			{
-				throw new ArgumentNullException(nameof(config), "valueConfig cannot be null");
+				throw new ArgumentNullException(nameof(config), nameof(config) + " cannot be null");
+			}
+			PropertyInfo property = ArgUtils.PropertyInfoFromExpression(expression);
+			if (config.Converter == null && typeof(TProp) != typeof(string))
+			{
+				throw new ArgumentException(nameof(config.Converter), string.Concat("A converter has to be provided for property " + property.Name + " if TProp is not string. TProp is: " + typeof(TProp).FullName));
 			}
 			ArgumentRequired ar = config.Dependencies != null ? ArgumentRequired.HasDependencies : config.IsRequired ? ArgumentRequired.Required : ArgumentRequired.Optional;
 			Value<TClass, TProp> thing = new Value<TClass, TProp>(config.DescriptiveName, config.HelpText, ar, property, config.DefaultValue, config.Dependencies, config.Converter);
@@ -87,18 +92,22 @@
 		}
 		/// <summary>
 		/// Adds a new Option.
-		/// Not intended that you call this directly, it's provided for you to create extension methods
-		/// which take specific types of <typeparamref name="TProp"/>. That way the extension methods can call this method and provide the correct converter.
+		/// This is mainly useful to provide custom extension methods which take specific types of <typeparamref name="TProp"/>.
 		/// </summary>
 		/// <typeparam name="TProp">The type of the target property.</typeparam>
 		/// <param name="config">The configuration.</param>
 		/// <param name="property">The property to set.</param>
-		/// <returns>The created option.</returns>
-		public Option<TClass, TProp> AddOptionCore<TProp>(NamedArgConfig<TClass, TProp, string> config, PropertyInfo property)
+		/// <returns>The created Option.</returns>
+		public Option<TClass, TProp> AddOptionCore<TProp>(Expression<Func<TClass, TProp>> expression, NamedArgConfig<TClass, TProp, string> config)
 		{
 			if (config == null)
 			{
 				throw new ArgumentNullException(nameof(config), nameof(config) + " cannot be null");
+			}
+			PropertyInfo property = ArgUtils.PropertyInfoFromExpression(expression);
+			if (config.Converter == null && typeof(TProp) != typeof(string))
+			{
+				throw new ArgumentException(nameof(config.Converter), string.Concat("A converter has to be provided for property " + property.Name + " if TProp is not string. TProp is: " + typeof(TProp).FullName));
 			}
 			string? shortName = config.ShortName;
 			string? longName = config.LongName;
@@ -111,22 +120,26 @@
 		}
 		/// <summary>
 		/// Adds a new Switch.
-		/// Not intended that you call this directly, it's provided for you to create extension methods
-		/// which take specific types of <typeparamref name="TProp"/>. That way the extension methods can call this method and provide the correct converter.
+		/// This is mainly useful to provide custom extension methods which take specific types of <typeparamref name="TProp"/>.
 		/// </summary>
 		/// <typeparam name="TProp">The type of the target property.</typeparam>
 		/// <param name="config">The configuration.</param>
 		/// <param name="property">The property to set.</param>
-		/// <returns>The created option.</returns>
-		public Switch<TClass, TProp> AddSwitchCore<TProp>(NamedArgConfig<TClass, TProp, bool> config, PropertyInfo property)
+		/// <returns>The created Switch.</returns>
+		public Switch<TClass, TProp> AddSwitchCore<TProp>(Expression<Func<TClass, TProp>> expression, NamedArgConfig<TClass, TProp, bool> config)
 		{
 			if (config == null)
 			{
 				throw new ArgumentNullException(nameof(config), nameof(config) + " cannot be null");
 			}
+			PropertyInfo property = ArgUtils.PropertyInfoFromExpression(expression);
+			if (config.Converter == null && typeof(TProp) != typeof(bool))
+			{
+				throw new ArgumentException(nameof(config.Converter), string.Concat("A converter has to be provided for property " + property.Name + " if TProp is not bool. TProp is: " + typeof(TProp).FullName));
+			}
 			string? shortName = config.ShortName;
 			string? longName = config.LongName;
-			ApplyDefaultPrefixAndCheck(ref shortName, ref longName, "option");
+			ApplyDefaultPrefixAndCheck(ref shortName, ref longName, "switch");
 			ArgumentRequired ar = config.Dependencies != null ? ArgumentRequired.HasDependencies : config.IsRequired ? ArgumentRequired.Required : ArgumentRequired.Optional;
 			Switch<TClass, TProp> arg = new Switch<TClass, TProp>(shortName, longName, config.DescriptiveName, config.HelpText, ar, property, config.DefaultValue, config.Dependencies, config.Converter);
 			AddToDictionary(arg.ShortName, arg.LongName, arg, allSwitchesByShortName, allSwitchesByLongName);
@@ -135,20 +148,23 @@
 		}
 		/// <summary>
 		/// Adds a new MultiValue.
-		/// Not intended that you call this directly, it's provided for you to create extension methods
-		/// which take specific types of <typeparamref name="TProp"/>. That way the extension methods can call this method and provide the correct converter.
+		/// This is mainly useful to provide custom extension methods which take specific types of <typeparamref name="TProp"/>.
 		/// </summary>
 		/// <typeparam name="TProp">The type of the target property.</typeparam>
 		/// <param name="config">The configuration.</param>
 		/// <param name="property">The property to set.</param>
-		/// <param name="converter">The default converter to use, if <paramref name="config"/> doesn't specify one.</param>
-		/// <returns>The created value.</returns>
-		public MultiValue<TClass, TProp, TPropCollection> AddMultiValueCore<TProp, TPropCollection>(NamelessMultiArgConfig<TClass, TProp, TPropCollection> config, PropertyInfo property)
+		/// <returns>The created MultiValue.</returns>
+		public MultiValue<TClass, TProp, TPropCollection> AddMultiValueCore<TProp, TPropCollection>(Expression<Func<TClass, TPropCollection>> expression, NamelessMultiArgConfig<TClass, TProp, TPropCollection> config)
 		{
 			if (config == null)
 			{
-				throw new ArgumentNullException(nameof(config), "valueConfig cannot be null");
+				throw new ArgumentNullException(nameof(config), nameof(config) + " cannot be null");
 			}
+			if (config.Converter == null)
+			{
+				throw new ArgumentNullException(nameof(config.Converter), "config.Converter cannot be null");
+			}
+			PropertyInfo property = ArgUtils.PropertyInfoFromExpression(expression);
 			ArgumentRequired ar = config.Dependencies != null ? ArgumentRequired.HasDependencies : config.IsRequired ? ArgumentRequired.Required : ArgumentRequired.Optional;
 
 			MultiValue<TClass, TProp, TPropCollection> arg = new MultiValue<TClass, TProp, TPropCollection>(config.DescriptiveName, config.HelpText, ar,
@@ -242,7 +258,7 @@
 			allSwitches.Add(thing);
 			return thing;
 		}
-		
+
 		public IParseResult Parse(IEnumerable<string> args)
 		{
 			TClass parsedClass = new TClass();
@@ -421,13 +437,13 @@
 			}
 			if (shortName != null)
 			{
-				if (!string.IsNullOrEmpty(config.DefaultShortPrefix) && !shortName.StartsWith(config.DefaultShortPrefix))
-				{
-					shortName = config.DefaultShortPrefix + shortName;
-				}
 				if (string.IsNullOrWhiteSpace(shortName))
 				{
 					throw new ArgumentException($"Short name for {type} for verb {LongName} was empty or entirely whitespace");
+				}
+				if (!string.IsNullOrEmpty(config.DefaultShortPrefix) && !shortName.StartsWith(config.DefaultShortPrefix))
+				{
+					shortName = config.DefaultShortPrefix + shortName;
 				}
 				if (shortName == config.ShortHelpSwitch || shortName == config.LongHelpSwitch)
 				{
@@ -440,13 +456,13 @@
 			}
 			if (longName != null)
 			{
-				if (!string.IsNullOrEmpty(config.DefaultLongPrefix) && !longName.StartsWith(config.DefaultLongPrefix))
-				{
-					longName = config.DefaultLongPrefix + longName;
-				}
 				if (string.IsNullOrWhiteSpace(longName))
 				{
 					throw new ArgumentException($"Long name for {type} for verb {LongName} was empty or entirely whitespace");
+				}
+				if (!string.IsNullOrEmpty(config.DefaultLongPrefix) && !longName.StartsWith(config.DefaultLongPrefix))
+				{
+					longName = config.DefaultLongPrefix + longName;
 				}
 				if (longName == config.ShortHelpSwitch || longName == config.LongHelpSwitch)
 				{

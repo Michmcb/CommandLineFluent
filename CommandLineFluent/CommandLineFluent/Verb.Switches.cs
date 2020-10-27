@@ -10,13 +10,13 @@
 		{
 			var obj = new NamedArgConfig<TClass, bool, bool>(false, null);
 			config(obj);
-			return AddSwitchCore(obj, ArgUtils.PropertyInfoFromExpression(expression));
+			return AddSwitchCore(expression, obj);
 		}
-		public Switch<TClass, TProp> AddSwitch<TProp>(Expression<Func<TClass, TProp>> expression, Action<NamedArgConfig<TClass, TProp, bool>> config)
-		{
-			var obj = new NamedArgConfig<TClass, TProp, bool>(false, null);
-			config(obj);
-			return AddSwitchCore(obj, ArgUtils.PropertyInfoFromExpression(expression));
-		}
+		//public Switch<TClass, TProp> AddSwitch<TProp>(Expression<Func<TClass, TProp>> expression, Action<NamedArgConfig<TClass, TProp, bool>> config)
+		//{
+		//	var obj = new NamedArgConfig<TClass, TProp, bool>(false, null);
+		//	config(obj);
+		//	return AddSwitchCore(expression, obj);
+		//}
 	}
 }

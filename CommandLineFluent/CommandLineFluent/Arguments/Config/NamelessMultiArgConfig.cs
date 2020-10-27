@@ -7,6 +7,7 @@
 	public sealed class NamelessMultiArgConfig<TClass, TProp, TPropCollection> where TClass : class, new()
 	{
 		private TPropCollection defaultValue;
+		public NamelessMultiArgConfig() { }
 		public NamelessMultiArgConfig(bool isRequired, Func<string, Converted<TProp, string>> converter, Func<IEnumerable<TProp>, TPropCollection> createCollection)
 		{
 			IsRequired = isRequired;

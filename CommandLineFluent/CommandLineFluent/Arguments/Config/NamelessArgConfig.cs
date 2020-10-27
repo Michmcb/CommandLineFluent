@@ -6,6 +6,7 @@
 	public sealed class NamelessArgConfig<TClass, TProp> where TClass : class, new()
 	{
 		private TProp defaultValue;
+		public NamelessArgConfig() { }
 		public NamelessArgConfig(bool isRequired, Func<string, Converted<TProp, string>>? converter)
 		{
 			IsRequired = isRequired;
