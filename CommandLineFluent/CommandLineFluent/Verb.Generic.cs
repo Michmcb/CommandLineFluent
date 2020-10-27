@@ -5,6 +5,7 @@
 	using System;
 	using System.Collections.Generic;
 	using System.ComponentModel;
+	using System.Reflection;
 	using System.Threading.Tasks;
 
 	public sealed partial class Verb<TClass> : IVerb where TClass : class, new()
@@ -65,18 +66,77 @@
 			msgFormatter.WriteSpecificHelp(console, this);
 		}
 		/// <summary>
-		/// Adds a new Option, without any predefined converter. If you're calling this, make sure you set a converter in <paramref name="optionConfig"/>!
-		/// Alternatively, you can also create an extension method for this property, which calls <see cref="AddOptionWithConverter{TProp}(string?, string?, Action{OptionConfig{TClass, TProp}}, Func{string, Converted{TProp, string}}?)"/>.
+		/// Adds a new Value.
+		/// Not intended that you call this directly, it's provided for you to create extension methods
+		/// which take specific types of <typeparamref name="TProp"/>. That way the extension methods can call this method and provide the correct converter.
 		/// </summary>
 		/// <typeparam name="TProp">The type of the target property.</typeparam>
-		/// <param name="shortName">The short name used to specify this option. If it lacks the configured default short prefix, it's automatically prepended.</param>
-		/// <param name="longName">The long name used to specify this option. If it lacks the configured default long prefix, it's automatically prepended.</param>
-		/// <param name="optionConfig">The action used to configure the option.</param>
-		/// <returns>The created option.</returns>
-		public Option<TClass, TProp> AddOption<TProp>(string? shortName, string? longName, Action<OptionConfig<TClass, TProp>> optionConfig)
+		/// <param name="config">The configuration.</param>
+		/// <param name="property">The property to set.</param>
+		/// <param name="converter">The default converter to use, if <paramref name="config"/> doesn't specify one.</param>
+		/// <returns>The created value.</returns>
+		public Value<TClass, TProp> AddValue<TProp>(NamelessArgConfig<TClass, TProp, string> config, PropertyInfo property, Func<string, Converted<TProp, string>>? converter)
 		{
-			return AddOptionWithConverter(shortName, longName, optionConfig, null);
+			if (config == null)
+			{
+				throw new ArgumentNullException(nameof(config), "valueConfig cannot be null");
+			}
+			Value<TClass, TProp> thing = new Value<TClass, TProp>(config.DescriptiveName, config.HelpText, config.ArgumentRequired, property, config.DefaultValue, config.Dependencies, config.Converter ?? converter);
+			allValues.Add(thing);
+			return thing;
 		}
+		/// <summary>
+		/// Adds a new Option.
+		/// Not intended that you call this directly, it's provided for you to create extension methods
+		/// which take specific types of <typeparamref name="TProp"/>. That way the extension methods can call this method and provide the correct converter.
+		/// </summary>
+		/// <typeparam name="TProp">The type of the target property.</typeparam>
+		/// <param name="config">The configuration.</param>
+		/// <param name="property">The property to set.</param>
+		/// <param name="converter">The default converter to use, if <paramref name="config"/> doesn't specify one.</param>
+		/// <returns>The created option.</returns>
+		public Option<TClass, TProp> AddOption<TProp>(NamedArgConfig<TClass, TProp, string> config, PropertyInfo property, Func<string, Converted<TProp, string>>? converter)
+		{
+			if (config == null)
+			{
+				throw new ArgumentNullException(nameof(config), nameof(config) + " cannot be null");
+			}
+			string? shortName = config.ShortName;
+			string? longName = config.LongName;
+			ApplyDefaultPrefixAndCheck(ref shortName, ref longName, "option");
+			Option<TClass, TProp> arg = new Option<TClass, TProp>(shortName, longName, config.DescriptiveName, config.HelpText, config.ArgumentRequired, property, config.DefaultValue, config.Dependencies, config.Converter ?? converter);
+			AddToDictionary(arg.ShortName, arg.LongName, arg, allOptionsByShortName, allOptionsByLongName);
+			allOptions.Add(arg);
+			return arg;
+		}
+		/// <summary>
+		/// Adds a new Switch.
+		/// Not intended that you call this directly, it's provided for you to create extension methods
+		/// which take specific types of <typeparamref name="TProp"/>. That way the extension methods can call this method and provide the correct converter.
+		/// </summary>
+		/// <typeparam name="TProp">The type of the target property.</typeparam>
+		/// <param name="config">The configuration.</param>
+		/// <param name="property">The property to set.</param>
+		/// <param name="converter">The default converter to use, if <paramref name="config"/> doesn't specify one.</param>
+		/// <returns>The created option.</returns>
+		public Switch<TClass, TProp> AddSwitch<TProp>(NamedArgConfig<TClass, TProp, bool> config, PropertyInfo property, Func<bool, Converted<TProp, string>>? converter)
+		{
+			if (config == null)
+			{
+				throw new ArgumentNullException(nameof(config), nameof(config) + " cannot be null");
+			}
+			string? shortName = config.ShortName;
+			string? longName = config.LongName;
+			ApplyDefaultPrefixAndCheck(ref shortName, ref longName, "option");
+			Switch<TClass, TProp> arg = new Switch<TClass, TProp>(shortName, longName, config.DescriptiveName, config.HelpText, config.ArgumentRequired, property, config.DefaultValue, config.Dependencies, config.Converter ?? converter);
+			AddToDictionary(arg.ShortName, arg.LongName, arg, allSwitchesByShortName, allSwitchesByLongName);
+			allSwitches.Add(arg);
+			return arg;
+		}
+
+
+
+
 		/// <summary>
 		/// Adds a new Option, setting the <paramref name="converter"/>.
 		/// Not intended that you call this directly (you can call WithConverter in the <paramref name="optionConfig"/>), it's provided for you to create extension methods
@@ -88,42 +148,20 @@
 		/// <param name="optionConfig">The action used to configure the option.</param>
 		/// <param name="converter">The converter that the <paramref name="optionConfig"/> will be configured to use.</param>
 		/// <returns>The created option.</returns>
+		[Obsolete("Prefer using AddOption")]
 		public Option<TClass, TProp> AddOptionWithConverter<TProp>(string? shortName, string? longName, Action<OptionConfig<TClass, TProp>> optionConfig, Func<string, Converted<TProp, string>>? converter)
 		{
 			if (optionConfig == null)
 			{
 				throw new ArgumentNullException(nameof(optionConfig), "optionConfig cannot be null");
 			}
-			if (shortName == null && longName == null)
-			{
-				throw new ArgumentException(string.Concat("Short Name and Long Name for a new option for verb ", LongName, " cannot both be null"));
-			}
-			if (shortName != null && string.IsNullOrWhiteSpace(shortName))
-			{
-				throw new ArgumentException("Short name cannot be an empty string or only whitespace", nameof(shortName));
-			}
-			if (longName != null && string.IsNullOrWhiteSpace(longName))
-			{
-				throw new ArgumentException("Long name cannot be an empty string or only whitespace", nameof(longName));
-			}
-			ApplyDefaultPrefixAndCheck(ref shortName, ref longName, "option", allOptionsByShortName, allOptionsByLongName);
+			ApplyDefaultPrefixAndCheck(ref shortName, ref longName, "option");
 			OptionConfig<TClass, TProp> c = new OptionConfig<TClass, TProp>(shortName, longName, converter);
 			optionConfig(c);
 			Option<TClass, TProp> thing = c.Build();
 			AddToDictionary(shortName, longName, thing, allOptionsByShortName, allOptionsByLongName);
 			allOptions.Add(thing);
 			return thing;
-		}
-		/// <summary>
-		/// Adds a new Value, without any predefined converter. If you're calling this, make sure you set a converter in <paramref name="valueConfig"/>!
-		/// Alternatively, you can also create an extension method for this property, which calls <see cref="AddValueWithConverter{TProp}(Action{ValueConfig{TClass, TProp}}, Func{string, Converted{TProp, string}}?)"/>.
-		/// </summary>
-		/// <typeparam name="TProp">The type of the target property.</typeparam>
-		/// <param name="valueConfig">The action used to configure the value.</param>
-		/// <returns>The created value.</returns>
-		public Value<TClass, TProp> AddValue<TProp>(Action<ValueConfig<TClass, TProp>> valueConfig)
-		{
-			return AddValueWithConverter(valueConfig, null);
 		}
 		/// <summary>
 		/// Adds a new Value, setting the <paramref name="converter"/>.
@@ -134,6 +172,7 @@
 		/// <param name="valueConfig">The action used to configure the value.</param>
 		/// <param name="converter">The converter that the <paramref name="valueConfig"/> will be configured to use.</param>
 		/// <returns>The created value.</returns>
+		[Obsolete("Prefer using AddValue")]
 		public Value<TClass, TProp> AddValueWithConverter<TProp>(Action<ValueConfig<TClass, TProp>> valueConfig, Func<string, Converted<TProp, string>>? converter)
 		{
 			if (valueConfig == null)
@@ -147,19 +186,6 @@
 			return thing;
 		}
 		/// <summary>
-		/// Adds a new Switch, without any predefined converter. If you're calling this, make sure you set a converter in <paramref name="switchConfig"/>!
-		/// Alternatively, you can also create an extension method for this property, which calls <see cref="AddSwitchWithConverter{TProp}(string?, string?, Action{SwitchConfig{TClass, TProp}}, Func{bool, Converted{TProp, string}}?)"/>.
-		/// </summary>
-		/// <typeparam name="TProp">The type of the target property.</typeparam>
-		/// <param name="shortName">The short name used to specify this switch. If it lacks the configured default short prefix, it's automatically prepended.</param>
-		/// <param name="longName">The long name used to specify this switch. If it lacks the configured default long prefix, it's automatically prepended.</param>
-		/// <param name="switchConfig">The action used to configure the switch.</param>
-		/// <returns>The created switch.</returns>
-		public Switch<TClass, TProp> AddSwitch<TProp>(string? shortName, string? longName, Action<SwitchConfig<TClass, TProp>> switchConfig)
-		{
-			return AddSwitchWithConverter(shortName, longName, switchConfig, null);
-		}
-		/// <summary>
 		/// Adds a new Switch, setting the <paramref name="converter"/>.
 		/// Not intended that you call this directly (you can call WithConverter in the <paramref name="switchConfig"/>), it's provided for you to create extension methods
 		/// which take specific types of <typeparamref name="TProp"/>, and call this method, providing the correct converter.
@@ -170,6 +196,7 @@
 		/// <param name="switchConfig">The action used to configure the switch.</param>
 		/// <param name="converter">The converter that the <paramref name="switchConfig"/> will be configured to use.</param>
 		/// <returns>The created switch.</returns>
+		[Obsolete("Prefer using AddSwitch")]
 		public Switch<TClass, TProp> AddSwitchWithConverter<TProp>(string? shortName, string? longName, Action<SwitchConfig<TClass, TProp>> switchConfig, Func<bool, Converted<TProp, string>>? converter)
 		{
 			if (switchConfig == null)
@@ -188,24 +215,13 @@
 			{
 				throw new ArgumentException("Short name cannot be an empty string", nameof(longName));
 			}
-			ApplyDefaultPrefixAndCheck(ref shortName, ref longName, "switch", allSwitchesByShortName, allSwitchesByLongName);
+			ApplyDefaultPrefixAndCheck(ref shortName, ref longName, "switch");
 			SwitchConfig<TClass, TProp> c = new SwitchConfig<TClass, TProp>(shortName, longName, converter);
 			switchConfig(c);
 			Switch<TClass, TProp> thing = c.Build();
 			AddToDictionary(shortName, longName, thing, allSwitchesByShortName, allSwitchesByLongName);
 			allSwitches.Add(thing);
 			return thing;
-		}
-		/// <summary>
-		/// Adds a new MultiValue, without any predefined converter. If you're calling this, make sure you set a converter in <paramref name="multivalueConfig"/>!
-		/// Alternatively, you can also create an extension method for this property, which calls <see cref="AddMultiValueWithConverter{TProp}(Action{MultiValueConfig{TClass, TProp}}, Func{string, Converted{TProp, string}}?)"/>.
-		/// </summary>
-		/// <typeparam name="TProp">The type of the target property.</typeparam>
-		/// <param name="multivalueConfig">The action used to configure the multivalue.</param>
-		/// <returns>The created multivalue.</returns>
-		public MultiValue<TClass, TProp> AddMultiValue<TProp>(Action<MultiValueConfig<TClass, TProp>> multivalueConfig)
-		{
-			return AddMultiValueWithConverter(multivalueConfig, null);
 		}
 		/// <summary>
 		/// Adds a new MultiValue, setting the <paramref name="converter"/>.
@@ -216,7 +232,8 @@
 		/// <param name="multivalueConfig">The action used to configure the multivalue.</param>
 		/// <param name="converter">The converter that the <paramref name="multivalueConfig"/> will be configured to use.</param>
 		/// <returns>The created multivalue.</returns>
-		public MultiValue<TClass, TProp> AddMultiValueWithConverter<TProp>(Action<MultiValueConfig<TClass, TProp>> multivalueConfig, Func<string, Converted<TProp, string>>? converter)
+		[Obsolete("Prefer using AddMultiValue")]
+		public MultiValue<TClass, TProp, TPropCollection> AddMultiValueWithConverter<TProp, TPropCollection>(Action<MultiValueConfig<TClass, TProp, TPropCollection>> multivalueConfig, Func<string, Converted<TProp, string>>? converter)
 		{
 			if (multivalueConfig == null)
 			{
@@ -226,9 +243,38 @@
 			{
 				throw new CliParserBuilderException("MultiValue has already been added; you cannot add more than one MultiValue");
 			}
-			MultiValueConfig<TClass, TProp> c = new MultiValueConfig<TClass, TProp>(converter);
+			MultiValueConfig<TClass, TProp, TPropCollection> c = new MultiValueConfig<TClass, TProp, TPropCollection>(converter);
 			multivalueConfig(c);
-			MultiValue<TClass, TProp> thing = c.Build();
+			MultiValue<TClass, TProp, TPropCollection> thing = c.Build();
+			MultiValue = thing;
+			return thing;
+		}
+		/// <summary>
+		/// Adds a new MultiValue, setting the <paramref name="converter"/>.
+		/// Not intended that you call this directly (you can call WithConverter in the <paramref name="multivalueConfig"/>), it's provided for you to create extension methods
+		/// which take specific types of <typeparamref name="TProp"/>, and call this method, providing the correct converter.
+		/// </summary>
+		/// <typeparam name="TProp">The type of the target property.</typeparam>
+		/// <param name="multivalueConfig">The action used to configure the multivalue.</param>
+		/// <param name="converter">The converter that the <paramref name="multivalueConfig"/> will be configured to use.</param>
+		/// <returns>The created multivalue.</returns>
+		public MultiValue<TClass, TProp, TPropCollection> AddMultiValueWithConverterAccumulator<TProp, TPropCollection>(
+			Action<MultiValueConfig<TClass, TProp, TPropCollection>> multivalueConfig,
+			Func<string, Converted<TProp, string>>? converter,
+			Func<IReadOnlyCollection<TProp>, TPropCollection> accumulator)
+		{
+			if (multivalueConfig == null)
+			{
+				throw new ArgumentNullException(nameof(multivalueConfig), "multivalueConfig cannot be null");
+			}
+			if (MultiValue != null)
+			{
+				throw new CliParserBuilderException("MultiValue has already been added; you cannot add more than one MultiValue");
+			}
+			MultiValueConfig<TClass, TProp, TPropCollection> c = new MultiValueConfig<TClass, TProp, TPropCollection>(converter);
+			c.Accumulator(accumulator);
+			multivalueConfig(c);
+			MultiValue<TClass, TProp, TPropCollection> thing = c.Build();
 			MultiValue = thing;
 			return thing;
 		}
@@ -402,8 +448,12 @@
 		{
 			return ArgUtils.ShortAndLongName(ShortName, LongName);
 		}
-		private void ApplyDefaultPrefixAndCheck<T>(ref string? shortName, ref string? longName, string type, Dictionary<string, T> shortNames, Dictionary<string, T> longNames)
+		private void ApplyDefaultPrefixAndCheck(ref string? shortName, ref string? longName, string type)
 		{
+			if (shortName == null && longName == null)
+			{
+				throw new ArgumentException(string.Concat("Short name and long name for a new ", type, " for verb ", LongName, " cannot both be null"));
+			}
 			if (shortName != null)
 			{
 				if (!string.IsNullOrEmpty(config.DefaultShortPrefix) && !shortName.StartsWith(config.DefaultShortPrefix))
@@ -412,13 +462,13 @@
 				}
 				if (string.IsNullOrWhiteSpace(shortName))
 				{
-					throw new ArgumentException($"Short Name for {type} for verb {LongName} was empty or entirely whitespace");
+					throw new ArgumentException($"Short name for {type} for verb {LongName} was empty or entirely whitespace");
 				}
-				if (shortName == config.ShortHelpSwitch)
+				if (shortName == config.ShortHelpSwitch || shortName == config.LongHelpSwitch)
 				{
-					throw new ArgumentException($"Short Name for {type} for verb {LongName} is already used by the short help switch ({config.ShortHelpSwitch})");
+					throw new ArgumentException($"Short name for {type} for verb {LongName} is already used by a help switch ({config.ShortHelpSwitch} or {config.LongHelpSwitch})");
 				}
-				if (shortNames.ContainsKey(shortName) || longNames.ContainsKey(shortName))
+				if (allOptionsByShortName.ContainsKey(shortName) || allOptionsByLongName.ContainsKey(shortName) || allSwitchesByShortName.ContainsKey(shortName) || allSwitchesByLongName.ContainsKey(shortName))
 				{
 					throw new ArgumentException($"The short name {shortName} for {type} for verb {LongName} has already been used");
 				}
@@ -431,15 +481,15 @@
 				}
 				if (string.IsNullOrWhiteSpace(longName))
 				{
-					throw new ArgumentException($"Short Name for {type} for verb {LongName} was empty or entirely whitespace");
+					throw new ArgumentException($"Long name for {type} for verb {LongName} was empty or entirely whitespace");
 				}
-				if (longName == config.LongHelpSwitch)
+				if (longName == config.ShortHelpSwitch || longName == config.LongHelpSwitch)
 				{
-					throw new ArgumentException($"Long Name for {type} for verb {LongName} is already used by the long help switch ({config.LongHelpSwitch})");
+					throw new ArgumentException($"Long name for {type} for verb {LongName} is already used by a help switch ({config.ShortHelpSwitch} or {config.LongHelpSwitch})");
 				}
-				if (shortNames.ContainsKey(longName) || longNames.ContainsKey(longName))
+				if (allOptionsByShortName.ContainsKey(longName) || allOptionsByLongName.ContainsKey(longName) || allSwitchesByShortName.ContainsKey(longName) || allSwitchesByLongName.ContainsKey(longName))
 				{
-					throw new ArgumentException($"The long name {longName} for {type} for verb {LongName} has already been used");
+					throw new ArgumentException($"The short name {longName} for {type} for verb {LongName} has already been used");
 				}
 			}
 		}

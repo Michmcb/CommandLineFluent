@@ -10,7 +10,7 @@
 	public sealed class Building
 	{
 		[Fact]
-		public void AddingOptionsValuesSwitches()
+		public void AddingOptionsValuesSwitches_Old()
 		{
 			CliParserBuilder fpb = new CliParserBuilder()
 				.AddVerb<Verb1>("default", verb =>
@@ -39,6 +39,45 @@
 					Assert.Equal(ArgumentRequired.Required, val.ArgumentRequired);
 
 					Switch<Verb1, bool> sw = verb.AddSwitchBool("s", "switch", s => s
+						.ForProperty(x => x.Switch)
+						.WithHelpText("help")
+						.IsOptional(true));
+					Assert.Equal(sw, verb.AllSwitches.First());
+					Assert.Equal("help", sw.HelpText);
+					Assert.Equal(ArgumentRequired.Optional, sw.ArgumentRequired);
+					Assert.True(sw.DefaultValue);
+				});
+		}
+		[Fact]
+		public void AddingOptionsValuesSwitches()
+		{
+			CliParserBuilder fpb = new CliParserBuilder()
+				.AddVerb<Verb1>("default", verb =>
+				{
+					Option<Verb1, string?> opt = verb.AddOption(x => x.Option, a => a
+						.SetBy("o", "option")
+						.WithHelpText("help")
+						.WithName("name")
+						.IsRequired());
+					Assert.Equal(opt, verb.AllOptions.First());
+					Assert.Equal("-o", opt.ShortName);
+					Assert.Equal("--option", opt.LongName);
+					Assert.Equal("help", opt.HelpText);
+					Assert.Equal("name", opt.Name);
+					Assert.Equal(ArgumentRequired.Required, opt.ArgumentRequired);
+
+
+					Value<Verb1, string> val = verb.AddValueString(a => a
+						.ForProperty(x => x.Value)
+						.WithHelpText("help")
+						.WithName("name")
+						.IsRequired());
+					Assert.Equal(val, verb.AllValues.First());
+					Assert.Equal("help", val.HelpText);
+					Assert.Equal("name", val.Name);
+					Assert.Equal(ArgumentRequired.Required, val.ArgumentRequired);
+
+					Switch<Verb1, bool> sw = verb.AddSwitchBool("s", "switch", a => a
 						.ForProperty(x => x.Switch)
 						.WithHelpText("help")
 						.IsOptional(true));

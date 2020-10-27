@@ -25,7 +25,7 @@
 		/// Creates a new <see cref="OptionConfig{TClass, TProp}"/>. You shouldn't need to create this manually.
 		/// </summary>
 		/// <param name="shortName">The short name the user can use to provide this.</param>
-		/// <param name="shortName">The long name the user can use to provide this.</param>
+		/// <param name="longName">The long name the user can use to provide this.</param>
 		/// <param name="converter">The converter to use to convert from string to <typeparamref name="TProp"/>.</param>
 		public OptionConfig(string? shortName, string? longName, Func<string, Converted<TProp, string>>? converter)
 		{

@@ -16,7 +16,7 @@
 		/// The rules which make up this relationship
 		/// </summary>
 		public IReadOnlyCollection<IDependencyRule<TClass>> Rules => rules;
-		internal Dependencies()
+		public Dependencies()
 		{
 			rules = new List<IDependencyRule<TClass>>();
 		}

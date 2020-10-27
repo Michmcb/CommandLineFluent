@@ -3,375 +3,237 @@
 	using CommandLineFluent.Arguments;
 	using CommandLineFluent.Arguments.Config;
 	using System;
+	using System.Linq.Expressions;
 	using static Converters;
 	public sealed partial class Verb<TClass> : IVerb where TClass : class, new()
 	{
-		// TODO add a converter from hexadecimal strings to byte arrays, and methods here for that converter
-		public Option<TClass, string> AddOptionString(string? shortName, string? longName, Action<OptionConfig<TClass, string>> optionConfig)
+		public Value<TClass, string?> AddValue(Expression<Func<TClass, string?>> expression, NamelessArgConfig<TClass, string?, string> config)
 		{
-			return AddOptionWithConverter(shortName, longName, optionConfig, null);
+			return AddValue(config, ArgUtils.PropertyInfoFromExpression(expression), null);
 		}
-		public Option<TClass, short> AddOptionShort(string? shortName, string? longName, Action<OptionConfig<TClass, short>> optionConfig)
+		public Value<TClass, short> AddValue(Expression<Func<TClass, short>> expression, NamelessArgConfig<TClass, short, string> config)
 		{
-			return AddOptionWithConverter(shortName, longName, optionConfig, ToShort);
+			return AddValue(config, ArgUtils.PropertyInfoFromExpression(expression), ToShort);
 		}
-		public Option<TClass, ushort> AddOptionUShort(string? shortName, string? longName, Action<OptionConfig<TClass, ushort>> optionConfig)
+		public Value<TClass, ushort> AddValue(Expression<Func<TClass, ushort>> expression, NamelessArgConfig<TClass, ushort, string> config)
 		{
-			return AddOptionWithConverter(shortName, longName, optionConfig, ToUShort);
+			return AddValue(config, ArgUtils.PropertyInfoFromExpression(expression), ToUShort);
 		}
-		public Option<TClass, int> AddOptionInt(string? shortName, string? longName, Action<OptionConfig<TClass, int>> optionConfig)
+		public Value<TClass, int> AddValue(Expression<Func<TClass, int>> expression, NamelessArgConfig<TClass, int, string> config)
 		{
-			return AddOptionWithConverter(shortName, longName, optionConfig, ToInt);
+			return AddValue(config, ArgUtils.PropertyInfoFromExpression(expression), ToInt);
 		}
-		public Option<TClass, uint> AddOptionUInt(string? shortName, string? longName, Action<OptionConfig<TClass, uint>> optionConfig)
+		public Value<TClass, uint> AddValue(Expression<Func<TClass, uint>> expression, NamelessArgConfig<TClass, uint, string> config)
 		{
-			return AddOptionWithConverter(shortName, longName, optionConfig, ToUInt);
+			return AddValue(config, ArgUtils.PropertyInfoFromExpression(expression), ToUInt);
 		}
-		public Option<TClass, long> AddOptionLong(string? shortName, string? longName, Action<OptionConfig<TClass, long>> optionConfig)
+		public Value<TClass, long> AddValue(Expression<Func<TClass, long>> expression, NamelessArgConfig<TClass, long, string> config)
 		{
-			return AddOptionWithConverter(shortName, longName, optionConfig, ToLong);
+			return AddValue(config, ArgUtils.PropertyInfoFromExpression(expression), ToLong);
 		}
-		public Option<TClass, ulong> AddOptionULong(string? shortName, string? longName, Action<OptionConfig<TClass, ulong>> optionConfig)
+		public Value<TClass, ulong> AddValue(Expression<Func<TClass, ulong>> expression, NamelessArgConfig<TClass, ulong, string> config)
 		{
-			return AddOptionWithConverter(shortName, longName, optionConfig, ToULong);
+			return AddValue(config, ArgUtils.PropertyInfoFromExpression(expression), ToULong);
 		}
-		public Option<TClass, float> AddOptionFloat(string? shortName, string? longName, Action<OptionConfig<TClass, float>> optionConfig)
+		public Value<TClass, float> AddValue(Expression<Func<TClass, float>> expression, NamelessArgConfig<TClass, float, string> config)
 		{
-			return AddOptionWithConverter(shortName, longName, optionConfig, ToFloat);
+			return AddValue(config, ArgUtils.PropertyInfoFromExpression(expression), ToFloat);
 		}
-		public Option<TClass, double> AddOptionDouble(string? shortName, string? longName, Action<OptionConfig<TClass, double>> optionConfig)
+		public Value<TClass, double> AddValue(Expression<Func<TClass, double>> expression, NamelessArgConfig<TClass, double, string> config)
 		{
-			return AddOptionWithConverter(shortName, longName, optionConfig, ToDouble);
+			return AddValue(config, ArgUtils.PropertyInfoFromExpression(expression), ToDouble);
 		}
-		public Option<TClass, decimal> AddOptionDecimal(string? shortName, string? longName, Action<OptionConfig<TClass, decimal>> optionConfig)
+		public Value<TClass, decimal> AddValue(Expression<Func<TClass, decimal>> expression, NamelessArgConfig<TClass, decimal, string> config)
 		{
-			return AddOptionWithConverter(shortName, longName, optionConfig, ToDecimal);
+			return AddValue(config, ArgUtils.PropertyInfoFromExpression(expression), ToDecimal);
 		}
-		public Option<TClass, TEnum> AddOptionEnum<TEnum>(string? shortName, string? longName, Action<OptionConfig<TClass, TEnum>> optionConfig) where TEnum : struct, Enum
+		public Value<TClass, TEnum> AddValue<TEnum>(Expression<Func<TClass, TEnum>> expression, NamelessArgConfig<TClass, TEnum, string> config) where TEnum : struct, Enum
 		{
-			return AddOptionWithConverter(shortName, longName, optionConfig, ToEnum<TEnum>);
+			return AddValue(config, ArgUtils.PropertyInfoFromExpression(expression), ToEnum<TEnum>);
 		}
-		public Option<TClass, DateTime> AddOptionDateTime(string? shortName, string? longName, Action<OptionConfig<TClass, DateTime>> optionConfig)
+		public Value<TClass, DateTime> AddValue(Expression<Func<TClass, DateTime>> expression, NamelessArgConfig<TClass, DateTime, string> config)
 		{
-			return AddOptionWithConverter(shortName, longName, optionConfig, ToDateTime);
+			return AddValue(config, ArgUtils.PropertyInfoFromExpression(expression), ToDateTime);
 		}
-		public Option<TClass, TimeSpan> AddOptionTimeSpan(string? shortName, string? longName, Action<OptionConfig<TClass, TimeSpan>> optionConfig)
+		public Value<TClass, TimeSpan> AddValue(Expression<Func<TClass, TimeSpan>> expression, NamelessArgConfig<TClass, TimeSpan, string> config)
 		{
-			return AddOptionWithConverter(shortName, longName, optionConfig, ToTimeSpan);
+			return AddValue(config, ArgUtils.PropertyInfoFromExpression(expression), ToTimeSpan);
 		}
-		public Option<TClass, Guid> AddOptionGuid(string? shortName, string? longName, Action<OptionConfig<TClass, Guid>> optionConfig)
+		public Value<TClass, Guid> AddValue(Expression<Func<TClass, Guid>> expression, NamelessArgConfig<TClass, Guid, string> config)
 		{
-			return AddOptionWithConverter(shortName, longName, optionConfig, ToGuid);
+			return AddValue(config, ArgUtils.PropertyInfoFromExpression(expression), ToGuid);
 		}
-		public Option<TClass, Uri> AddOptionUri(string? shortName, string? longName, Action<OptionConfig<TClass, Uri>> optionConfig)
+		public Value<TClass, short?> AddValue(Expression<Func<TClass, short?>> expression, NamelessArgConfig<TClass, short?, string> config)
 		{
-			return AddOptionWithConverter(shortName, longName, optionConfig, ToUri);
+			return AddValue(config, ArgUtils.PropertyInfoFromExpression(expression), ToNullableShort);
 		}
-		public Option<TClass, string?> AddOptionNullableString(string? shortName, string? longName, Action<OptionConfig<TClass, string?>> optionConfig)
+		public Value<TClass, ushort?> AddValue(Expression<Func<TClass, ushort?>> expression, NamelessArgConfig<TClass, ushort?, string> config)
 		{
-			return AddOptionWithConverter(shortName, longName, optionConfig, null);
+			return AddValue(config, ArgUtils.PropertyInfoFromExpression(expression), ToNullableUShort);
 		}
-		public Option<TClass, short?> AddOptionNullableShort(string? shortName, string? longName, Action<OptionConfig<TClass, short?>> optionConfig)
+		public Value<TClass, int?> AddValue(Expression<Func<TClass, int?>> expression, NamelessArgConfig<TClass, int?, string> config)
 		{
-			return AddOptionWithConverter(shortName, longName, optionConfig, ToNullableShort);
+			return AddValue(config, ArgUtils.PropertyInfoFromExpression(expression), ToNullableInt);
 		}
-		public Option<TClass, ushort?> AddOptionNullableUShort(string? shortName, string? longName, Action<OptionConfig<TClass, ushort?>> optionConfig)
+		public Value<TClass, uint?> AddValue(Expression<Func<TClass, uint?>> expression, NamelessArgConfig<TClass, uint?, string> config)
 		{
-			return AddOptionWithConverter(shortName, longName, optionConfig, ToNullableUShort);
+			return AddValue(config, ArgUtils.PropertyInfoFromExpression(expression), ToNullableUInt);
 		}
-		public Option<TClass, int?> AddOptionNullableInt(string? shortName, string? longName, Action<OptionConfig<TClass, int?>> optionConfig)
+		public Value<TClass, long?> AddValue(Expression<Func<TClass, long?>> expression, NamelessArgConfig<TClass, long?, string> config)
 		{
-			return AddOptionWithConverter(shortName, longName, optionConfig, ToNullableInt);
+			return AddValue(config, ArgUtils.PropertyInfoFromExpression(expression), ToNullableLong);
 		}
-		public Option<TClass, uint?> AddOptionNullableUInt(string? shortName, string? longName, Action<OptionConfig<TClass, uint?>> optionConfig)
+		public Value<TClass, ulong?> AddValue(Expression<Func<TClass, ulong?>> expression, NamelessArgConfig<TClass, ulong?, string> config)
 		{
-			return AddOptionWithConverter(shortName, longName, optionConfig, ToNullableUInt);
+			return AddValue(config, ArgUtils.PropertyInfoFromExpression(expression), ToNullableULong);
 		}
-		public Option<TClass, long?> AddOptionNullableLong(string? shortName, string? longName, Action<OptionConfig<TClass, long?>> optionConfig)
+		public Value<TClass, float?> AddValue(Expression<Func<TClass, float?>> expression, NamelessArgConfig<TClass, float?, string> config)
 		{
-			return AddOptionWithConverter(shortName, longName, optionConfig, ToNullableLong);
+			return AddValue(config, ArgUtils.PropertyInfoFromExpression(expression), ToNullableFloat);
 		}
-		public Option<TClass, ulong?> AddOptionNullableULong(string? shortName, string? longName, Action<OptionConfig<TClass, ulong?>> optionConfig)
+		public Value<TClass, double?> AddValue(Expression<Func<TClass, double?>> expression, NamelessArgConfig<TClass, double?, string> config)
 		{
-			return AddOptionWithConverter(shortName, longName, optionConfig, ToNullableULong);
+			return AddValue(config, ArgUtils.PropertyInfoFromExpression(expression), ToNullableDouble);
 		}
-		public Option<TClass, float?> AddOptionNullableFloat(string? shortName, string? longName, Action<OptionConfig<TClass, float?>> optionConfig)
+		public Value<TClass, decimal?> AddValue(Expression<Func<TClass, decimal?>> expression, NamelessArgConfig<TClass, decimal?, string> config)
 		{
-			return AddOptionWithConverter(shortName, longName, optionConfig, ToNullableFloat);
+			return AddValue(config, ArgUtils.PropertyInfoFromExpression(expression), ToNullableDecimal);
 		}
-		public Option<TClass, double?> AddOptionNullableDouble(string? shortName, string? longName, Action<OptionConfig<TClass, double?>> optionConfig)
+		public Value<TClass, TEnum?> AddValue<TEnum>(Expression<Func<TClass, TEnum?>> expression, NamelessArgConfig<TClass, TEnum?, string> config) where TEnum : struct, Enum
 		{
-			return AddOptionWithConverter(shortName, longName, optionConfig, ToNullableDouble);
+			return AddValue(config, ArgUtils.PropertyInfoFromExpression(expression), ToNullableEnum<TEnum>);
 		}
-		public Option<TClass, decimal?> AddOptionNullableDecimal(string? shortName, string? longName, Action<OptionConfig<TClass, decimal?>> optionConfig)
+		public Value<TClass, DateTime?> AddValue(Expression<Func<TClass, DateTime?>> expression, NamelessArgConfig<TClass, DateTime?, string> config)
 		{
-			return AddOptionWithConverter(shortName, longName, optionConfig, ToNullableDecimal);
+			return AddValue(config, ArgUtils.PropertyInfoFromExpression(expression), ToNullableDateTime);
 		}
-		public Option<TClass, TEnum?> AddOptionNullableEnum<TEnum>(string? shortName, string? longName, Action<OptionConfig<TClass, TEnum?>> optionConfig) where TEnum : struct, Enum
+		public Value<TClass, TimeSpan?> AddValue(Expression<Func<TClass, TimeSpan?>> expression, NamelessArgConfig<TClass, TimeSpan?, string> config)
 		{
-			return AddOptionWithConverter(shortName, longName, optionConfig, ToNullableEnum<TEnum>);
+			return AddValue(config, ArgUtils.PropertyInfoFromExpression(expression), ToNullableTimeSpan);
 		}
-		public Option<TClass, DateTime?> AddOptionNullableDateTime(string? shortName, string? longName, Action<OptionConfig<TClass, DateTime?>> optionConfig)
+		public Value<TClass, Guid?> AddValue(Expression<Func<TClass, Guid?>> expression, NamelessArgConfig<TClass, Guid?, string> config)
 		{
-			return AddOptionWithConverter(shortName, longName, optionConfig, ToNullableDateTime);
+			return AddValue(config, ArgUtils.PropertyInfoFromExpression(expression), ToNullableGuid);
 		}
-		public Option<TClass, TimeSpan?> AddOptionNullableTimeSpan(string? shortName, string? longName, Action<OptionConfig<TClass, TimeSpan?>> optionConfig)
+		public Value<TClass, Uri?> AddValue(Expression<Func<TClass, Uri?>> expression, NamelessArgConfig<TClass, Uri?, string> config)
 		{
-			return AddOptionWithConverter(shortName, longName, optionConfig, ToNullableTimeSpan);
+			return AddValue(config, ArgUtils.PropertyInfoFromExpression(expression), ToNullableUri);
 		}
-		public Option<TClass, Guid?> AddOptionNullableGuid(string? shortName, string? longName, Action<OptionConfig<TClass, Guid?>> optionConfig)
+		public Option<TClass, string?> AddOption(Expression<Func<TClass, string?>> expression, NamedArgConfig<TClass, string?, string> config)
 		{
-			return AddOptionWithConverter(shortName, longName, optionConfig, ToNullableGuid);
+			return AddOption(config, ArgUtils.PropertyInfoFromExpression(expression), null);
 		}
-		public Option<TClass, Uri?> AddOptionNullableUri(string? shortName, string? longName, Action<OptionConfig<TClass, Uri?>> optionConfig)
+		public Option<TClass, short> AddOption(Expression<Func<TClass, short>> expression, NamedArgConfig<TClass, short, string> config)
 		{
-			return AddOptionWithConverter(shortName, longName, optionConfig, ToNullableUri);
+			return AddOption(config, ArgUtils.PropertyInfoFromExpression(expression), ToShort);
 		}
-
-		public Value<TClass, string> AddValueString(Action<ValueConfig<TClass, string>> valueConfig)
+		public Option<TClass, ushort> AddOption(Expression<Func<TClass, ushort>> expression, NamedArgConfig<TClass, ushort, string> config)
 		{
-			return AddValueWithConverter(valueConfig, null);
+			return AddOption(config, ArgUtils.PropertyInfoFromExpression(expression), ToUShort);
 		}
-		public Value<TClass, short> AddValueShort(Action<ValueConfig<TClass, short>> valueConfig)
+		public Option<TClass, int> AddOption(Expression<Func<TClass, int>> expression, NamedArgConfig<TClass, int, string> config)
 		{
-			return AddValueWithConverter(valueConfig, ToShort);
+			return AddOption(config, ArgUtils.PropertyInfoFromExpression(expression), ToInt);
 		}
-		public Value<TClass, ushort> AddValueUShort(Action<ValueConfig<TClass, ushort>> valueConfig)
+		public Option<TClass, uint> AddOption(Expression<Func<TClass, uint>> expression, NamedArgConfig<TClass, uint, string> config)
 		{
-			return AddValueWithConverter(valueConfig, ToUShort);
+			return AddOption(config, ArgUtils.PropertyInfoFromExpression(expression), ToUInt);
 		}
-		public Value<TClass, int> AddValueInt(Action<ValueConfig<TClass, int>> valueConfig)
+		public Option<TClass, long> AddOption(Expression<Func<TClass, long>> expression, NamedArgConfig<TClass, long, string> config)
 		{
-			return AddValueWithConverter(valueConfig, ToInt);
+			return AddOption(config, ArgUtils.PropertyInfoFromExpression(expression), ToLong);
 		}
-		public Value<TClass, uint> AddValueUInt(Action<ValueConfig<TClass, uint>> valueConfig)
+		public Option<TClass, ulong> AddOption(Expression<Func<TClass, ulong>> expression, NamedArgConfig<TClass, ulong, string> config)
 		{
-			return AddValueWithConverter(valueConfig, ToUInt);
+			return AddOption(config, ArgUtils.PropertyInfoFromExpression(expression), ToULong);
 		}
-		public Value<TClass, long> AddValueLong(Action<ValueConfig<TClass, long>> valueConfig)
+		public Option<TClass, float> AddOption(Expression<Func<TClass, float>> expression, NamedArgConfig<TClass, float, string> config)
 		{
-			return AddValueWithConverter(valueConfig, ToLong);
+			return AddOption(config, ArgUtils.PropertyInfoFromExpression(expression), ToFloat);
 		}
-		public Value<TClass, ulong> AddValueULong(Action<ValueConfig<TClass, ulong>> valueConfig)
+		public Option<TClass, double> AddOption(Expression<Func<TClass, double>> expression, NamedArgConfig<TClass, double, string> config)
 		{
-			return AddValueWithConverter(valueConfig, ToULong);
+			return AddOption(config, ArgUtils.PropertyInfoFromExpression(expression), ToDouble);
 		}
-		public Value<TClass, float> AddValueFloat(Action<ValueConfig<TClass, float>> valueConfig)
+		public Option<TClass, decimal> AddOption(Expression<Func<TClass, decimal>> expression, NamedArgConfig<TClass, decimal, string> config)
 		{
-			return AddValueWithConverter(valueConfig, ToFloat);
+			return AddOption(config, ArgUtils.PropertyInfoFromExpression(expression), ToDecimal);
 		}
-		public Value<TClass, double> AddValueDouble(Action<ValueConfig<TClass, double>> valueConfig)
+		public Option<TClass, TEnum> AddOption<TEnum>(Expression<Func<TClass, TEnum>> expression, NamedArgConfig<TClass, TEnum, string> config) where TEnum : struct, Enum
 		{
-			return AddValueWithConverter(valueConfig, ToDouble);
+			return AddOption(config, ArgUtils.PropertyInfoFromExpression(expression), ToEnum<TEnum>);
 		}
-		public Value<TClass, decimal> AddValueDecimal(Action<ValueConfig<TClass, decimal>> valueConfig)
+		public Option<TClass, DateTime> AddOption(Expression<Func<TClass, DateTime>> expression, NamedArgConfig<TClass, DateTime, string> config)
 		{
-			return AddValueWithConverter(valueConfig, ToDecimal);
+			return AddOption(config, ArgUtils.PropertyInfoFromExpression(expression), ToDateTime);
 		}
-		public Value<TClass, TEnum> AddValueEnum<TEnum>(Action<ValueConfig<TClass, TEnum>> valueConfig) where TEnum : struct, Enum
+		public Option<TClass, TimeSpan> AddOption(Expression<Func<TClass, TimeSpan>> expression, NamedArgConfig<TClass, TimeSpan, string> config)
 		{
-			return AddValueWithConverter(valueConfig, ToEnum<TEnum>);
+			return AddOption(config, ArgUtils.PropertyInfoFromExpression(expression), ToTimeSpan);
 		}
-		public Value<TClass, DateTime> AddValueDateTime(Action<ValueConfig<TClass, DateTime>> valueConfig)
+		public Option<TClass, Guid> AddOption(Expression<Func<TClass, Guid>> expression, NamedArgConfig<TClass, Guid, string> config)
 		{
-			return AddValueWithConverter(valueConfig, ToDateTime);
+			return AddOption(config, ArgUtils.PropertyInfoFromExpression(expression), ToGuid);
 		}
-		public Value<TClass, TimeSpan> AddValueTimeSpan(Action<ValueConfig<TClass, TimeSpan>> valueConfig)
+		public Option<TClass, short?> AddOption(Expression<Func<TClass, short?>> expression, NamedArgConfig<TClass, short?, string> config)
 		{
-			return AddValueWithConverter(valueConfig, ToTimeSpan);
+			return AddOption(config, ArgUtils.PropertyInfoFromExpression(expression), ToNullableShort);
 		}
-		public Value<TClass, Guid> AddValueGuid(Action<ValueConfig<TClass, Guid>> valueConfig)
+		public Option<TClass, ushort?> AddOption(Expression<Func<TClass, ushort?>> expression, NamedArgConfig<TClass, ushort?, string> config)
 		{
-			return AddValueWithConverter(valueConfig, ToGuid);
+			return AddOption(config, ArgUtils.PropertyInfoFromExpression(expression), ToNullableUShort);
 		}
-		public Value<TClass, Uri> AddValueUrl(Action<ValueConfig<TClass, Uri>> valueConfig)
+		public Option<TClass, int?> AddOption(Expression<Func<TClass, int?>> expression, NamedArgConfig<TClass, int?, string> config)
 		{
-			return AddValueWithConverter(valueConfig, ToUri);
+			return AddOption(config, ArgUtils.PropertyInfoFromExpression(expression), ToNullableInt);
 		}
-		public Value<TClass, string?> AddValueNullableString(Action<ValueConfig<TClass, string?>> valueConfig)
+		public Option<TClass, uint?> AddOption(Expression<Func<TClass, uint?>> expression, NamedArgConfig<TClass, uint?, string> config)
 		{
-			return AddValueWithConverter(valueConfig, null);
+			return AddOption(config, ArgUtils.PropertyInfoFromExpression(expression), ToNullableUInt);
 		}
-		public Value<TClass, short?> AddValueNullableShort(Action<ValueConfig<TClass, short?>> valueConfig)
+		public Option<TClass, long?> AddOption(Expression<Func<TClass, long?>> expression, NamedArgConfig<TClass, long?, string> config)
 		{
-			return AddValueWithConverter(valueConfig, ToNullableShort);
+			return AddOption(config, ArgUtils.PropertyInfoFromExpression(expression), ToNullableLong);
 		}
-		public Value<TClass, ushort?> AddValueNullableUShort(Action<ValueConfig<TClass, ushort?>> valueConfig)
+		public Option<TClass, ulong?> AddOption(Expression<Func<TClass, ulong?>> expression, NamedArgConfig<TClass, ulong?, string> config)
 		{
-			return AddValueWithConverter(valueConfig, ToNullableUShort);
+			return AddOption(config, ArgUtils.PropertyInfoFromExpression(expression), ToNullableULong);
 		}
-		public Value<TClass, int?> AddValueNullableInt(Action<ValueConfig<TClass, int?>> valueConfig)
+		public Option<TClass, float?> AddOption(Expression<Func<TClass, float?>> expression, NamedArgConfig<TClass, float?, string> config)
 		{
-			return AddValueWithConverter(valueConfig, ToNullableInt);
+			return AddOption(config, ArgUtils.PropertyInfoFromExpression(expression), ToNullableFloat);
 		}
-		public Value<TClass, uint?> AddValueNullableUInt(Action<ValueConfig<TClass, uint?>> valueConfig)
+		public Option<TClass, double?> AddOption(Expression<Func<TClass, double?>> expression, NamedArgConfig<TClass, double?, string> config)
 		{
-			return AddValueWithConverter(valueConfig, ToNullableUInt);
+			return AddOption(config, ArgUtils.PropertyInfoFromExpression(expression), ToNullableDouble);
 		}
-		public Value<TClass, long?> AddValueNullableLong(Action<ValueConfig<TClass, long?>> valueConfig)
+		public Option<TClass, decimal?> AddOption(Expression<Func<TClass, decimal?>> expression, NamedArgConfig<TClass, decimal?, string> config)
 		{
-			return AddValueWithConverter(valueConfig, ToNullableLong);
+			return AddOption(config, ArgUtils.PropertyInfoFromExpression(expression), ToNullableDecimal);
 		}
-		public Value<TClass, ulong?> AddValueNullableULong(Action<ValueConfig<TClass, ulong?>> valueConfig)
+		public Option<TClass, TEnum?> AddOption<TEnum>(Expression<Func<TClass, TEnum?>> expression, NamedArgConfig<TClass, TEnum?, string> config) where TEnum : struct, Enum
 		{
-			return AddValueWithConverter(valueConfig, ToNullableULong);
+			return AddOption(config, ArgUtils.PropertyInfoFromExpression(expression), ToNullableEnum<TEnum>);
 		}
-		public Value<TClass, float?> AddValueNullableFloat(Action<ValueConfig<TClass, float?>> valueConfig)
+		public Option<TClass, DateTime?> AddOption(Expression<Func<TClass, DateTime?>> expression, NamedArgConfig<TClass, DateTime?, string> config)
 		{
-			return AddValueWithConverter(valueConfig, ToNullableFloat);
+			return AddOption(config, ArgUtils.PropertyInfoFromExpression(expression), ToNullableDateTime);
 		}
-		public Value<TClass, double?> AddValueNullableDouble(Action<ValueConfig<TClass, double?>> valueConfig)
+		public Option<TClass, TimeSpan?> AddOption(Expression<Func<TClass, TimeSpan?>> expression, NamedArgConfig<TClass, TimeSpan?, string> config)
 		{
-			return AddValueWithConverter(valueConfig, ToNullableDouble);
+			return AddOption(config, ArgUtils.PropertyInfoFromExpression(expression), ToNullableTimeSpan);
 		}
-		public Value<TClass, decimal?> AddValueNullableDecimal(Action<ValueConfig<TClass, decimal?>> valueConfig)
+		public Option<TClass, Guid?> AddOption(Expression<Func<TClass, Guid?>> expression, NamedArgConfig<TClass, Guid?, string> config)
 		{
-			return AddValueWithConverter(valueConfig, ToNullableDecimal);
+			return AddOption(config, ArgUtils.PropertyInfoFromExpression(expression), ToNullableGuid);
 		}
-		public Value<TClass, TEnum?> AddValueNullableEnum<TEnum>(Action<ValueConfig<TClass, TEnum?>> valueConfig) where TEnum : struct, Enum
+		public Option<TClass, Uri?> AddOption(Expression<Func<TClass, Uri?>> expression, NamedArgConfig<TClass, Uri?, string> config)
 		{
-			return AddValueWithConverter(valueConfig, ToNullableEnum<TEnum>);
+			return AddOption(config, ArgUtils.PropertyInfoFromExpression(expression), ToNullableUri);
 		}
-		public Value<TClass, DateTime?> AddValueNullableDateTime(Action<ValueConfig<TClass, DateTime?>> valueConfig)
+		public Switch<TClass, bool> AddSwitch(Expression<Func<TClass, Uri?>> expression, NamedArgConfig<TClass, bool, bool> config)
 		{
-			return AddValueWithConverter(valueConfig, ToNullableDateTime);
-		}
-		public Value<TClass, TimeSpan?> AddValueNullableTimeSpan(Action<ValueConfig<TClass, TimeSpan?>> valueConfig)
-		{
-			return AddValueWithConverter(valueConfig, ToNullableTimeSpan);
-		}
-		public Value<TClass, Guid?> AddValueNullableGuid(Action<ValueConfig<TClass, Guid?>> valueConfig)
-		{
-			return AddValueWithConverter(valueConfig, ToNullableGuid);
-		}
-		public Value<TClass, Uri?> AddValueNullableUrl(Action<ValueConfig<TClass, Uri?>> valueConfig)
-		{
-			return AddValueWithConverter(valueConfig, ToNullableUri);
-		}
-		public Switch<TClass, bool> AddSwitchBool(string? shortName, string? longName, Action<SwitchConfig<TClass, bool>> switchConfig)
-		{
-			return AddSwitchWithConverter(shortName, longName, switchConfig, null);
-		}
-
-		public MultiValue<TClass, string> AddMultiValueString(Action<MultiValueConfig<TClass, string>> multiValueConfig)
-		{
-			return AddMultiValueWithConverter(multiValueConfig, null);
-		}
-		public MultiValue<TClass, short> AddMultiValueShort(Action<MultiValueConfig<TClass, short>> multiValueConfig)
-		{
-			return AddMultiValueWithConverter(multiValueConfig, ToShort);
-		}
-		public MultiValue<TClass, ushort> AddMultiValueUShort(Action<MultiValueConfig<TClass, ushort>> multiValueConfig)
-		{
-			return AddMultiValueWithConverter(multiValueConfig, ToUShort);
-		}
-		public MultiValue<TClass, int> AddMultiValueInt(Action<MultiValueConfig<TClass, int>> multiValueConfig)
-		{
-			return AddMultiValueWithConverter(multiValueConfig, ToInt);
-		}
-		public MultiValue<TClass, uint> AddMultiValueUInt(Action<MultiValueConfig<TClass, uint>> multiValueConfig)
-		{
-			return AddMultiValueWithConverter(multiValueConfig, ToUInt);
-		}
-		public MultiValue<TClass, long> AddMultiValueLong(Action<MultiValueConfig<TClass, long>> multiValueConfig)
-		{
-			return AddMultiValueWithConverter(multiValueConfig, ToLong);
-		}
-		public MultiValue<TClass, ulong> AddMultiValueULong(Action<MultiValueConfig<TClass, ulong>> multiValueConfig)
-		{
-			return AddMultiValueWithConverter(multiValueConfig, ToULong);
-		}
-		public MultiValue<TClass, float> AddMultiValueFloat(Action<MultiValueConfig<TClass, float>> multiValueConfig)
-		{
-			return AddMultiValueWithConverter(multiValueConfig, ToFloat);
-		}
-		public MultiValue<TClass, double> AddMultiValueDouble(Action<MultiValueConfig<TClass, double>> multiValueConfig)
-		{
-			return AddMultiValueWithConverter(multiValueConfig, ToDouble);
-		}
-		public MultiValue<TClass, decimal> AddMultiValueDecimal(Action<MultiValueConfig<TClass, decimal>> multiValueConfig)
-		{
-			return AddMultiValueWithConverter(multiValueConfig, ToDecimal);
-		}
-		public MultiValue<TClass, TEnum> AddMultiValueEnum<TEnum>(Action<MultiValueConfig<TClass, TEnum>> multiValueConfig) where TEnum : struct, Enum
-		{
-			return AddMultiValueWithConverter(multiValueConfig, ToEnum<TEnum>);
-		}
-		public MultiValue<TClass, DateTime> AddMultiValueDateTime(Action<MultiValueConfig<TClass, DateTime>> multiValueConfig)
-		{
-			return AddMultiValueWithConverter(multiValueConfig, ToDateTime);
-		}
-		public MultiValue<TClass, TimeSpan> AddMultiValueTimeSpan(Action<MultiValueConfig<TClass, TimeSpan>> multiValueConfig)
-		{
-			return AddMultiValueWithConverter(multiValueConfig, ToTimeSpan);
-		}
-		public MultiValue<TClass, Guid> AddMultiValueGuid(Action<MultiValueConfig<TClass, Guid>> multiValueConfig)
-		{
-			return AddMultiValueWithConverter(multiValueConfig, ToGuid);
-		}
-		public MultiValue<TClass, Uri> AddMultiValueUrl(Action<MultiValueConfig<TClass, Uri>> multiValueConfig)
-		{
-			return AddMultiValueWithConverter(multiValueConfig, ToUri);
-		}
-		public MultiValue<TClass, string?> AddMultiValueNullableString(Action<MultiValueConfig<TClass, string?>> multiValueConfig)
-		{
-			return AddMultiValueWithConverter(multiValueConfig, null);
-		}
-		public MultiValue<TClass, short?> AddMultiValueNullableShort(Action<MultiValueConfig<TClass, short?>> multiValueConfig)
-		{
-			return AddMultiValueWithConverter(multiValueConfig, ToNullableShort);
-		}
-		public MultiValue<TClass, ushort?> AddMultiValueNullableUShort(Action<MultiValueConfig<TClass, ushort?>> multiValueConfig)
-		{
-			return AddMultiValueWithConverter(multiValueConfig, ToNullableUShort);
-		}
-		public MultiValue<TClass, int?> AddMultiValueNullableInt(Action<MultiValueConfig<TClass, int?>> multiValueConfig)
-		{
-			return AddMultiValueWithConverter(multiValueConfig, ToNullableInt);
-		}
-		public MultiValue<TClass, uint?> AddMultiValueNullableUInt(Action<MultiValueConfig<TClass, uint?>> multiValueConfig)
-		{
-			return AddMultiValueWithConverter(multiValueConfig, ToNullableUInt);
-		}
-		public MultiValue<TClass, long?> AddMultiValueNullableLong(Action<MultiValueConfig<TClass, long?>> multiValueConfig)
-		{
-			return AddMultiValueWithConverter(multiValueConfig, ToNullableLong);
-		}
-		public MultiValue<TClass, ulong?> AddMultiValueNullableULong(Action<MultiValueConfig<TClass, ulong?>> multiValueConfig)
-		{
-			return AddMultiValueWithConverter(multiValueConfig, ToNullableULong);
-		}
-		public MultiValue<TClass, float?> AddMultiValueNullableFloat(Action<MultiValueConfig<TClass, float?>> multiValueConfig)
-		{
-			return AddMultiValueWithConverter(multiValueConfig, ToNullableFloat);
-		}
-		public MultiValue<TClass, double?> AddMultiValueNullableDouble(Action<MultiValueConfig<TClass, double?>> multiValueConfig)
-		{
-			return AddMultiValueWithConverter(multiValueConfig, ToNullableDouble);
-		}
-		public MultiValue<TClass, decimal?> AddMultiValueNullableDecimal(Action<MultiValueConfig<TClass, decimal?>> multiValueConfig)
-		{
-			return AddMultiValueWithConverter(multiValueConfig, ToNullableDecimal);
-		}
-		public MultiValue<TClass, TEnum?> AddMultiValueNullableEnum<TEnum>(Action<MultiValueConfig<TClass, TEnum?>> multiValueConfig) where TEnum : struct, Enum
-		{
-			return AddMultiValueWithConverter(multiValueConfig, ToNullableEnum<TEnum>);
-		}
-		public MultiValue<TClass, DateTime?> AddMultiValueNullableDateTime(Action<MultiValueConfig<TClass, DateTime?>> multiValueConfig)
-		{
-			return AddMultiValueWithConverter(multiValueConfig, ToNullableDateTime);
-		}
-		public MultiValue<TClass, TimeSpan?> AddMultiValueNullableTimeSpan(Action<MultiValueConfig<TClass, TimeSpan?>> multiValueConfig)
-		{
-			return AddMultiValueWithConverter(multiValueConfig, ToNullableTimeSpan);
-		}
-		public MultiValue<TClass, Guid?> AddMultiValueNullableGuid(Action<MultiValueConfig<TClass, Guid?>> multiValueConfig)
-		{
-			return AddMultiValueWithConverter(multiValueConfig, ToNullableGuid);
-		}
-		public MultiValue<TClass, Uri?> AddMultiValueNullableUrl(Action<MultiValueConfig<TClass, Uri?>> multiValueConfig)
-		{
-			return AddMultiValueWithConverter(multiValueConfig, ToNullableUri);
+			return AddSwitch(config, ArgUtils.PropertyInfoFromExpression(expression), null);
 		}
 	}
 }
