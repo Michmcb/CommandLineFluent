@@ -73,15 +73,15 @@
 		/// <typeparam name="TProp">The type of the target property.</typeparam>
 		/// <param name="config">The configuration.</param>
 		/// <param name="property">The property to set.</param>
-		/// <param name="converter">The default converter to use, if <paramref name="config"/> doesn't specify one.</param>
 		/// <returns>The created value.</returns>
-		public Value<TClass, TProp> AddValue<TProp>(NamelessArgConfig<TClass, TProp, string> config, PropertyInfo property, Func<string, Converted<TProp, string>>? converter)
+		public Value<TClass, TProp> AddValueCore<TProp>(NamelessArgConfig<TClass, TProp> config, PropertyInfo property)
 		{
 			if (config == null)
 			{
 				throw new ArgumentNullException(nameof(config), "valueConfig cannot be null");
 			}
-			Value<TClass, TProp> thing = new Value<TClass, TProp>(config.DescriptiveName, config.HelpText, config.ArgumentRequired, property, config.DefaultValue, config.Dependencies, config.Converter ?? converter);
+			ArgumentRequired ar = config.Dependencies != null ? ArgumentRequired.HasDependencies : config.IsRequired ? ArgumentRequired.Required : ArgumentRequired.Optional;
+			Value<TClass, TProp> thing = new Value<TClass, TProp>(config.DescriptiveName, config.HelpText, ar, property, config.DefaultValue, config.Dependencies, config.Converter);
 			allValues.Add(thing);
 			return thing;
 		}
@@ -93,9 +93,8 @@
 		/// <typeparam name="TProp">The type of the target property.</typeparam>
 		/// <param name="config">The configuration.</param>
 		/// <param name="property">The property to set.</param>
-		/// <param name="converter">The default converter to use, if <paramref name="config"/> doesn't specify one.</param>
 		/// <returns>The created option.</returns>
-		public Option<TClass, TProp> AddOption<TProp>(NamedArgConfig<TClass, TProp, string> config, PropertyInfo property, Func<string, Converted<TProp, string>>? converter)
+		public Option<TClass, TProp> AddOptionCore<TProp>(NamedArgConfig<TClass, TProp, string> config, PropertyInfo property)
 		{
 			if (config == null)
 			{
@@ -104,7 +103,8 @@
 			string? shortName = config.ShortName;
 			string? longName = config.LongName;
 			ApplyDefaultPrefixAndCheck(ref shortName, ref longName, "option");
-			Option<TClass, TProp> arg = new Option<TClass, TProp>(shortName, longName, config.DescriptiveName, config.HelpText, config.ArgumentRequired, property, config.DefaultValue, config.Dependencies, config.Converter ?? converter);
+			ArgumentRequired ar = config.Dependencies != null ? ArgumentRequired.HasDependencies : config.IsRequired ? ArgumentRequired.Required : ArgumentRequired.Optional;
+			Option<TClass, TProp> arg = new Option<TClass, TProp>(shortName, longName, config.DescriptiveName, config.HelpText, ar, property, config.DefaultValue, config.Dependencies, config.Converter);
 			AddToDictionary(arg.ShortName, arg.LongName, arg, allOptionsByShortName, allOptionsByLongName);
 			allOptions.Add(arg);
 			return arg;
@@ -117,9 +117,8 @@
 		/// <typeparam name="TProp">The type of the target property.</typeparam>
 		/// <param name="config">The configuration.</param>
 		/// <param name="property">The property to set.</param>
-		/// <param name="converter">The default converter to use, if <paramref name="config"/> doesn't specify one.</param>
 		/// <returns>The created option.</returns>
-		public Switch<TClass, TProp> AddSwitch<TProp>(NamedArgConfig<TClass, TProp, bool> config, PropertyInfo property, Func<bool, Converted<TProp, string>>? converter)
+		public Switch<TClass, TProp> AddSwitchCore<TProp>(NamedArgConfig<TClass, TProp, bool> config, PropertyInfo property)
 		{
 			if (config == null)
 			{
@@ -128,15 +127,35 @@
 			string? shortName = config.ShortName;
 			string? longName = config.LongName;
 			ApplyDefaultPrefixAndCheck(ref shortName, ref longName, "option");
-			Switch<TClass, TProp> arg = new Switch<TClass, TProp>(shortName, longName, config.DescriptiveName, config.HelpText, config.ArgumentRequired, property, config.DefaultValue, config.Dependencies, config.Converter ?? converter);
+			ArgumentRequired ar = config.Dependencies != null ? ArgumentRequired.HasDependencies : config.IsRequired ? ArgumentRequired.Required : ArgumentRequired.Optional;
+			Switch<TClass, TProp> arg = new Switch<TClass, TProp>(shortName, longName, config.DescriptiveName, config.HelpText, ar, property, config.DefaultValue, config.Dependencies, config.Converter);
 			AddToDictionary(arg.ShortName, arg.LongName, arg, allSwitchesByShortName, allSwitchesByLongName);
 			allSwitches.Add(arg);
 			return arg;
 		}
+		/// <summary>
+		/// Adds a new MultiValue.
+		/// Not intended that you call this directly, it's provided for you to create extension methods
+		/// which take specific types of <typeparamref name="TProp"/>. That way the extension methods can call this method and provide the correct converter.
+		/// </summary>
+		/// <typeparam name="TProp">The type of the target property.</typeparam>
+		/// <param name="config">The configuration.</param>
+		/// <param name="property">The property to set.</param>
+		/// <param name="converter">The default converter to use, if <paramref name="config"/> doesn't specify one.</param>
+		/// <returns>The created value.</returns>
+		public MultiValue<TClass, TProp, TPropCollection> AddMultiValueCore<TProp, TPropCollection>(NamelessMultiArgConfig<TClass, TProp, TPropCollection> config, PropertyInfo property)
+		{
+			if (config == null)
+			{
+				throw new ArgumentNullException(nameof(config), "valueConfig cannot be null");
+			}
+			ArgumentRequired ar = config.Dependencies != null ? ArgumentRequired.HasDependencies : config.IsRequired ? ArgumentRequired.Required : ArgumentRequired.Optional;
 
-
-
-
+			MultiValue<TClass, TProp, TPropCollection> arg = new MultiValue<TClass, TProp, TPropCollection>(config.DescriptiveName, config.HelpText, ar,
+				property, config.DefaultValue, config.Dependencies, config.Converter, config.CreateCollection);
+			MultiValue = arg;
+			return arg;
+		}
 		/// <summary>
 		/// Adds a new Option, setting the <paramref name="converter"/>.
 		/// Not intended that you call this directly (you can call WithConverter in the <paramref name="optionConfig"/>), it's provided for you to create extension methods
@@ -223,61 +242,7 @@
 			allSwitches.Add(thing);
 			return thing;
 		}
-		/// <summary>
-		/// Adds a new MultiValue, setting the <paramref name="converter"/>.
-		/// Not intended that you call this directly (you can call WithConverter in the <paramref name="multivalueConfig"/>), it's provided for you to create extension methods
-		/// which take specific types of <typeparamref name="TProp"/>, and call this method, providing the correct converter.
-		/// </summary>
-		/// <typeparam name="TProp">The type of the target property.</typeparam>
-		/// <param name="multivalueConfig">The action used to configure the multivalue.</param>
-		/// <param name="converter">The converter that the <paramref name="multivalueConfig"/> will be configured to use.</param>
-		/// <returns>The created multivalue.</returns>
-		[Obsolete("Prefer using AddMultiValue")]
-		public MultiValue<TClass, TProp, TPropCollection> AddMultiValueWithConverter<TProp, TPropCollection>(Action<MultiValueConfig<TClass, TProp, TPropCollection>> multivalueConfig, Func<string, Converted<TProp, string>>? converter)
-		{
-			if (multivalueConfig == null)
-			{
-				throw new ArgumentNullException(nameof(multivalueConfig), "multivalueConfig cannot be null");
-			}
-			if (MultiValue != null)
-			{
-				throw new CliParserBuilderException("MultiValue has already been added; you cannot add more than one MultiValue");
-			}
-			MultiValueConfig<TClass, TProp, TPropCollection> c = new MultiValueConfig<TClass, TProp, TPropCollection>(converter);
-			multivalueConfig(c);
-			MultiValue<TClass, TProp, TPropCollection> thing = c.Build();
-			MultiValue = thing;
-			return thing;
-		}
-		/// <summary>
-		/// Adds a new MultiValue, setting the <paramref name="converter"/>.
-		/// Not intended that you call this directly (you can call WithConverter in the <paramref name="multivalueConfig"/>), it's provided for you to create extension methods
-		/// which take specific types of <typeparamref name="TProp"/>, and call this method, providing the correct converter.
-		/// </summary>
-		/// <typeparam name="TProp">The type of the target property.</typeparam>
-		/// <param name="multivalueConfig">The action used to configure the multivalue.</param>
-		/// <param name="converter">The converter that the <paramref name="multivalueConfig"/> will be configured to use.</param>
-		/// <returns>The created multivalue.</returns>
-		public MultiValue<TClass, TProp, TPropCollection> AddMultiValueWithConverterAccumulator<TProp, TPropCollection>(
-			Action<MultiValueConfig<TClass, TProp, TPropCollection>> multivalueConfig,
-			Func<string, Converted<TProp, string>>? converter,
-			Func<IReadOnlyCollection<TProp>, TPropCollection> accumulator)
-		{
-			if (multivalueConfig == null)
-			{
-				throw new ArgumentNullException(nameof(multivalueConfig), "multivalueConfig cannot be null");
-			}
-			if (MultiValue != null)
-			{
-				throw new CliParserBuilderException("MultiValue has already been added; you cannot add more than one MultiValue");
-			}
-			MultiValueConfig<TClass, TProp, TPropCollection> c = new MultiValueConfig<TClass, TProp, TPropCollection>(converter);
-			c.Accumulator(accumulator);
-			multivalueConfig(c);
-			MultiValue<TClass, TProp, TPropCollection> thing = c.Build();
-			MultiValue = thing;
-			return thing;
-		}
+		
 		public IParseResult Parse(IEnumerable<string> args)
 		{
 			TClass parsedClass = new TClass();

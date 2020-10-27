@@ -10,7 +10,7 @@
 	{
 		public string? ShortName { get; }
 		public string? LongName { get; }
-		public string? Name { get; }
+		public string? DescriptiveName { get; }
 		public string HelpText { get; }
 		public ArgumentRequired ArgumentRequired { get; }
 		public PropertyInfo TargetProperty { get; }
@@ -31,7 +31,7 @@
 		{
 			ShortName = shortName;
 			LongName = longName;
-			Name = name;
+			DescriptiveName = name;
 			HelpText = helpText;
 			ArgumentRequired = argumentRequired;
 			TargetProperty = targetProperty;
@@ -52,7 +52,7 @@
 					}
 					catch (Exception ex)
 					{
-						return new Error(ErrorCode.SwitchFailedConversion, $"Converter for Switch {Name} threw an exception ({ex.Message})");
+						return new Error(ErrorCode.SwitchFailedConversion, $"Converter for Switch {DescriptiveName} threw an exception ({ex.Message})");
 					}
 					if (converted.Success(out TProp val, out string error))
 					{
@@ -72,7 +72,7 @@
 			{
 				if (ArgumentRequired == ArgumentRequired.Required)
 				{
-					return new Error(ErrorCode.MissingRequiredSwitch, $"Switch {Name} ({ArgUtils.ShortAndLongName(ShortName, LongName)}) is required and was not present");
+					return new Error(ErrorCode.MissingRequiredSwitch, $"Switch {DescriptiveName} ({ArgUtils.ShortAndLongName(ShortName, LongName)}) is required and was not present");
 				}
 				else
 				{

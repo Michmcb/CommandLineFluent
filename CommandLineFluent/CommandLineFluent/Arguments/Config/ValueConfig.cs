@@ -10,6 +10,7 @@
 	/// </summary>
 	/// <typeparam name="TClass">The type of the target class.</typeparam>
 	/// <typeparam name="TProp">The type of the target property.</typeparam>
+	[Obsolete("Use NamelessArgConfig instead")]
 	public sealed class ValueConfig<TClass, TProp> where TClass : class, new()
 	{
 		private PropertyInfo? targetProperty;

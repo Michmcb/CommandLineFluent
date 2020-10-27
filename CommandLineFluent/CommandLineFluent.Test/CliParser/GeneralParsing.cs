@@ -244,16 +244,22 @@
 						.IsOptional(true)
 						.WithHelpText("h"));
 
-					verb.AddSwitch<string>("s3", "ss3", s => s
-						.ForProperty(x => x.ConvertedSwitch)
-						.WithConverter(v => Converted<string, string>.Value(v.ToString()))
-						.WithHelpText("h"));
+					verb.AddSwitch(a => a.ConvertedSwitch, x =>
+					{
+						x.Converter = v => Converted<string, string>.Value(v.ToString());
+						x.HelpText = "h";
+						x.ShortName = "s3";
+						x.LongName = "ss3";
+					});
 
-					verb.AddSwitch<string>("s4", "ss4", s => s
-						.ForProperty(x => x.DefaultValueConvertedSwitch)
-						.WithConverter(v => Converted<string, string>.Value(v.ToString()))
-						.IsOptional("Default")
-						.WithHelpText("h"));
+					verb.AddSwitch(a => a.DefaultValueConvertedSwitch, x =>
+					{
+						x.Converter = v => Converted<string, string>.Value(v.ToString());
+						x.DefaultValue = "Default";
+						x.HelpText = "h";
+						x.ShortName = "s4";
+						x.LongName = "ss4";
+					});
 
 					verb.AddOptionString("o1", "oo1", o => o
 						.ForProperty(x => x.RequiredOption)
@@ -306,10 +312,10 @@
 			CliParser fp = new CliParserBuilder()
 				.AddVerb<ManyValuesVerb>("default", verb =>
 				{
-					verb.AddMultiValueString(mv => mv
-						.ForProperty(x => x.ManyValues)
-						//.IgnorePrefixes("-", "--")
-						.WithHelpText("h"));
+					verb.AddMultiValue(x => x.ManyValues, x =>
+					{
+						x.HelpText = "h";
+					});
 					verb.AddOptionString("o", "oo", o => o
 						.ForProperty(x => x.Option)
 						.IsOptional("default")

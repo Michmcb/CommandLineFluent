@@ -44,11 +44,13 @@
 					.WithName("Option")
 					.WithHelpText("Help me please"));
 
-				verb.AddMultiValueInt(mv => mv
-					.ForProperty(x => x.Values)
-					.WithHelpText("help"));
-			})
-			.Build();
+				verb.AddMultiValue(a => a.Values, x =>
+				{
+					x.HelpText = "help";
+					x.IsRequired = true;
+				});
+			}
+			).Build();
 		[Fact]
 		public void NoArgs_EmptyResult()
 		{

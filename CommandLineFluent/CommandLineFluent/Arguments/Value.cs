@@ -8,7 +8,7 @@
 	/// </summary>
 	public sealed class Value<TClass, TProp> : IValue<TClass> where TClass : class, new()
 	{
-		public string? Name { get; }
+		public string? DescriptiveName { get; }
 		public string HelpText { get; }
 		public ArgumentRequired ArgumentRequired { get; }
 		public PropertyInfo TargetProperty { get; }
@@ -27,7 +27,7 @@
 		internal Value(string? name, string helpText, ArgumentRequired argumentRequired, PropertyInfo targetProperty,
 			TProp defaultValue, Dependencies<TClass>? dependencies, Func<string, Converted<TProp, string>>? converter)
 		{
-			Name = name;
+			DescriptiveName = name;
 			HelpText = helpText;
 			ArgumentRequired = argumentRequired;
 			TargetProperty = targetProperty;
@@ -48,7 +48,7 @@
 					}
 					catch (Exception ex)
 					{
-						return new Error(ErrorCode.ValueFailedConversion, $"Converter for Value {Name} threw an exception ({ex.Message})");
+						return new Error(ErrorCode.ValueFailedConversion, $"Converter for Value {DescriptiveName} threw an exception ({ex.Message})");
 					}
 					if (converted.Success(out TProp val, out string error))
 					{
@@ -68,7 +68,7 @@
 			{
 				if (ArgumentRequired == ArgumentRequired.Required)
 				{
-					return new Error(ErrorCode.MissingRequiredValue, $"Value {Name} is required and did not have a value provided");
+					return new Error(ErrorCode.MissingRequiredValue, $"Value {DescriptiveName} is required and did not have a value provided");
 				}
 				else
 				{

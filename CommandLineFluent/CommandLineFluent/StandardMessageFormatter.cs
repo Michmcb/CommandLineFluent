@@ -65,7 +65,7 @@
 			int i = 1;
 			foreach (IOption<TClass> opt in verb.AllOptions)
 			{
-				console.Write(ArgUtils.ShortAndLongName(opt.ShortName, opt.LongName, opt.Name ?? "?", opt.ArgumentRequired != ArgumentRequired.Required));
+				console.Write(ArgUtils.ShortAndLongName(opt.ShortName, opt.LongName, opt.DescriptiveName ?? "?", opt.ArgumentRequired != ArgumentRequired.Required));
 				console.Write(" ");
 			}
 			foreach (ISwitch<TClass> sw in verb.AllSwitches)
@@ -75,12 +75,12 @@
 			}
 			foreach (IValue<TClass> val in verb.AllValues)
 			{
-				console.Write(val.ArgumentRequired == ArgumentRequired.Required ? "\"" + (string.IsNullOrEmpty(val.Name) ? $"value{i}" : val.Name) + "\" " : $"[{val.Name ?? $"value{i}"}] ");
+				console.Write(val.ArgumentRequired == ArgumentRequired.Required ? "\"" + (string.IsNullOrEmpty(val.DescriptiveName) ? $"value{i}" : val.DescriptiveName) + "\" " : $"[{val.DescriptiveName ?? $"value{i}"}] ");
 				i++;
 			}
 			if (verb.MultiValue != null)
 			{
-				console.Write(verb.MultiValue.ArgumentRequired == ArgumentRequired.Required ? "\"" + (string.IsNullOrEmpty(verb.MultiValue.Name) ? "Values..." : verb.MultiValue.Name) + "\"" : $"[{verb.MultiValue.Name ?? "Values..."}]");
+				console.Write(verb.MultiValue.ArgumentRequired == ArgumentRequired.Required ? "\"" + (string.IsNullOrEmpty(verb.MultiValue.DescriptiveName) ? "Values..." : verb.MultiValue.DescriptiveName) + "\"" : $"[{verb.MultiValue.DescriptiveName ?? "Values..."}]");
 			}
 			console.WriteLine();
 			console.WriteLine();
@@ -96,11 +96,11 @@
 			}
 			foreach (IValue<TClass> val in verb.AllValues)
 			{
-				stuffToWrite.Add(new KeywordAndDescription(val.Name ?? "", GetRequiredness(val.ArgumentRequired) + val.HelpText));
+				stuffToWrite.Add(new KeywordAndDescription(val.DescriptiveName ?? "", GetRequiredness(val.ArgumentRequired) + val.HelpText));
 			}
 			if (verb.MultiValue != null)
 			{
-				stuffToWrite.Add(new KeywordAndDescription(verb.MultiValue.Name ?? "", GetRequiredness(verb.MultiValue.ArgumentRequired) + verb.MultiValue.HelpText));
+				stuffToWrite.Add(new KeywordAndDescription(verb.MultiValue.DescriptiveName ?? "", GetRequiredness(verb.MultiValue.ArgumentRequired) + verb.MultiValue.HelpText));
 			}
 			WritePaddedKeywordDescriptions(console, KeywordColor, stuffToWrite);
 			console.ForegroundColor = original;

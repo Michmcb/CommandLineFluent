@@ -1,24 +1,26 @@
 ﻿namespace CommandLineFluent.Arguments.Config
 {
 	using System;
+	using System.Collections.Generic;
 	using System.ComponentModel;
 
-	public sealed class NamedArgConfig<TClass, TProp, TRaw> where TClass : class, new()
+	public sealed class NamelessMultiArgConfig<TClass, TProp, TPropCollection> where TClass : class, new()
 	{
-		private TProp defaultValue;
-		public NamedArgConfig(bool isRequired, Func<TRaw, Converted<TProp, string>>? converter)
+		private TPropCollection defaultValue;
+		public NamelessMultiArgConfig(bool isRequired, Func<string, Converted<TProp, string>> converter, Func<IEnumerable<TProp>, TPropCollection> createCollection)
 		{
 			IsRequired = isRequired;
 			Converter = converter;
+			CreateCollection = createCollection;
+			HelpText = string.Empty;
 		}
-		public string? ShortName { get; set; }
-		public string? LongName { get; set; }
 		public bool IsRequired { get; set; }
-		public TProp DefaultValue { get => defaultValue; set { IsRequired = false; defaultValue = value; } }
+		public TPropCollection DefaultValue { get => defaultValue; set { IsRequired = false; defaultValue = value; } }
 		public Dependencies<TClass>? Dependencies { get; set; }
-		public string HelpText { get; set; } = string.Empty;
+		public string HelpText { get; set; }
 		public string? DescriptiveName { get; set; }
-		public Func<TRaw, Converted<TProp, string>>? Converter { get; set; }
+		public Func<string, Converted<TProp, string>> Converter { get; set; }
+		public Func<IEnumerable<TProp>, TPropCollection> CreateCollection { get; set; }
 		// This stuff is useless and just adds clutter, so hide it
 		[EditorBrowsable(EditorBrowsableState.Never)]
 		public override bool Equals(object obj)

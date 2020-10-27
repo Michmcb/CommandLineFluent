@@ -9,9 +9,9 @@
 	public interface IArgument<TClass> where TClass : class, new()
 	{
 		/// <summary>
-		/// A human-readable name which describes this.
+		/// A human-readable name which describes this argument.
 		/// </summary>
-		string? Name { get; }
+		string? DescriptiveName { get; }
 		/// <summary>
 		/// Text that describes this.
 		/// </summary>
