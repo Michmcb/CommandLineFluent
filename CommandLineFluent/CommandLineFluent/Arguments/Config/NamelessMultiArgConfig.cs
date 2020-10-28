@@ -7,6 +7,7 @@
 	public sealed class NamelessMultiArgConfig<TClass, TProp, TPropCollection> where TClass : class, new()
 	{
 		private TPropCollection defaultValue;
+		internal Dependencies<TClass>? configuredDependencies;
 		public NamelessMultiArgConfig() { }
 		public NamelessMultiArgConfig(bool isRequired, Func<string, Converted<TProp, string>> converter, Func<IEnumerable<TProp>, TPropCollection> createCollection)
 		{
@@ -17,7 +18,11 @@
 		}
 		public bool IsRequired { get; set; }
 		public TPropCollection DefaultValue { get => defaultValue; set { IsRequired = false; defaultValue = value; } }
-		public Dependencies<TClass>? Dependencies { get; set; }
+		public Dependencies<TClass> Dependencies
+		{
+			get => configuredDependencies ??= new Dependencies<TClass>();
+			private set => configuredDependencies = value;
+		}
 		public string HelpText { get; set; }
 		public string? DescriptiveName { get; set; }
 		public Func<string, Converted<TProp, string>> Converter { get; set; }

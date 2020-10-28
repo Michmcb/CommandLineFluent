@@ -85,8 +85,8 @@
 			{
 				throw new ArgumentException(nameof(config.Converter), string.Concat("A converter has to be provided for property " + property.Name + " if TProp is not string. TProp is: " + typeof(TProp).FullName));
 			}
-			ArgumentRequired ar = config.Dependencies != null ? ArgumentRequired.HasDependencies : config.IsRequired ? ArgumentRequired.Required : ArgumentRequired.Optional;
-			Value<TClass, TProp> thing = new Value<TClass, TProp>(config.DescriptiveName, config.HelpText, ar, property, config.DefaultValue, config.Dependencies, config.Converter);
+			ArgumentRequired ar = config.configuredDependencies != null ? ArgumentRequired.HasDependencies : config.IsRequired ? ArgumentRequired.Required : ArgumentRequired.Optional;
+			Value<TClass, TProp> thing = new Value<TClass, TProp>(config.DescriptiveName, config.HelpText, ar, property, config.DefaultValue, config.configuredDependencies, config.Converter);
 			allValues.Add(thing);
 			return thing;
 		}
@@ -112,8 +112,8 @@
 			string? shortName = config.ShortName;
 			string? longName = config.LongName;
 			ApplyDefaultPrefixAndCheck(ref shortName, ref longName, "option");
-			ArgumentRequired ar = config.Dependencies != null ? ArgumentRequired.HasDependencies : config.IsRequired ? ArgumentRequired.Required : ArgumentRequired.Optional;
-			Option<TClass, TProp> arg = new Option<TClass, TProp>(shortName, longName, config.DescriptiveName, config.HelpText, ar, property, config.DefaultValue, config.Dependencies, config.Converter);
+			ArgumentRequired ar = config.configuredDependencies != null ? ArgumentRequired.HasDependencies : config.IsRequired ? ArgumentRequired.Required : ArgumentRequired.Optional;
+			Option<TClass, TProp> arg = new Option<TClass, TProp>(shortName, longName, config.DescriptiveName, config.HelpText, ar, property, config.DefaultValue, config.configuredDependencies, config.Converter);
 			AddToDictionary(arg.ShortName, arg.LongName, arg, allOptionsByShortName, allOptionsByLongName);
 			allOptions.Add(arg);
 			return arg;
@@ -140,8 +140,8 @@
 			string? shortName = config.ShortName;
 			string? longName = config.LongName;
 			ApplyDefaultPrefixAndCheck(ref shortName, ref longName, "switch");
-			ArgumentRequired ar = config.Dependencies != null ? ArgumentRequired.HasDependencies : config.IsRequired ? ArgumentRequired.Required : ArgumentRequired.Optional;
-			Switch<TClass, TProp> arg = new Switch<TClass, TProp>(shortName, longName, config.DescriptiveName, config.HelpText, ar, property, config.DefaultValue, config.Dependencies, config.Converter);
+			ArgumentRequired ar = config.configuredDependencies != null ? ArgumentRequired.HasDependencies : config.IsRequired ? ArgumentRequired.Required : ArgumentRequired.Optional;
+			Switch<TClass, TProp> arg = new Switch<TClass, TProp>(shortName, longName, config.DescriptiveName, config.HelpText, ar, property, config.DefaultValue, config.configuredDependencies, config.Converter);
 			AddToDictionary(arg.ShortName, arg.LongName, arg, allSwitchesByShortName, allSwitchesByLongName);
 			allSwitches.Add(arg);
 			return arg;
@@ -165,10 +165,10 @@
 				throw new ArgumentNullException(nameof(config.Converter), "config.Converter cannot be null");
 			}
 			PropertyInfo property = ArgUtils.PropertyInfoFromExpression(expression);
-			ArgumentRequired ar = config.Dependencies != null ? ArgumentRequired.HasDependencies : config.IsRequired ? ArgumentRequired.Required : ArgumentRequired.Optional;
+			ArgumentRequired ar = config.configuredDependencies != null ? ArgumentRequired.HasDependencies : config.IsRequired ? ArgumentRequired.Required : ArgumentRequired.Optional;
 
 			MultiValue<TClass, TProp, TPropCollection> arg = new MultiValue<TClass, TProp, TPropCollection>(config.DescriptiveName, config.HelpText, ar,
-				property, config.DefaultValue, config.Dependencies, config.Converter, config.CreateCollection);
+				property, config.DefaultValue, config.configuredDependencies, config.Converter, config.CreateCollection);
 			MultiValue = arg;
 			return arg;
 		}

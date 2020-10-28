@@ -12,43 +12,18 @@
 		private static readonly CliParser parser = new CliParserBuilder()
 			.AddVerb<OptOneOfEach>("OptOneOfEach", verb =>
 			{
-				verb.AddOptionString("-o", "--option", o => o
-					.ForProperty(x => x.Option)
-					.IsRequired()
-					.WithName("Option")
-					.WithHelpText("Help me please"));
+				verb.AddOption(x => x.Option, x => { x.ShortName = "-o"; x.LongName = "--option"; x.DescriptiveName = "Option"; x.HelpText = "help me please"; });
 
-				verb.AddSwitchBool("-s", "--switch", s => s
-					.ForProperty(x => x.Switch)
-					.IsRequired()
-					.WithName("Switch")
-					.WithHelpText("really help meeeeee"));
+				verb.AddSwitch(x => x.Switch, x => { x.ShortName = "-s"; x.LongName = "--switch"; x.DescriptiveName = "Switch"; x.HelpText = "really help meeeeee"; });
 
-				verb.AddValueString(v => v
-					.ForProperty(x => x.Value)
-					.IsRequired()
-					.WithName("Value")
-					.WithHelpText("fine forget it"));
+				verb.AddValue(x => x.Value, x => { x.DescriptiveName = "Value"; x.HelpText = "fine forget it"; });
 			})
 			.AddVerb<OptMulti>("OptMulti", verb =>
 			{
-				verb.AddOptionString("-o1", "--option1", o => o
-					.ForProperty(x => x.Option1)
-					.IsRequired()
-					.WithName("Option")
-					.WithHelpText("Help me please"));
+				verb.AddOption(x => x.Option1, x => { x.ShortName = "-o1"; x.LongName = "--option1"; x.DescriptiveName = "Option"; x.HelpText = "help me please"; });
+				verb.AddOption(x => x.Option2, x => { x.ShortName = "-o2"; x.LongName = "--option2"; x.DescriptiveName = "Option"; x.HelpText = "help me please"; });
 
-				verb.AddOptionString("-o2", "--option2", o => o
-					.ForProperty(x => x.Option2)
-					.IsRequired()
-					.WithName("Option")
-					.WithHelpText("Help me please"));
-
-				verb.AddMultiValue(a => a.Values, x =>
-				{
-					x.HelpText = "help";
-					x.IsRequired = true;
-				});
+				verb.AddMultiValue(a => a.Values, x => { x.HelpText = "help"; x.IsRequired = true; });
 			}
 			).Build();
 		[Fact]
@@ -107,7 +82,7 @@
 		[Fact]
 		public void GoodArgs_NormalResult()
 		{
-			IParseResult ipr = parser.Parse(new string[] { "OptOneOfEach", "-o", "string", "--switch", "value" });
+			IParseResult ipr = parser.Parse(new string[] { "OptOneOfEach", "-o", "1", "--switch", "value" });
 			Assert.True(ipr.Ok);
 			SuccessfulParse<OptOneOfEach> pr = Assert.IsType<SuccessfulParse<OptOneOfEach>>(ipr);
 			Assert.NotNull(pr);
@@ -115,7 +90,7 @@
 			Assert.NotNull(pr.Verb);
 			Assert.NotNull(pr.Object);
 			OptOneOfEach obj = pr.Object;
-			Assert.Equal("string", obj.Option);
+			Assert.Equal(1, obj.Option);
 			Assert.True(obj.Switch);
 			Assert.Equal("value", obj.Value);
 		}

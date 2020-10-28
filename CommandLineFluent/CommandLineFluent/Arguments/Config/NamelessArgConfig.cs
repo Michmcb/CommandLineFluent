@@ -6,6 +6,7 @@
 	public sealed class NamelessArgConfig<TClass, TProp> where TClass : class, new()
 	{
 		private TProp defaultValue;
+		internal Dependencies<TClass>? configuredDependencies;
 		public NamelessArgConfig() { }
 		public NamelessArgConfig(bool isRequired, Func<string, Converted<TProp, string>>? converter)
 		{
@@ -14,7 +15,11 @@
 		}
 		public bool IsRequired { get; set; }
 		public TProp DefaultValue { get => defaultValue; set { IsRequired = false; defaultValue = value; } }
-		public Dependencies<TClass>? Dependencies { get; set; }
+		public Dependencies<TClass> Dependencies
+		{
+			get => configuredDependencies ??= new Dependencies<TClass>();
+			private set => configuredDependencies = value;
+		}
 		public string HelpText { get; set; } = string.Empty;
 		public string? DescriptiveName { get; set; }
 		public Func<string, Converted<TProp, string>>? Converter { get; set; }

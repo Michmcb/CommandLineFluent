@@ -17,20 +17,20 @@
 			CliParserBuilder fpb = new CliParserBuilder()
 				.AddVerb<OptOneOfEach>("default", verb =>
 				{
-					Option<OptOneOfEach, string> opt = verb.AddOption(x => x.Option, x =>
+					Option<OptOneOfEach, int> opt = verb.AddOption(x => x.Option, x =>
 					{
 						x.ShortName = "o";
 						x.LongName = "option";
 						x.HelpText = "help";
 						x.DescriptiveName = "name";
-						x.DefaultValue = "defaultValue";
+						x.DefaultValue = 98;
 					});
 					Assert.Equal(opt, verb.AllOptions.First());
 					Assert.Equal("-o", opt.ShortName);
 					Assert.Equal("--option", opt.LongName);
 					Assert.Equal("help", opt.HelpText);
 					Assert.Equal("name", opt.DescriptiveName);
-					Assert.Equal("defaultValue", opt.DefaultValue);
+					Assert.Equal(98, opt.DefaultValue);
 					Assert.Equal(ArgumentRequired.Optional, opt.ArgumentRequired);
 
 					Value<OptOneOfEach, string> val = verb.AddValue(x => x.Value, x =>
