@@ -66,13 +66,19 @@
 		{
 			msgFormatter.WriteSpecificHelp(console, this);
 		}
+		public Value<TClass, TProp> AddValueCore<TProp>(Expression<Func<TClass, TProp>> expression, Action<NamelessArgConfig<TClass, TProp>> config)
+		{
+			var obj = new NamelessArgConfig<TClass, TProp>();
+			config(obj);
+			return AddValueCore(expression, obj);
+		}
 		/// <summary>
 		/// Adds a new Value.
 		/// This is mainly useful to provide custom extension methods which take specific types of <typeparamref name="TProp"/>.
 		/// </summary>
 		/// <typeparam name="TProp">The type of the target property.</typeparam>
+		/// <param name="expression">The property to set.</param>
 		/// <param name="config">The configuration.</param>
-		/// <param name="property">The property to set.</param>
 		/// <returns>The created Value.</returns>
 		public Value<TClass, TProp> AddValueCore<TProp>(Expression<Func<TClass, TProp>> expression, NamelessArgConfig<TClass, TProp> config)
 		{
@@ -80,23 +86,30 @@
 			{
 				throw new ArgumentNullException(nameof(config), nameof(config) + " cannot be null");
 			}
+			config.configuredDependencies?.Validate();
 			PropertyInfo property = ArgUtils.PropertyInfoFromExpression(expression);
 			if (config.Converter == null && typeof(TProp) != typeof(string))
 			{
 				throw new ArgumentException(nameof(config.Converter), string.Concat("A converter has to be provided for property " + property.Name + " if TProp is not string. TProp is: " + typeof(TProp).FullName));
 			}
 			ArgumentRequired ar = config.configuredDependencies != null ? ArgumentRequired.HasDependencies : config.IsRequired ? ArgumentRequired.Required : ArgumentRequired.Optional;
-			Value<TClass, TProp> thing = new Value<TClass, TProp>(config.DescriptiveName, config.HelpText, ar, property, config.DefaultValue, config.configuredDependencies, config.Converter);
+			Value<TClass, TProp> thing = new Value<TClass, TProp>(config.DescriptiveName, config.HelpText ?? "No help available.", ar, property, config.DefaultValue, config.configuredDependencies, config.Converter);
 			allValues.Add(thing);
 			return thing;
+		}
+		public Option<TClass, TProp> AddOptionCore<TProp>(Expression<Func<TClass, TProp>> expression, Action<NamedArgConfig<TClass, TProp, string>> config)
+		{
+			var obj = new NamedArgConfig<TClass, TProp, string>();
+			config(obj);
+			return AddOptionCore(expression, obj);
 		}
 		/// <summary>
 		/// Adds a new Option.
 		/// This is mainly useful to provide custom extension methods which take specific types of <typeparamref name="TProp"/>.
 		/// </summary>
 		/// <typeparam name="TProp">The type of the target property.</typeparam>
+		/// <param name="expression">The property to set.</param>
 		/// <param name="config">The configuration.</param>
-		/// <param name="property">The property to set.</param>
 		/// <returns>The created Option.</returns>
 		public Option<TClass, TProp> AddOptionCore<TProp>(Expression<Func<TClass, TProp>> expression, NamedArgConfig<TClass, TProp, string> config)
 		{
@@ -104,6 +117,7 @@
 			{
 				throw new ArgumentNullException(nameof(config), nameof(config) + " cannot be null");
 			}
+			config.configuredDependencies?.Validate();
 			PropertyInfo property = ArgUtils.PropertyInfoFromExpression(expression);
 			if (config.Converter == null && typeof(TProp) != typeof(string))
 			{
@@ -113,18 +127,24 @@
 			string? longName = config.LongName;
 			ApplyDefaultPrefixAndCheck(ref shortName, ref longName, "option");
 			ArgumentRequired ar = config.configuredDependencies != null ? ArgumentRequired.HasDependencies : config.IsRequired ? ArgumentRequired.Required : ArgumentRequired.Optional;
-			Option<TClass, TProp> arg = new Option<TClass, TProp>(shortName, longName, config.DescriptiveName, config.HelpText, ar, property, config.DefaultValue, config.configuredDependencies, config.Converter);
+			Option<TClass, TProp> arg = new Option<TClass, TProp>(shortName, longName, config.DescriptiveName, config.HelpText ?? "No help available.", ar, property, config.DefaultValue, config.configuredDependencies, config.Converter);
 			AddToDictionary(arg.ShortName, arg.LongName, arg, allOptionsByShortName, allOptionsByLongName);
 			allOptions.Add(arg);
 			return arg;
+		}
+		public Switch<TClass, TProp> AddSwitchCore<TProp>(Expression<Func<TClass, TProp>> expression, Action<NamedArgConfig<TClass, TProp, bool>> config)
+		{
+			var obj = new NamedArgConfig<TClass, TProp, bool>();
+			config(obj);
+			return AddSwitchCore(expression, obj);
 		}
 		/// <summary>
 		/// Adds a new Switch.
 		/// This is mainly useful to provide custom extension methods which take specific types of <typeparamref name="TProp"/>.
 		/// </summary>
 		/// <typeparam name="TProp">The type of the target property.</typeparam>
+		/// <param name="expression">The property to set.</param>
 		/// <param name="config">The configuration.</param>
-		/// <param name="property">The property to set.</param>
 		/// <returns>The created Switch.</returns>
 		public Switch<TClass, TProp> AddSwitchCore<TProp>(Expression<Func<TClass, TProp>> expression, NamedArgConfig<TClass, TProp, bool> config)
 		{
@@ -132,6 +152,7 @@
 			{
 				throw new ArgumentNullException(nameof(config), nameof(config) + " cannot be null");
 			}
+			config.configuredDependencies?.Validate();
 			PropertyInfo property = ArgUtils.PropertyInfoFromExpression(expression);
 			if (config.Converter == null && typeof(TProp) != typeof(bool))
 			{
@@ -141,18 +162,24 @@
 			string? longName = config.LongName;
 			ApplyDefaultPrefixAndCheck(ref shortName, ref longName, "switch");
 			ArgumentRequired ar = config.configuredDependencies != null ? ArgumentRequired.HasDependencies : config.IsRequired ? ArgumentRequired.Required : ArgumentRequired.Optional;
-			Switch<TClass, TProp> arg = new Switch<TClass, TProp>(shortName, longName, config.DescriptiveName, config.HelpText, ar, property, config.DefaultValue, config.configuredDependencies, config.Converter);
+			Switch<TClass, TProp> arg = new Switch<TClass, TProp>(shortName, longName, config.DescriptiveName, config.HelpText ?? "No help available.", ar, property, config.DefaultValue, config.configuredDependencies, config.Converter);
 			AddToDictionary(arg.ShortName, arg.LongName, arg, allSwitchesByShortName, allSwitchesByLongName);
 			allSwitches.Add(arg);
 			return arg;
+		}
+		public MultiValue<TClass, TProp, TPropCollection> AddMultiValueCore<TProp, TPropCollection>(Expression<Func<TClass, TPropCollection>> expression, Action<NamelessMultiArgConfig<TClass, TProp, TPropCollection>> config)
+		{
+			var obj = new NamelessMultiArgConfig<TClass, TProp, TPropCollection>();
+			config(obj);
+			return AddMultiValueCore(expression, obj);
 		}
 		/// <summary>
 		/// Adds a new MultiValue.
 		/// This is mainly useful to provide custom extension methods which take specific types of <typeparamref name="TProp"/>.
 		/// </summary>
 		/// <typeparam name="TProp">The type of the target property.</typeparam>
+		/// <param name="expression">The property to set.</param>
 		/// <param name="config">The configuration.</param>
-		/// <param name="property">The property to set.</param>
 		/// <returns>The created MultiValue.</returns>
 		public MultiValue<TClass, TProp, TPropCollection> AddMultiValueCore<TProp, TPropCollection>(Expression<Func<TClass, TPropCollection>> expression, NamelessMultiArgConfig<TClass, TProp, TPropCollection> config)
 		{
@@ -162,13 +189,14 @@
 			}
 			if (config.Converter == null)
 			{
-				throw new ArgumentNullException(nameof(config.Converter), "config.Converter cannot be null");
+				throw new ArgumentNullException(nameof(config.Converter), "config.Converter cannot be null for a MultiValue. If none is required, use " + nameof(Converters) + "." + nameof(Converters.ToString));
 			}
+			config.configuredDependencies?.Validate();
 			PropertyInfo property = ArgUtils.PropertyInfoFromExpression(expression);
 			ArgumentRequired ar = config.configuredDependencies != null ? ArgumentRequired.HasDependencies : config.IsRequired ? ArgumentRequired.Required : ArgumentRequired.Optional;
 
-			MultiValue<TClass, TProp, TPropCollection> arg = new MultiValue<TClass, TProp, TPropCollection>(config.DescriptiveName, config.HelpText, ar,
-				property, config.DefaultValue, config.configuredDependencies, config.Converter, config.CreateCollection);
+			MultiValue<TClass, TProp, TPropCollection> arg = new MultiValue<TClass, TProp, TPropCollection>(config.DescriptiveName, config.HelpText ?? "No help available.", ar,
+				property, config.DefaultValue, config.configuredDependencies, config.Converter, config.Accumulator);
 			MultiValue = arg;
 			return arg;
 		}

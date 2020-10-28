@@ -48,7 +48,7 @@
 					}
 					catch (Exception ex)
 					{
-						return new Error(ErrorCode.ValueFailedConversion, $"Converter for Value {DescriptiveName} threw an exception ({ex.Message})");
+						return new Error(ErrorCode.ValueFailedConversion, $"Converter for Value {DescriptiveName} threw an exception ({ex.ToString()})");
 					}
 					if (converted.Success(out TProp val, out string error))
 					{

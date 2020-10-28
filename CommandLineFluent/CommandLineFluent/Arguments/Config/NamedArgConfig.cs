@@ -22,8 +22,6 @@
 		/// This is useful when creating an extension method for a certain type; the converter can be set to a default,
 		/// and it can be required or not based on its nullability.
 		/// </summary>
-		/// <param name="isRequired"></param>
-		/// <param name="converter"></param>
 		public NamedArgConfig(bool isRequired, Func<TRaw, Converted<TProp, string>>? converter)
 		{
 			IsRequired = isRequired;
@@ -39,6 +37,7 @@
 		public string? LongName { get; set; }
 		/// <summary>
 		/// Whether or not this argument is required.
+		/// Note, setting <see cref="DefaultValue"/> will set this to false automatically.
 		/// </summary>
 		public bool IsRequired { get; set; }
 		/// <summary>
@@ -48,7 +47,7 @@
 		/// <summary>
 		/// Can be used to set dependencies. Each call made on this sets a new rule.
 		/// </summary>
-		public Dependencies<TClass> Dependencies
+		public Dependencies<TClass> HasDependency
 		{
 			get =>  configuredDependencies ??= new Dependencies<TClass>();
 			private set => configuredDependencies = value;
@@ -56,7 +55,7 @@
 		/// <summary>
 		/// Help text displayed to the user.
 		/// </summary>
-		public string HelpText { get; set; } = string.Empty;
+		public string? HelpText { get; set; }
 		/// <summary>
 		/// A descriptive name, only used to display to the user.
 		/// </summary>

@@ -14,7 +14,7 @@
 					verb.AddValue(x => x.Value, x =>
 					{
 						x.HelpText = "h";
-						x.Dependencies.RequiredIf(e => e.Option).IsEqualTo(25).WithErrorMessage("If Option is equal to 25, you must specify a value");
+						x.HasDependency.RequiredIf(e => e.Option).IsEqualTo(25).WithErrorMessage("If Option is equal to 25, you must specify a value");
 					});
 
 					verb.AddOption(x => x.Option, x => { x.ShortName = "o"; x.LongName = "option"; x.HelpText = "h"; });
@@ -33,7 +33,7 @@
 			fp = new CliParserBuilder()
 				.AddVerb<VerbVariety>("default", verb =>
 				{
-					verb.AddValue(x => x.Value, x => { x.HelpText = "h"; x.Dependencies.MustNotAppearIf(e => e.Option).IsEqualTo(25).WithErrorMessage("If Option is equal to 25, you must NOT specify a value"); });
+					verb.AddValue(x => x.Value, x => { x.HelpText = "h"; x.HasDependency.MustNotAppearIf(e => e.Option).IsEqualTo(25).WithErrorMessage("If Option is equal to 25, you must NOT specify a value"); });
 
 					verb.AddOption(x => x.Option, x => { x.ShortName = "o"; x.LongName = "option"; x.HelpText = "h"; });
 				})
@@ -54,7 +54,7 @@
 			CliParser fp = new CliParserBuilder()
 				.AddVerb<VerbVariety>("default", verb =>
 				{
-					verb.AddValue(x => x.Value, x => { x.HelpText = "h"; x.Dependencies.RequiredIf(e => e.Option).IsNotEqualTo(25).WithErrorMessage("If Option is not equal to 25, you must specify a value"); });
+					verb.AddValue(x => x.Value, x => { x.HelpText = "h"; x.HasDependency.RequiredIf(e => e.Option).IsNotEqualTo(25).WithErrorMessage("If Option is not equal to 25, you must specify a value"); });
 
 					verb.AddOption(x => x.Option, x => { x.ShortName = "o"; x.LongName = "option"; x.HelpText = "h"; });
 				})
@@ -72,7 +72,7 @@
 			fp = new CliParserBuilder()
 				.AddVerb<VerbVariety>("default", verb =>
 				{
-					verb.AddValue(x => x.Value, x => { x.HelpText = "h"; x.Dependencies.MustNotAppearIf(e => e.Option).IsNotEqualTo(25).WithErrorMessage("If Option is not equal to 25, you must NOT specify a value"); });
+					verb.AddValue(x => x.Value, x => { x.HelpText = "h"; x.HasDependency.MustNotAppearIf(e => e.Option).IsNotEqualTo(25).WithErrorMessage("If Option is not equal to 25, you must NOT specify a value"); });
 
 					verb.AddOption(x => x.Option, x => { x.ShortName = "o"; x.LongName = "option"; x.HelpText = "h"; });
 				})
@@ -95,7 +95,7 @@
 				{
 					verb.AddValue(x => x.Value, x =>
 					{
-						x.HelpText = "h"; x.Dependencies.RequiredIf(e => e.OptionNullable).IsNull().WithErrorMessage("If OptionNullable is null, you must specify a value");
+						x.HelpText = "h"; x.HasDependency.RequiredIf(e => e.OptionNullable).IsNull().WithErrorMessage("If OptionNullable is null, you must specify a value");
 					});
 
 					verb.AddOption(x => x.OptionNullable, x => { x.ShortName = "o"; x.LongName = "option"; x.DefaultValue = null; x.HelpText = "h"; });
@@ -115,7 +115,7 @@
 			fp = new CliParserBuilder()
 				.AddVerb<VerbVariety>("default", verb =>
 				{
-					verb.AddValue(x => x.Value, x =>					{						x.HelpText = "h"; x.Dependencies.MustNotAppearIf(e => e.OptionNullable).IsNull().WithErrorMessage("If OptionNullable is null, you must NOT specify a value");					});
+					verb.AddValue(x => x.Value, x =>					{						x.HelpText = "h"; x.HasDependency.MustNotAppearIf(e => e.OptionNullable).IsNull().WithErrorMessage("If OptionNullable is null, you must NOT specify a value");					});
 
 					verb.AddOption(x => x.OptionNullable, x => { x.ShortName = "o"; x.LongName = "option"; x.DefaultValue = null; x.HelpText = "h"; });
 				})
@@ -138,7 +138,7 @@
 				{
 					verb.AddValue(x => x.Value, x =>
 					{
-						x.HelpText = "h"; x.Dependencies.RequiredIf(e => e.OptionNullable).IsNotNull().WithErrorMessage("If OptionNullable is not null, you must specify a value");
+						x.HelpText = "h"; x.HasDependency.RequiredIf(e => e.OptionNullable).IsNotNull().WithErrorMessage("If OptionNullable is not null, you must specify a value");
 					});
 
 					verb.AddOption(x => x.OptionNullable, x => { x.ShortName = "o"; x.LongName = "option"; x.DefaultValue = null; x.HelpText = "h"; });
@@ -160,7 +160,7 @@
 				{
 					verb.AddValue(x => x.Value, x =>
 					{
-						x.HelpText = "h"; x.Dependencies.MustNotAppearIf(e => e.OptionNullable).IsNotNull().WithErrorMessage("If OptionNullable is not null, you must NOT specify a value");
+						x.HelpText = "h"; x.HasDependency.MustNotAppearIf(e => e.OptionNullable).IsNotNull().WithErrorMessage("If OptionNullable is not null, you must NOT specify a value");
 					});
 
 					verb.AddOption(x => x.OptionNullable, x => { x.ShortName = "o"; x.LongName = "option"; x.DefaultValue = null; x.HelpText = "h"; });
@@ -184,7 +184,7 @@
 				{
 					verb.AddValue(x => x.Value, x =>
 					{
-						x.HelpText = "h"; x.Dependencies.RequiredIf(e => e.OptionNullable).When(v => v > 50).WithErrorMessage("Only required if OptionNullable is larger than 50");
+						x.HelpText = "h"; x.HasDependency.RequiredIf(e => e.OptionNullable).When(v => v > 50).WithErrorMessage("Only required if OptionNullable is larger than 50");
 					});
 
 					verb.AddOption(x => x.OptionNullable, x => { x.ShortName = "o"; x.LongName = "option"; x.DefaultValue = null; x.HelpText = "h"; });
@@ -208,7 +208,7 @@
 				{
 					verb.AddValue(x => x.Value, x =>
 					{
-						x.HelpText = "h"; x.Dependencies.MustNotAppearIf(e => e.OptionNullable).When(v => v > 50).WithErrorMessage("Shouldn't appear if OptionNullable is larger than 50");
+						x.HelpText = "h"; x.HasDependency.MustNotAppearIf(e => e.OptionNullable).When(v => v > 50).WithErrorMessage("Shouldn't appear if OptionNullable is larger than 50");
 					});
 
 					verb.AddOption(x => x.OptionNullable, x => { x.ShortName = "o"; x.LongName = "option"; x.DefaultValue = null; x.HelpText = "h"; });
@@ -234,7 +234,7 @@
 				{
 					verb.AddValue(x => x.Value, x =>
 					{
-						x.HelpText = "h"; x.Dependencies.RequiredIf(e => e.OptionNullable).When(v => v <= 50).WithErrorMessage("Only required if OptionNullable is less than or equal to 50");
+						x.HelpText = "h"; x.HasDependency.RequiredIf(e => e.OptionNullable).When(v => v <= 50).WithErrorMessage("Only required if OptionNullable is less than or equal to 50");
 					});
 
 					verb.AddOption(x => x.OptionNullable, x => { x.ShortName = "o"; x.LongName = "option"; x.DefaultValue = null; x.HelpText = "h"; });
@@ -258,7 +258,7 @@
 				{
 					verb.AddValue(x => x.Value, x =>
 					{
-						x.HelpText = "h"; x.Dependencies.MustNotAppearIf(e => e.OptionNullable).When(v => v <= 50).WithErrorMessage("Must not appear if OptionNullable is less than or equal to 50");
+						x.HelpText = "h"; x.HasDependency.MustNotAppearIf(e => e.OptionNullable).When(v => v <= 50).WithErrorMessage("Must not appear if OptionNullable is less than or equal to 50");
 					});
 
 					verb.AddOption(x => x.OptionNullable, x => { x.ShortName = "o"; x.LongName = "option"; x.DefaultValue = null; x.HelpText = "h"; });
@@ -286,8 +286,8 @@
 					{
 						x.HelpText = "h";
 						// Optional if it's between 45 to 50, inclusive
-						x.Dependencies.MustNotAppearIf(e => e.OptionNullable).When(v => v > 50).WithErrorMessage("Must not be provided if OptionNullable is > 50");
-						x.Dependencies.RequiredIf(e => e.OptionNullable).When(v => v < 45).WithErrorMessage("Must be provided if OptionNullable is < 45");
+						x.HasDependency.MustNotAppearIf(e => e.OptionNullable).When(v => v > 50).WithErrorMessage("Must not be provided if OptionNullable is > 50");
+						x.HasDependency.RequiredIf(e => e.OptionNullable).When(v => v < 45).WithErrorMessage("Must be provided if OptionNullable is < 45");
 					});
 
 					verb.AddOption(x => x.OptionNullable, x => { x.ShortName = "o"; x.LongName = "option"; x.DefaultValue = null; x.HelpText = "h"; });

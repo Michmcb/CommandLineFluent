@@ -52,7 +52,7 @@
 					}
 					catch (Exception ex)
 					{
-						return new Error(ErrorCode.SwitchFailedConversion, $"Converter for Switch {DescriptiveName} threw an exception ({ex.Message})");
+						return new Error(ErrorCode.SwitchFailedConversion, $"Converter for Switch {DescriptiveName} threw an exception ({ex.ToString()})");
 					}
 					if (converted.Success(out TProp val, out string error))
 					{

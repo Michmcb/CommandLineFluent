@@ -63,7 +63,7 @@
 				}
 				catch (Exception ex)
 				{
-					return new Error(ErrorCode.MultiValueFailedConversion, $"Converter for MultiValue {DescriptiveName} threw an exception ({ex.Message})");
+					return new Error(ErrorCode.MultiValueFailedConversion, $"Converter for MultiValue {DescriptiveName} threw an exception ({ex.ToString()})");
 				}
 				TargetProperty.SetValue(target, CreateCollection(convertedValues));
 			}

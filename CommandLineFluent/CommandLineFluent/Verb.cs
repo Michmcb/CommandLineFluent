@@ -11,6 +11,9 @@
 		{
 			ShortName = shortName;
 			LongName = longName;
+			HelpText = "No help available.";
+			Invoke = () => throw new CliParserBuilderException(string.Concat("Invoke for verb ", LongName, " has not been configured"));
+			InvokeAsync = () => throw new CliParserBuilderException(string.Concat("InvokeAsync for verb ", LongName, " has not been configured"));
 		}
 		public string? ShortName { get; }
 		public string LongName { get; }
