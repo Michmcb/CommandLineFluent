@@ -4,7 +4,7 @@
 	using System.Linq;
 
 	/// <summary>
-	/// Built-in accumulators, which turn an <see cref="IEnumerable{T}"/> into a concrete collection type
+	/// Built-in accumulators, which turn an <see cref="IEnumerable{T}"/> into a concrete collection type.
 	/// </summary>
 	public static class Accumulators
 	{

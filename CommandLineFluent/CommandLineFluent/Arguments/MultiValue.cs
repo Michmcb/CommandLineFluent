@@ -12,7 +12,7 @@
 		public string? DescriptiveName { get; }
 		public string HelpText { get; }
 		public ArgumentRequired ArgumentRequired { get; }
-		public PropertyInfo TargetProperty { get; }
+		public Action<TClass, TPropCollection> PropertySetter { get; }
 		/// <summary>
 		/// The default values to use when nothing is provided.
 		/// </summary>
@@ -27,16 +27,16 @@
 		public Func<string, Converted<TProp, string>> Converter { get; }
 		/// <summary>
 		/// Creates a new collection, filled with the values provided.
-		/// If you don't provide one, the specific type isn't guaranteed
+		/// If you don't provide one, the specific type isn't guaranteed.
 		/// </summary>
 		public Func<IEnumerable<TProp>, TPropCollection> CreateCollection { get; }
-		public MultiValue(string? name, string helpText, ArgumentRequired argumentRequired, PropertyInfo targetProperty, TPropCollection defaultValues,
+		public MultiValue(string? name, string helpText, ArgumentRequired argumentRequired, Action<TClass, TPropCollection> propertySetter, TPropCollection defaultValues,
 			Dependencies<TClass>? dependencies, Func<string, Converted<TProp, string>> converter, Func<IEnumerable<TProp>, TPropCollection> createCollection)
 		{
 			DescriptiveName = name;
 			HelpText = helpText;
 			ArgumentRequired = argumentRequired;
-			TargetProperty = targetProperty;
+			PropertySetter = propertySetter;
 			DefaultValues = defaultValues;
 			Dependencies = dependencies;
 			Converter = converter;
@@ -65,7 +65,7 @@
 				{
 					return new Error(ErrorCode.MultiValueFailedConversion, $"Converter for MultiValue {DescriptiveName} threw an exception ({ex.ToString()})");
 				}
-				TargetProperty.SetValue(target, CreateCollection(convertedValues));
+				PropertySetter(target, CreateCollection(convertedValues));
 			}
 			else
 			{
@@ -75,7 +75,7 @@
 				}
 				else
 				{
-					TargetProperty.SetValue(target, DefaultValues);
+					PropertySetter(target, DefaultValues);
 				}
 			}
 			return default;

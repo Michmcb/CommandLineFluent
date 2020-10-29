@@ -76,11 +76,11 @@
 			new CliParserBuilder()
 				.AddVerb<ComplexVerb1>("default", verb =>
 				{
-					Assert.Throws<ArgumentException>(() => verb.AddOptionCore(x => x.ConvertedOption, new NamedArgConfig<ComplexVerb1, int, string>(true, null){ ShortName = "-o", LongName = "--o" }));
+					Assert.Throws<CliParserBuilderException>(() => verb.AddOptionCore(x => x.ConvertedOption, new NamedArgConfig<ComplexVerb1, int, string>(true, null!){ ShortName = "-o", LongName = "--o" }));
 
-					Assert.Throws<ArgumentException>(() => verb.AddSwitchCore(x => x.ConvertedOption, new NamedArgConfig<ComplexVerb1, int, bool>(true, null){ ShortName = "-s", LongName = "--s" }));
+					Assert.Throws<CliParserBuilderException>(() => verb.AddSwitchCore(x => x.ConvertedOption, new NamedArgConfig<ComplexVerb1, int, bool>(true, null!){ ShortName = "-s", LongName = "--s" }));
 
-					Assert.Throws<ArgumentException>(() => verb.AddValueCore(x => x.ConvertedOption, new NamelessArgConfig<ComplexVerb1, int>(true, null)));
+					Assert.Throws<CliParserBuilderException>(() => verb.AddValueCore(x => x.ConvertedOption, new NamelessArgConfig<ComplexVerb1, int>(true, null!)));
 				})
 				.Build();
 		}

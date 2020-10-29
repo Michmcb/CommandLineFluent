@@ -17,9 +17,9 @@
 		private static readonly char[] LineBreakChars = new char[] { '\n', '\r' };
 		public const string ThreeSpaces = "   ";
 		// TODO Write help for arguments in the same order the user added them to the Verb. To do this, make a new List<IArgument<TClass>> in the Verb classes and stuff it full of all the Arguments
-		public StandardMessageFormatter()
+		public StandardMessageFormatter(ConsoleColor keywordColor)
 		{
-			KeywordColor = ConsoleColor.Cyan;
+			KeywordColor = keywordColor;
 		}
 		/// <summary>
 		/// The color that keywords are written in, such as verb names and short/long names for options/switches

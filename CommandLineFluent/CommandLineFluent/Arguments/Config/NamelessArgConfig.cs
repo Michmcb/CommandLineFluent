@@ -21,7 +21,7 @@
 		/// This is useful when creating an extension method for a certain type; the converter can be set to a default,
 		/// and it can be required or not based on its nullability.
 		/// </summary>
-		public NamelessArgConfig(bool isRequired, Func<string, Converted<TProp, string>>? converter)
+		public NamelessArgConfig(bool isRequired, Func<string, Converted<TProp, string>> converter)
 		{
 			IsRequired = isRequired;
 			Converter = converter;
@@ -54,7 +54,7 @@
 		/// <summary>
 		/// A function to use to convert from <typeparamref name="TRaw"/> into <typeparamref name="TProp"/>.
 		/// </summary>
-		public Func<string, Converted<TProp, string>>? Converter { get; set; }
+		public Func<string, Converted<TProp, string>> Converter { get; set; }
 		// This stuff is useless and just adds clutter, so hide it
 		[EditorBrowsable(EditorBrowsableState.Never)]
 		public override bool Equals(object obj)

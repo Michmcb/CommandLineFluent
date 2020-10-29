@@ -86,14 +86,14 @@
 			{
 				throw new ArgumentNullException(nameof(config), nameof(config) + " cannot be null");
 			}
-			config.configuredDependencies?.Validate();
-			PropertyInfo property = ArgUtils.PropertyInfoFromExpression(expression);
-			if (config.Converter == null && typeof(TProp) != typeof(string))
+			Action<TClass, TProp> setter = CliParserBuilder.GetSetMethodDelegateFromExpression(expression, out PropertyInfo pi);
+			if (config.Converter == null)
 			{
-				throw new ArgumentException(nameof(config.Converter), string.Concat("A converter has to be provided for property " + property.Name + " if TProp is not string. TProp is: " + typeof(TProp).FullName));
+				throw new CliParserBuilderException(string.Concat("You need to provide a converter for the property ", pi.Name, " of the class ", typeof(TClass).Name));
 			}
+			config.configuredDependencies?.Validate();
 			ArgumentRequired ar = config.configuredDependencies != null ? ArgumentRequired.HasDependencies : config.IsRequired ? ArgumentRequired.Required : ArgumentRequired.Optional;
-			Value<TClass, TProp> thing = new Value<TClass, TProp>(config.DescriptiveName, config.HelpText ?? "No help available.", ar, property, config.DefaultValue, config.configuredDependencies, config.Converter);
+			Value<TClass, TProp> thing = new Value<TClass, TProp>(config.DescriptiveName, config.HelpText ?? "No help available.", ar, setter, config.DefaultValue, config.configuredDependencies, config.Converter);
 			allValues.Add(thing);
 			return thing;
 		}
@@ -117,17 +117,17 @@
 			{
 				throw new ArgumentNullException(nameof(config), nameof(config) + " cannot be null");
 			}
-			config.configuredDependencies?.Validate();
-			PropertyInfo property = ArgUtils.PropertyInfoFromExpression(expression);
-			if (config.Converter == null && typeof(TProp) != typeof(string))
+			Action<TClass, TProp> setter = CliParserBuilder.GetSetMethodDelegateFromExpression(expression, out PropertyInfo pi);
+			if (config.Converter == null)
 			{
-				throw new ArgumentException(nameof(config.Converter), string.Concat("A converter has to be provided for property " + property.Name + " if TProp is not string. TProp is: " + typeof(TProp).FullName));
+				throw new CliParserBuilderException(string.Concat("You need to provide a converter for the property ", pi.Name, " of the class ", typeof(TClass).Name));
 			}
+			config.configuredDependencies?.Validate();
 			string? shortName = config.ShortName;
 			string? longName = config.LongName;
 			ApplyDefaultPrefixAndCheck(ref shortName, ref longName, "option");
 			ArgumentRequired ar = config.configuredDependencies != null ? ArgumentRequired.HasDependencies : config.IsRequired ? ArgumentRequired.Required : ArgumentRequired.Optional;
-			Option<TClass, TProp> arg = new Option<TClass, TProp>(shortName, longName, config.DescriptiveName, config.HelpText ?? "No help available.", ar, property, config.DefaultValue, config.configuredDependencies, config.Converter);
+			Option<TClass, TProp> arg = new Option<TClass, TProp>(shortName, longName, config.DescriptiveName, config.HelpText ?? "No help available.", ar, setter, config.DefaultValue, config.configuredDependencies, config.Converter);
 			AddToDictionary(arg.ShortName, arg.LongName, arg, allOptionsByShortName, allOptionsByLongName);
 			allOptions.Add(arg);
 			return arg;
@@ -152,17 +152,17 @@
 			{
 				throw new ArgumentNullException(nameof(config), nameof(config) + " cannot be null");
 			}
-			config.configuredDependencies?.Validate();
-			PropertyInfo property = ArgUtils.PropertyInfoFromExpression(expression);
-			if (config.Converter == null && typeof(TProp) != typeof(bool))
+			Action<TClass, TProp> setter = CliParserBuilder.GetSetMethodDelegateFromExpression(expression, out PropertyInfo pi);
+			if (config.Converter == null)
 			{
-				throw new ArgumentException(nameof(config.Converter), string.Concat("A converter has to be provided for property " + property.Name + " if TProp is not bool. TProp is: " + typeof(TProp).FullName));
+				throw new CliParserBuilderException(string.Concat("You need to provide a converter for the property ", pi.Name, " of the class ", typeof(TClass).Name));
 			}
+			config.configuredDependencies?.Validate();
 			string? shortName = config.ShortName;
 			string? longName = config.LongName;
 			ApplyDefaultPrefixAndCheck(ref shortName, ref longName, "switch");
 			ArgumentRequired ar = config.configuredDependencies != null ? ArgumentRequired.HasDependencies : config.IsRequired ? ArgumentRequired.Required : ArgumentRequired.Optional;
-			Switch<TClass, TProp> arg = new Switch<TClass, TProp>(shortName, longName, config.DescriptiveName, config.HelpText ?? "No help available.", ar, property, config.DefaultValue, config.configuredDependencies, config.Converter);
+			Switch<TClass, TProp> arg = new Switch<TClass, TProp>(shortName, longName, config.DescriptiveName, config.HelpText ?? "No help available.", ar, setter, config.DefaultValue, config.configuredDependencies, config.Converter);
 			AddToDictionary(arg.ShortName, arg.LongName, arg, allSwitchesByShortName, allSwitchesByLongName);
 			allSwitches.Add(arg);
 			return arg;
@@ -187,16 +187,16 @@
 			{
 				throw new ArgumentNullException(nameof(config), nameof(config) + " cannot be null");
 			}
+			Action<TClass, TPropCollection> setter = CliParserBuilder.GetSetMethodDelegateFromExpression(expression, out PropertyInfo pi);
 			if (config.Converter == null)
 			{
-				throw new ArgumentNullException(nameof(config.Converter), "config.Converter cannot be null for a MultiValue. If none is required, use " + nameof(Converters) + "." + nameof(Converters.ToString));
+				throw new CliParserBuilderException(string.Concat("You need to provide a converter for the property ", pi.Name, " of the class ", typeof(TClass).Name));
 			}
 			config.configuredDependencies?.Validate();
-			PropertyInfo property = ArgUtils.PropertyInfoFromExpression(expression);
 			ArgumentRequired ar = config.configuredDependencies != null ? ArgumentRequired.HasDependencies : config.IsRequired ? ArgumentRequired.Required : ArgumentRequired.Optional;
 
 			MultiValue<TClass, TProp, TPropCollection> arg = new MultiValue<TClass, TProp, TPropCollection>(config.DescriptiveName, config.HelpText ?? "No help available.", ar,
-				property, config.DefaultValue, config.configuredDependencies, config.Converter, config.Accumulator);
+				setter, config.DefaultValue, config.configuredDependencies, config.Converter, config.Accumulator);
 			MultiValue = arg;
 			return arg;
 		}
@@ -212,7 +212,7 @@
 		/// <param name="converter">The converter that the <paramref name="optionConfig"/> will be configured to use.</param>
 		/// <returns>The created option.</returns>
 		[Obsolete("Prefer using AddOption")]
-		public Option<TClass, TProp> AddOptionWithConverter<TProp>(string? shortName, string? longName, Action<OptionConfig<TClass, TProp>> optionConfig, Func<string, Converted<TProp, string>>? converter)
+		public Option<TClass, TProp> AddOptionWithConverter<TProp>(string? shortName, string? longName, Action<OptionConfig<TClass, TProp>> optionConfig, Func<string, Converted<TProp, string>> converter)
 		{
 			if (optionConfig == null)
 			{
@@ -236,7 +236,7 @@
 		/// <param name="converter">The converter that the <paramref name="valueConfig"/> will be configured to use.</param>
 		/// <returns>The created value.</returns>
 		[Obsolete("Prefer using AddValue")]
-		public Value<TClass, TProp> AddValueWithConverter<TProp>(Action<ValueConfig<TClass, TProp>> valueConfig, Func<string, Converted<TProp, string>>? converter)
+		public Value<TClass, TProp> AddValueWithConverter<TProp>(Action<ValueConfig<TClass, TProp>> valueConfig, Func<string, Converted<TProp, string>> converter)
 		{
 			if (valueConfig == null)
 			{
@@ -260,7 +260,7 @@
 		/// <param name="converter">The converter that the <paramref name="switchConfig"/> will be configured to use.</param>
 		/// <returns>The created switch.</returns>
 		[Obsolete("Prefer using AddSwitch")]
-		public Switch<TClass, TProp> AddSwitchWithConverter<TProp>(string? shortName, string? longName, Action<SwitchConfig<TClass, TProp>> switchConfig, Func<bool, Converted<TProp, string>>? converter)
+		public Switch<TClass, TProp> AddSwitchWithConverter<TProp>(string? shortName, string? longName, Action<SwitchConfig<TClass, TProp>> switchConfig, Func<bool, Converted<TProp, string>> converter)
 		{
 			if (switchConfig == null)
 			{

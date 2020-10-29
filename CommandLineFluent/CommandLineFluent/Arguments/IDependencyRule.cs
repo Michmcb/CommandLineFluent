@@ -7,8 +7,8 @@
 	public interface IDependencyRule<TClass> where TClass : new()
 	{
 		/// <summary>
-		/// You don't need to call this; but this checks that the specified property of an object
-		/// of type T satisfies the rule, given whether or not the Argument on which this rule was configured
+		/// This checks that the specified property of an object
+		/// of type <typeparamref name="TClass"/> satisfies the rule, given whether or not the Argument on which this rule was configured
 		/// had a value appear during parsing or not.
 		/// </summary>
 		/// <param name="obj">The object.</param>

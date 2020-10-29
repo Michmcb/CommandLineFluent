@@ -23,11 +23,11 @@
 		/// This is useful when creating an extension method for a certain type; the converter and collection creator can be set to a default,
 		/// and it can be required or not based on its nullability.
 		/// </summary>
-		public NamelessMultiArgConfig(bool isRequired, Func<string, Converted<TProp, string>> converter, Func<IEnumerable<TProp>, TPropCollection> createCollection)
+		public NamelessMultiArgConfig(bool isRequired, Func<string, Converted<TProp, string>> converter, Func<IEnumerable<TProp>, TPropCollection> accumulator)
 		{
 			IsRequired = isRequired;
 			Converter = converter;
-			Accumulator = createCollection;
+			Accumulator = accumulator;
 			HelpText = string.Empty;
 		}
 		/// <summary>
@@ -72,6 +72,7 @@
 		[EditorBrowsable(EditorBrowsableState.Never)]
 		public override int GetHashCode()
 		{
+
 			return base.GetHashCode();
 		}
 		[EditorBrowsable(EditorBrowsableState.Never)]

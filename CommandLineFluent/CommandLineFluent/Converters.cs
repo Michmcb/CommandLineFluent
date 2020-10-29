@@ -6,30 +6,31 @@
 	/// </summary>
 	public static class Converters
 	{
-		//public static Maybe<byte[], string> FromHexString(string s)
-		//{
-		//}
 		/// <summary>
 		/// Always returns a successfully converted string, which is just <paramref name="s"/>.
-		/// Primarily helpful for Multi-valued arguments
 		/// </summary>
 		/// <param name="s">The string.</param>
 		/// <returns><paramref name="s"/></returns>
-		public static Converted<string, string> ToString(string s) => Converted<string, string>.Value(s);
+		public static Converted<string, string> NoConversion(string s) => Converted<string, string>.Value(s);
 		/// <summary>
 		/// Always returns a successfully converted string, which is just <paramref name="s"/>.
-		/// Primarily helpful for Multi-valued arguments
 		/// </summary>
 		/// <param name="s">The string.</param>
 		/// <returns><paramref name="s"/></returns>
-		public static Converted<string?, string> ToNullableString(string? s) => Converted<string?, string>.Value(s);
+		public static Converted<string?, string> NoConversionNullable(string? s) => Converted<string?, string>.Value(s);
+		/// <summary>
+		/// Always returns a successfully converted bool, which is just <paramref name="b"/>.
+		/// </summary>
+		/// <param name="b">The boolean.</param>
+		/// <returns><paramref name="b"/></returns>
+		public static Converted<bool, string> NoConversion(bool b) => b;
 		/// <summary>
 		/// If <paramref name="s"/> is 1 character, returns that. Otherwise, error.
 		/// </summary>
 		/// <param name="s">The string to convert</param>
 		public static Converted<char, string> ToChar(string s)
 		{
-			return s.Length == 1 ? s[0] : (Converted<char, string>)(s + " must be a single character");
+			return s.Length == 1 ? s[0] : (Converted<char, string>)(s + " was not a single character");
 		}
 		/// <summary>
 		/// If <paramref name="s"/> is 1 character, returns that. Otherwise, error.
@@ -37,7 +38,7 @@
 		/// <param name="s">The string to convert</param>
 		public static Converted<char?, string> ToNullableChar(string s)
 		{
-			return s.Length == 1 ? s[0] : (Converted<char?, string>)(s + " must be a single character");
+			return s.Length == 1 ? s[0] : (Converted<char?, string>)(s + " was not a single character");
 		}
 		/// <summary>
 		/// Converts the provided string to short.

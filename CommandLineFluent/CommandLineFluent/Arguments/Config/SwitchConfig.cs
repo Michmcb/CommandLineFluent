@@ -3,7 +3,6 @@
 	using System;
 	using System.ComponentModel;
 	using System.Linq.Expressions;
-	using System.Reflection;
 
 	/// <summary>
 	/// Configures a Switch.
@@ -15,20 +14,20 @@
 	{
 		private readonly string? shortName;
 		private readonly string? longName;
-		private PropertyInfo? targetProperty;
+		private Action<TClass, TProp>? targetProperty;
 		private ArgumentRequired argumentRequired;
 		private TProp defaultValue;
 		private Dependencies<TClass>? dependencies;
 		private string? helpText;
 		private string? name;
-		private Func<bool, Converted<TProp, string>>? converter;
+		private Func<bool, Converted<TProp, string>> converter;
 		/// <summary>
 		/// Creates a new <see cref="SwitchConfig{TClass, TProp}"/>. You shouldn't need to create this manually.
 		/// </summary>
 		/// <param name="shortName">The short name the user can use to provide this.</param>
 		/// <param name="shortName">The long name the user can use to provide this.</param>
 		/// <param name="converter">The converter to use to convert from bool to <typeparamref name="TProp"/>.</param>
-		public SwitchConfig(string? shortName, string? longName, Func<bool, Converted<TProp, string>>? converter)
+		public SwitchConfig(string? shortName, string? longName, Func<bool, Converted<TProp, string>> converter)
 		{
 			this.shortName = shortName;
 			this.longName = longName;
@@ -43,7 +42,7 @@
 		/// <param name="expression">The property to set.</param>
 		public SwitchConfig<TClass, TProp> ForProperty(Expression<Func<TClass, TProp>> expression)
 		{
-			targetProperty = ArgUtils.PropertyInfoFromExpression(expression);
+			targetProperty = CliParserBuilder.GetSetMethodDelegateFromExpression(expression, out _);
 			return this;
 		}
 		/// <summary>
@@ -124,16 +123,19 @@
 			{
 				throw new CliParserBuilderException("You need to set a target property for Switch " + name);
 			}
-			if (converter == null && typeof(TProp) != typeof(bool))
+			if (converter == null)
 			{
-				throw new CliParserBuilderException(string.Concat("You need to provide a converter from bool to ", typeof(TProp).FullName, " for Switch ", name));
+				throw new CliParserBuilderException("You need to set a converter for Switch " + name);
 			}
 			if (dependencies != null)
 			{
 				dependencies.Validate();
 			}
 
+			// helpText is never null here
+#pragma warning disable CS8604 // Possible null reference argument.
 			return new Switch<TClass, TProp>(shortName, longName, name, helpText, argumentRequired, targetProperty, defaultValue, dependencies, converter);
+#pragma warning restore CS8604 // Possible null reference argument.
 		}
 		// This stuff is useless and just adds clutter, so hide it
 		[EditorBrowsable(EditorBrowsableState.Never)]

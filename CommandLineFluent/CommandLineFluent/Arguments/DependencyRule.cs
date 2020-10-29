@@ -15,9 +15,9 @@
 		/// </summary>
 		public DependencyRequiredness Requiredness { get; }
 		/// <summary>
-		/// The target property to use when evaluating this rule.
+		/// The target property's getter to use when evaluating this rule.
 		/// </summary>
-		public PropertyInfo TargetProperty { get; }
+		public Func<TClass, TOtherProp> PropertyGetter { get; }
 		/// <summary>
 		/// The predicate used for this rule
 		/// </summary>
@@ -26,9 +26,9 @@
 		/// The error message when this rule is violated.
 		/// </summary>
 		public string ErrorMessage { get; private set; }
-		internal DependencyRule(PropertyInfo targetProperty, DependencyRequiredness required)
+		internal DependencyRule(Func<TClass, TOtherProp> propertyGetter, DependencyRequiredness required)
 		{
-			TargetProperty = targetProperty;
+			PropertyGetter = propertyGetter;
 			Requiredness = required;
 			Predicate = null!;
 			ErrorMessage = "";
@@ -109,7 +109,7 @@
 		public bool DoesSatifyRule(TClass obj, bool didAppear)
 		{
 			// TargetProperty's value corresponds to the WhateverIf(e => e.Property) part they write.
-			TOtherProp propertyVal = (TOtherProp)TargetProperty.GetValue(obj);
+			TOtherProp propertyVal = PropertyGetter(obj);
 			// Requiredness depends on what they said. RequiredIf, OptionalIf, MustNotAppearIf.
 			switch (Requiredness)
 			{
@@ -134,7 +134,7 @@
 		{
 			if (Predicate == null)
 			{
-				throw new CliParserBuilderException($@"A rule that is {Requiredness} for the property {TargetProperty.Name} has no predicate. Probably missing a When, IsEqualTo, or IsNull call.");
+				throw new CliParserBuilderException($"A rule that is {Requiredness} for a property of type {typeof(TOtherProp).Name} of class {typeof(TClass).Name} has no predicate. Probably missing a When, IsEqualTo, or IsNull call.");
 			}
 		}
 		// This stuff is useless and just adds clutter, so hide it

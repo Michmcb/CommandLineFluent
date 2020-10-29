@@ -26,6 +26,11 @@
 		/// The asynchronous action that's invoked when parsing is successful and this verb was provided.
 		/// </summary>
 		public Func<Task> InvokeAsync { get; set; }
+		/// <summary>
+		/// If <paramref name="args"/> is empty, returns a <see cref="SuccessfulParse"/>.
+		/// Otherwise, returns a <see cref="FailedParseWithVerb"/>.
+		/// </summary>
+		/// <param name="args">The arguments.</param>
 		public IParseResult Parse(IEnumerable<string> args)
 		{
 			if (args.Any())

@@ -41,6 +41,9 @@
 		/// Used to create messages for the user.
 		/// </summary>
 		public IMessageFormatter MsgFormatter { get; }
+		/// <summary>
+		/// All verbs that have been added to this.
+		/// </summary>
 		public IReadOnlyCollection<IVerb> Verbs { get; }
 		/// <summary>
 		/// Starts a loop that reads input from <see cref="Console"/>, splits it into tokens using <see cref="Tokenizer"/>, and then parses and invokes it synchronously (using <see cref="Handle(IParseResult)"/>).
@@ -199,29 +202,6 @@
 					MsgFormatter.WriteOverallHelp(Console, Verbs, config);
 				}
 			}
-		}
-		/// <summary>
-		/// Writes the provided Errors using <see cref="IMessageFormatter.WriteErrors(IConsole, IEnumerable{Error})"/>.
-		/// </summary>
-		/// <param name="errors">The errors to write.</param>
-		public void WriteErrors(IEnumerable<Error> errors)
-		{
-			MsgFormatter.WriteErrors(Console, errors);
-		}
-		/// <summary>
-		/// Writes overall help, i.e. using <see cref="IMessageFormatter.WriteOverallHelp(IConsole, IReadOnlyCollection{IVerb}, CliParserConfig)"/>.
-		/// </summary>
-		public void WriteOverallHelp()
-		{
-			MsgFormatter.WriteOverallHelp(Console, Verbs, config);
-		}
-		/// <summary>
-		/// Writes help for a specific verb; i.e. using <see cref="IMessageFormatter.WriteSpecificHelp{TClass}(IConsole, Verb{TClass}, CliParserConfig)"/>.
-		/// </summary>
-		/// <param name="verb">The verb to write detailed usage/help for.</param>
-		public void WriteHelp(IVerb verb)
-		{
-			verb.WriteSpecificHelp(Console, MsgFormatter);
 		}
 	}
 }

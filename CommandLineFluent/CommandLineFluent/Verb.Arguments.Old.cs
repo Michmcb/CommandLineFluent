@@ -11,7 +11,7 @@
 		// TODO add a converter from hexadecimal strings to byte arrays, and methods here for that converter
 		[Obsolete("Prefer AddOption and pass a NamedArgConfig instead")]public Option<TClass, string> AddOptionString(string? shortName, string? longName, Action<OptionConfig<TClass, string>> optionConfig)
 		{
-			return AddOptionWithConverter(shortName, longName, optionConfig, null);
+			return AddOptionWithConverter(shortName, longName, optionConfig, NoConversion);
 		}
 		[Obsolete("Prefer AddOption and pass a NamedArgConfig instead")]public Option<TClass, short> AddOptionShort(string? shortName, string? longName, Action<OptionConfig<TClass, short>> optionConfig)
 		{
@@ -71,7 +71,7 @@
 		}
 		[Obsolete("Prefer AddOption and pass a NamedArgConfig instead")]public Option<TClass, string?> AddOptionNullableString(string? shortName, string? longName, Action<OptionConfig<TClass, string?>> optionConfig)
 		{
-			return AddOptionWithConverter(shortName, longName, optionConfig, null);
+			return AddOptionWithConverter(shortName, longName, optionConfig, NoConversionNullable);
 		}
 		[Obsolete("Prefer AddOption and pass a NamedArgConfig instead")]public Option<TClass, short?> AddOptionNullableShort(string? shortName, string? longName, Action<OptionConfig<TClass, short?>> optionConfig)
 		{
@@ -131,7 +131,7 @@
 		}
 		[Obsolete("Prefer AddValue and pass a NamelessArgConfig instead")]public Value<TClass, string> AddValueString(Action<ValueConfig<TClass, string>> valueConfig)
 		{
-			return AddValueWithConverter(valueConfig, null);
+			return AddValueWithConverter(valueConfig, NoConversion);
 		}
 		[Obsolete("Prefer AddValue and pass a NamelessArgConfig instead")]public Value<TClass, short> AddValueShort(Action<ValueConfig<TClass, short>> valueConfig)
 		{
@@ -191,7 +191,7 @@
 		}
 		[Obsolete("Prefer AddValue and pass a NamelessArgConfig instead")]public Value<TClass, string?> AddValueNullableString(Action<ValueConfig<TClass, string?>> valueConfig)
 		{
-			return AddValueWithConverter(valueConfig, null);
+			return AddValueWithConverter(valueConfig, NoConversionNullable);
 		}
 		[Obsolete("Prefer AddValue and pass a NamelessArgConfig instead")]public Value<TClass, short?> AddValueNullableShort(Action<ValueConfig<TClass, short?>> valueConfig)
 		{
@@ -252,7 +252,7 @@
 		[Obsolete("Prefer AddSwitch and pass a NamedArgConfig instead")]
 		public Switch<TClass, bool> AddSwitchBool(string? shortName, string? longName, Action<SwitchConfig<TClass, bool>> switchConfig)
 		{
-			return AddSwitchWithConverter(shortName, longName, switchConfig, null);
+			return AddSwitchWithConverter(shortName, longName, switchConfig, NoConversion);
 		}
 #pragma warning restore CS0612 // Type or member is obsolete
 #pragma warning restore CS0618 // Type or member is obsolete

@@ -1,7 +1,6 @@
 ﻿namespace CommandLineFluent.Arguments
 {
 	using System;
-	using System.Reflection;
 
 	/// <summary>
 	/// An argument with a single value
@@ -11,7 +10,7 @@
 		public string? DescriptiveName { get; }
 		public string HelpText { get; }
 		public ArgumentRequired ArgumentRequired { get; }
-		public PropertyInfo TargetProperty { get; }
+		public Action<TClass, TProp> PropertySetter { get; }
 		/// <summary>
 		/// The default value to use when nothing is provided.
 		/// </summary>
@@ -23,14 +22,14 @@
 		/// <summary>
 		/// Converts from a string into <typeparamref name="TProp"/>, or returns an error message.
 		/// </summary>
-		public Func<string, Converted<TProp, string>>? Converter { get; }
-		internal Value(string? name, string helpText, ArgumentRequired argumentRequired, PropertyInfo targetProperty,
-			TProp defaultValue, Dependencies<TClass>? dependencies, Func<string, Converted<TProp, string>>? converter)
+		public Func<string, Converted<TProp, string>> Converter { get; }
+		internal Value(string? name, string helpText, ArgumentRequired argumentRequired, Action<TClass, TProp> propertySetter,
+			TProp defaultValue, Dependencies<TClass>? dependencies, Func<string, Converted<TProp, string>> converter)
 		{
 			DescriptiveName = name;
 			HelpText = helpText;
 			ArgumentRequired = argumentRequired;
-			TargetProperty = targetProperty;
+			PropertySetter = propertySetter;
 			DefaultValue = defaultValue;
 			Dependencies = dependencies;
 			Converter = converter;
@@ -39,29 +38,22 @@
 		{
 			if (rawValue != null)
 			{
-				if (Converter != null)
+				Converted<TProp, string> converted;
+				try
 				{
-					Converted<TProp, string> converted;
-					try
-					{
-						converted = Converter.Invoke(rawValue);
-					}
-					catch (Exception ex)
-					{
-						return new Error(ErrorCode.ValueFailedConversion, $"Converter for Value {DescriptiveName} threw an exception ({ex.ToString()})");
-					}
-					if (converted.Success(out TProp val, out string error))
-					{
-						TargetProperty.SetValue(target, val);
-					}
-					else
-					{
-						return new Error(ErrorCode.ValueFailedConversion, error);
-					}
+					converted = Converter.Invoke(rawValue);
+				}
+				catch (Exception ex)
+				{
+					return new Error(ErrorCode.ValueFailedConversion, $"Converter for Value {DescriptiveName} threw an exception ({ex.ToString()})");
+				}
+				if (converted.Success(out TProp val, out string error))
+				{
+					PropertySetter(target, val);
 				}
 				else
 				{
-					TargetProperty.SetValue(target, rawValue);
+					return new Error(ErrorCode.ValueFailedConversion, error);
 				}
 			}
 			else
@@ -72,7 +64,7 @@
 				}
 				else
 				{
-					TargetProperty.SetValue(target, DefaultValue);
+					PropertySetter(target, DefaultValue);
 				}
 			}
 			return default;

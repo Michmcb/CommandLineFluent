@@ -25,7 +25,7 @@
 		public string LongHelpSwitch { get; set; } = "--help";
 		/// <summary>
 		/// The string comparer to use when parsing argument short/long names and verb names.
-		/// By default: StringComparer.OrdinalIgnoreCase.
+		/// By default: <see cref="StringComparer.OrdinalIgnoreCase"/>.
 		/// </summary>
 		public StringComparer StringComparer { get; set; } = StringComparer.OrdinalIgnoreCase;
 	}

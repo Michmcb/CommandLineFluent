@@ -3,7 +3,6 @@
 	using System;
 	using System.ComponentModel;
 	using System.Linq.Expressions;
-	using System.Reflection;
 
 	/// <summary>
 	/// Configures a Value.
@@ -13,18 +12,18 @@
 	[Obsolete("Use NamelessArgConfig instead")]
 	public sealed class ValueConfig<TClass, TProp> where TClass : class, new()
 	{
-		private PropertyInfo? targetProperty;
+		private Action<TClass, TProp>? targetProperty;
 		private ArgumentRequired argumentRequired;
 		private TProp defaultValue;
 		private Dependencies<TClass>? dependencies;
 		private string? helpText;
 		private string? name;
-		private Func<string, Converted<TProp, string>>? converter;
+		private Func<string, Converted<TProp, string>> converter;
 		/// <summary>
 		/// Creates a new <see cref="ValueConfig{TClass, TProp}"/>. You shouldn't need to create this manually.
 		/// </summary>
 		/// <param name="converter">The converter to use to convert from string to <typeparamref name="TProp"/>.</param>
-		public ValueConfig(Func<string, Converted<TProp, string>>? converter)
+		public ValueConfig(Func<string, Converted<TProp, string>> converter)
 		{
 			defaultValue = default!;
 			this.converter = converter;
@@ -35,7 +34,7 @@
 		/// <param name="expression">The property to set.</param>
 		public ValueConfig<TClass, TProp> ForProperty(Expression<Func<TClass, TProp>> expression)
 		{
-			targetProperty = ArgUtils.PropertyInfoFromExpression(expression);
+			targetProperty = CliParserBuilder.GetSetMethodDelegateFromExpression(expression, out _);
 			return this;
 		}
 		/// <summary>
@@ -116,12 +115,19 @@
 			{
 				throw new CliParserBuilderException("You need to set a target property for Value " + name);
 			}
+			if (converter == null)
+			{
+				throw new CliParserBuilderException("You need to set a converter for Value " + name);
+			}
 			if (dependencies != null)
 			{
 				dependencies.Validate();
 			}
-
+			
+			// helpText is never null here
+#pragma warning disable CS8604 // Possible null reference argument.
 			return new Value<TClass, TProp>(name, helpText, argumentRequired, targetProperty, defaultValue, dependencies, converter);
+#pragma warning restore CS8604 // Possible null reference argument.
 		}
 		// This stuff is useless and just adds clutter, so hide it
 		[EditorBrowsable(EditorBrowsableState.Never)]
