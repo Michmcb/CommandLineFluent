@@ -282,17 +282,182 @@
 				Assert.True(expectedResult.ConvertedOption == x.ConvertedOption);
 			}
 		}
-
-		internal void ParsingConverters()
+		[Fact]
+		public void ParsingConverters_Required()
 		{
-			// TODO test converters
-		}
+			CliParser fp = new CliParserBuilder()
+				.AddVerb<EveryPrimitiveType>("default", verb =>
+				{
+					verb.AddOption(x => x.Str, x => { x.ShortName = "-Str"; });
+					verb.AddOption(x => x.Short, x => { x.ShortName = "-Short"; });
+					verb.AddOption(x => x.UShort, x => { x.ShortName = "-UShort"; });
+					verb.AddOption(x => x.Int, x => { x.ShortName = "-Int"; });
+					verb.AddOption(x => x.UInt, x => { x.ShortName = "-UInt"; });
+					verb.AddOption(x => x.Long, x => { x.ShortName = "-Long"; });
+					verb.AddOption(x => x.ULong, x => { x.ShortName = "-ULong"; });
+					verb.AddOption(x => x.Float, x => { x.ShortName = "-Float"; });
+					verb.AddOption(x => x.Double, x => { x.ShortName = "-Double"; });
+					verb.AddOption(x => x.Decimal, x => { x.ShortName = "-Decimal"; });
+					verb.AddOption(x => x.MyEnum, x => { x.ShortName = "-MyEnum"; });
+					verb.AddOption(x => x.DateTime, x => { x.ShortName = "-DateTime"; });
+					verb.AddOption(x => x.TimeSpan, x => { x.ShortName = "-TimeSpan"; });
+					verb.AddOption(x => x.Guid, x => { x.ShortName = "-Guid"; });
+				}).Build();
 
-		internal void ManyValueAccumulators()
+			IParseResult parseResult = fp.Parse(new string[]
+			{ "default",
+				"-Str", "SomeString",
+				"-Short", "10",
+				"-UShort", "20",
+				"-Int", "-30",
+				"-UInt", "40",
+				"-Long", "50",
+				"-ULong", "60",
+				"-Float", "70.5",
+				"-Double", "95.2",
+				"-Decimal", "100.130",
+				"-MyEnum", "SomeValue",
+				"-DateTime", "2020-10-10T05:05:05.123",
+				"-TimeSpan", "12:00:00",
+				"-Guid", "123e4567-e89b-12d3-a456-426614174000"
+			});
+
+			EveryPrimitiveType pr = Assert.IsType<SuccessfulParse<EveryPrimitiveType>>(parseResult).Object;
+			Assert.Equal("SomeString", pr.Str);
+			Assert.Equal(10, pr.Short);
+			Assert.Equal(20, pr.UShort);
+			Assert.Equal(-30, pr.Int);
+			Assert.True(40U == pr.UInt);
+			Assert.Equal(50, pr.Long);
+			Assert.True(60UL == pr.ULong);
+			Assert.Equal(70.5, pr.Float);
+			Assert.Equal(95.2, pr.Double);
+			Assert.True(100.130m == pr.Decimal);
+			Assert.Equal(MyEnum.SomeValue, pr.MyEnum);
+			Assert.Equal(new DateTime(2020, 10, 10, 5, 5, 5, 123), pr.DateTime);
+			Assert.Equal(new TimeSpan(12, 0, 0), pr.TimeSpan);
+			Assert.Equal(new Guid(0x123e4567, 0xe89b, 0x12d3, 0xa4, 0x56, 0x42, 0x66, 0x14, 0x17, 0x40, 0x00), pr.Guid);
+		}
+		[Fact]
+		public void ParsingConverters_Nullable()
 		{
-			// TODO test accumulators
-		}
+			CliParser fp = new CliParserBuilder()
+				.AddVerb<EveryPrimitiveTypeNullable>("default", verb =>
+				{
+					verb.AddOptionNullable(x => x.Str, x => { x.ShortName = "-Str"; });
+					verb.AddOption(x => x.Short, x => { x.ShortName = "-Short"; });
+					verb.AddOption(x => x.UShort, x => { x.ShortName = "-UShort"; });
+					verb.AddOption(x => x.Int, x => { x.ShortName = "-Int"; });
+					verb.AddOption(x => x.UInt, x => { x.ShortName = "-UInt"; });
+					verb.AddOption(x => x.Long, x => { x.ShortName = "-Long"; });
+					verb.AddOption(x => x.ULong, x => { x.ShortName = "-ULong"; });
+					verb.AddOption(x => x.Float, x => { x.ShortName = "-Float"; });
+					verb.AddOption(x => x.Double, x => { x.ShortName = "-Double"; });
+					verb.AddOption(x => x.Decimal, x => { x.ShortName = "-Decimal"; });
+					verb.AddOption(x => x.MyEnum, x => { x.ShortName = "-MyEnum"; });
+					verb.AddOption(x => x.DateTime, x => { x.ShortName = "-DateTime"; });
+					verb.AddOption(x => x.TimeSpan, x => { x.ShortName = "-TimeSpan"; });
+					verb.AddOption(x => x.Guid, x => { x.ShortName = "-Guid"; });
+				}).Build();
 
+			IParseResult parseResult = fp.Parse(new string[]
+			{ "default",
+				"-Str", "SomeString",
+				"-Short", "10",
+				"-UShort", "20",
+				"-Int", "-30",
+				"-UInt", "40",
+				"-Long", "50",
+				"-ULong", "60",
+				"-Float", "70.5",
+				"-Double", "95.2",
+				"-Decimal", "100.130",
+				"-MyEnum", "SomeValue",
+				"-DateTime", "2020-10-10T05:05:05.123",
+				"-TimeSpan", "12:00:00",
+				"-Guid", "123e4567-e89b-12d3-a456-426614174000"
+			});
+
+			EveryPrimitiveTypeNullable pr = Assert.IsType<SuccessfulParse<EveryPrimitiveTypeNullable>>(parseResult).Object;
+			Assert.Equal("SomeString", pr.Str);
+			Assert.Equal(10, pr.Short.Value);
+			Assert.Equal(20, pr.UShort.Value);
+			Assert.Equal(-30, pr.Int);
+			Assert.True(40U == pr.UInt);
+			Assert.Equal(50, pr.Long);
+			Assert.True(60UL == pr.ULong);
+			Assert.Equal(70.5, pr.Float.Value);
+			Assert.Equal(95.2, pr.Double);
+			Assert.True(100.130m == pr.Decimal);
+			Assert.Equal(MyEnum.SomeValue, pr.MyEnum);
+			Assert.Equal(new DateTime(2020, 10, 10, 5, 5, 5, 123), pr.DateTime);
+			Assert.Equal(new TimeSpan(12, 0, 0), pr.TimeSpan);
+			Assert.Equal(new Guid(0x123e4567, 0xe89b, 0x12d3, 0xa4, 0x56, 0x42, 0x66, 0x14, 0x17, 0x40, 0x00), pr.Guid);
+		}
+		[Fact]
+		public void ManyValueAccumulators()
+		{
+			CliParser fp = new CliParserBuilder().AddVerb<OptArray>("default", verb => { verb.AddMultiValue(x => x.Collection, x => { }); }).Build();
+			var objOptArray = Assert.IsType<SuccessfulParse<OptArray>>(fp.Parse(new string[] { "default", "String1", "String2", "String3" })).Object;
+			Assert.Contains("String1", objOptArray.Collection);
+			Assert.Contains("String2", objOptArray.Collection);
+			Assert.Contains("String3", objOptArray.Collection);
+
+			fp = new CliParserBuilder().AddVerb<OptList>("default", verb => { verb.AddMultiValue(x => x.Collection, x => { }); }).Build();
+			var objOptList = Assert.IsType<SuccessfulParse<OptList>>(fp.Parse(new string[] { "default", "String1", "String2", "String3" })).Object;
+			Assert.Contains("String1", objOptList.Collection);
+			Assert.Contains("String2", objOptList.Collection);
+			Assert.Contains("String3", objOptList.Collection);
+
+			fp = new CliParserBuilder().AddVerb<OptIList>("default", verb => { verb.AddMultiValue(x => x.Collection, x => { }); }).Build();
+			var objOptIList = Assert.IsType<SuccessfulParse<OptIList>>(fp.Parse(new string[] { "default", "String1", "String2", "String3" })).Object;
+			Assert.Contains("String1", objOptIList.Collection);
+			Assert.Contains("String2", objOptIList.Collection);
+			Assert.Contains("String3", objOptIList.Collection);
+
+			fp = new CliParserBuilder().AddVerb<OptIReadOnlyList>("default", verb => { verb.AddMultiValue(x => x.Collection, x => { }); }).Build();
+			var objOptIReadOnlyList = Assert.IsType<SuccessfulParse<OptIReadOnlyList>>(fp.Parse(new string[] { "default", "String1", "String2", "String3" })).Object;
+			Assert.Contains("String1", objOptIReadOnlyList.Collection);
+			Assert.Contains("String2", objOptIReadOnlyList.Collection);
+			Assert.Contains("String3", objOptIReadOnlyList.Collection);
+
+			fp = new CliParserBuilder().AddVerb<OptICollection>("default", verb => { verb.AddMultiValue(x => x.Collection, x => { }); }).Build();
+			var objOptICollection = Assert.IsType<SuccessfulParse<OptICollection>>(fp.Parse(new string[] { "default", "String1", "String2", "String3" })).Object;
+			Assert.Contains("String1", objOptICollection.Collection);
+			Assert.Contains("String2", objOptICollection.Collection);
+			Assert.Contains("String3", objOptICollection.Collection);
+
+			fp = new CliParserBuilder().AddVerb<OptIReadOnlyCollection>("default", verb => { verb.AddMultiValue(x => x.Collection, x => { }); }).Build();
+			var objOptIReadOnlyCollection = Assert.IsType<SuccessfulParse<OptIReadOnlyCollection>>(fp.Parse(new string[] { "default", "String1", "String2", "String3" })).Object;
+			Assert.Contains("String1", objOptIReadOnlyCollection.Collection);
+			Assert.Contains("String2", objOptIReadOnlyCollection.Collection);
+			Assert.Contains("String3", objOptIReadOnlyCollection.Collection);
+
+			fp = new CliParserBuilder().AddVerb<OptIEnumerable>("default", verb => { verb.AddMultiValue(x => x.Collection, x => { }); }).Build();
+			var objOptIEnumerable = Assert.IsType<SuccessfulParse<OptIEnumerable>>(fp.Parse(new string[] { "default", "String1", "String2", "String3" })).Object;
+			Assert.Contains("String1", objOptIEnumerable.Collection);
+			Assert.Contains("String2", objOptIEnumerable.Collection);
+			Assert.Contains("String3", objOptIEnumerable.Collection);
+
+			fp = new CliParserBuilder().AddVerb<OptHashSet>("default", verb => { verb.AddMultiValue(x => x.Collection, x => { }); }).Build();
+			var objOptHashSet = Assert.IsType<SuccessfulParse<OptHashSet>>(fp.Parse(new string[] { "default", "String1", "String2", "String3" })).Object;
+			Assert.Contains("String1", objOptHashSet.Collection);
+			Assert.Contains("String2", objOptHashSet.Collection);
+			Assert.Contains("String3", objOptHashSet.Collection);
+
+			fp = new CliParserBuilder().AddVerb<OptStack>("default", verb => { verb.AddMultiValue(x => x.Collection, x => { }); }).Build();
+			var objOptStack = Assert.IsType<SuccessfulParse<OptStack>>(fp.Parse(new string[] { "default", "String1", "String2", "String3" })).Object;
+			Assert.Contains("String1", objOptStack.Collection);
+			Assert.Contains("String2", objOptStack.Collection);
+			Assert.Contains("String3", objOptStack.Collection);
+
+			fp = new CliParserBuilder().AddVerb<OptQueue>("default", verb => { verb.AddMultiValue(x => x.Collection, x => { }); }).Build();
+			var objOptQueue = Assert.IsType<SuccessfulParse<OptQueue>>(fp.Parse(new string[] { "default", "String1", "String2", "String3" })).Object;
+			Assert.Contains("String1", objOptQueue.Collection);
+			Assert.Contains("String2", objOptQueue.Collection);
+			Assert.Contains("String3", objOptQueue.Collection);
+		}
+		
 		[Fact]
 		public void ManyValuesAllNormal_Good()
 		{

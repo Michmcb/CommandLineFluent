@@ -3,7 +3,7 @@
 	using System;
 	using System.IO;
 	/// <summary>
-	/// This class simply calls Console methods.
+	/// This class simply calls <see cref="Console"/> methods.
 	/// </summary>
 	public sealed class StandardConsole : IConsole
 	{

@@ -1,6 +1,9 @@
 ﻿namespace CommandLineFluent
 {
 	using System;
+	/// <summary>
+	/// A wrapper for <see cref="Console"/>. Mainly useful for unit testing.
+	/// </summary>
 	public interface IConsole
 	{
 		int CurrentWidth { get; }

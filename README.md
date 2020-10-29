@@ -94,7 +94,7 @@ new CliParserBuilder(new CliParserConfig()
 	.UseTokenizer(new MyTokenizer()) // This is, by default, QuotedStringTokenizer
 	.UseConsole(new MyConsole()) // This is, by default, StandardConsole, which just calls Console methods
 	.UseMessageFormatter(new MyMessageFormatter()) // This is, by default, StandardMessageFormatter, which provides default usage, help, and error formatting.
-	.AddVerb<ProcessFile>(verb =>
+	.AddVerb<ProcessFile>("process", verb =>
 	{
 		// This automatically prefixes these, so they become -f and -frobulate
 		verb.AddSwitch(x => x.Frobulate, x => {
@@ -204,35 +204,35 @@ verb.AddOptionCore<MyType>(x => x.InputFileInfo, x => {
 		x.LongName = "--frobulationIntensity";
 		x.DescriptiveName = "Frobulation Intensity";
 		x.HelpText = "frobulation intensifies";
-		x.DefaultValue = Intensity.Default;
+		x.DefaultValue = MyType.Default;
 		
 		// Returning a string is the error message, whereas returning a type of TProp is success.
 		// This is just for demonstration
 		x.Converter = (rawString) => {
-		if (Intensity.TryParse(rawString, out Intensity value) {
+		if (MyType.TryParse(rawString, out MyType value) {
 			// Converted<TProp, string> can be implicitly constructed as successful from MyType
 			return value;
 		}
 		else {
 			// It can also be implicitly constructed as failed from string, which is the error message.
-			return "Cannot parse string as Intensity";
+			return "Cannot parse string as MyType";
 		}
 	}
-	});
+});
 ```
 
 You can also create an extension method to set some defaults on the object. This way you don't need to provide certain properties every time.
 Note, if you need to return Converted<string, string>, you need to use Converted<string, string>.Value() and Converted<string, string>.Error() to clarify when it's successful and when it's failed.
 
 ```csharp
-	public static Option<TClass, string> AddOption(this Verb<TClass> verb, Expression<Func<TClass, Intensity>> expression, Action<NamedArgConfig<TClass, Intensity, string>> config)
+	public static Option<TClass, Intensity> AddOption<TClass>(this Verb<TClass> verb, Expression<Func<TClass, Intensity>> expression, Action<NamedArgConfig<TClass, Intensity, string>> config) where TClass : class, new()
 	{
 		// We set a default converter on the object
 		var obj = new NamedArgConfig<TClass, Intensity, string>();
 		obj.Converter = IntensityConverter;
 		
 		// There's also a constructor for the common scenario of requiredness/converter
-		var obj = new NamedArgConfig<TClass, Intensity, string>(
+		obj = new NamedArgConfig<TClass, Intensity, string>(
 			isRequired: true,
 			converter: IntensityConverter);
 		
@@ -302,10 +302,10 @@ verb.AddMultiValue(x => x.MyCollectionOfIntegers, x => {
 		x.HelpText = "A bunch of numbers";
 
 		// Say the property MyCollectionOfIntegers is an interface, but we want a specific concrete type, such as an array. So, we can define a custom accumulator.
-		x.Accumulator = enumerable => new Stack<TProp>(enumerable);
+		x.Accumulator = enumerable => new Stack<int>(enumerable);
 });
 
-verb.AddMultiValueCore(x => x.SummedInteger, x => {
+verb.AddMultiValueCore<int, int>(x => x.SummedInteger, x => {
 		x.DescriptiveName = "ManyIntegers";
 		x.HelpText = "A bunch of numbers which will be summed";
 
@@ -317,7 +317,7 @@ verb.AddMultiValueCore(x => x.SummedInteger, x => {
 			{
 				total += number;
 			}
-			return number;
+			return total;
 		};
 });
 ```
