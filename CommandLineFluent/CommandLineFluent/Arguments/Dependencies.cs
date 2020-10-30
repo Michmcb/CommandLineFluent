@@ -3,12 +3,11 @@
 	using System;
 	using System.Collections.Generic;
 	using System.ComponentModel;
-	using System.Linq.Expressions;
 	/// <summary>
-	/// Defines a relationship between an Argument and a property of the target object.
+	/// Defines a relationship between an Argument and a property of a target object of type <typeparamref name="TClass"/>.
 	/// It allows you to specify that certain Arguments are only required or allowed under certain circumstances.
 	/// </summary>
-	/// <typeparam name="TClass">The class of the property which this set of Dependencies is for.</typeparam>
+	/// <typeparam name="TClass">The class which this set of Dependencies is for.</typeparam>
 	public sealed class Dependencies<TClass> where TClass : new()
 	{
 		private readonly List<IDependencyRule<TClass>> rules;
@@ -26,9 +25,9 @@
 		/// </summary>
 		/// <typeparam name="TOtherProp">The type of the <paramref name="property"/>.</typeparam>
 		/// <param name="property">The rule stipulates this Argument is required if <paramref name="property"/> has a certain value.</param>
-		public DependencyRule<TClass, TOtherProp> RequiredIf<TOtherProp>(Expression<Func<TClass, TOtherProp>> property)
+		public DependencyRule<TClass, TOtherProp> RequiredIf<TOtherProp>(Func<TClass, TOtherProp> property)
 		{
-			DependencyRule<TClass, TOtherProp> rule = new DependencyRule<TClass, TOtherProp>(ArgUtils.PropertyInfoFromExpression(property), DependencyRequiredness.Required);
+			DependencyRule<TClass, TOtherProp> rule = new DependencyRule<TClass, TOtherProp>(property, DependencyRequiredness.Required);
 			rules.Add(rule);
 			return rule;
 		}
@@ -38,9 +37,9 @@
 		/// </summary>
 		/// <typeparam name="TOtherProp">The type of the property</typeparam>
 		/// <param name="property">The rule stipulates this Argument must not appear if <paramref name="property"/> has a certain value.</param>
-		public DependencyRule<TClass, TOtherProp> MustNotAppearIf<TOtherProp>(Expression<Func<TClass, TOtherProp>> property)
+		public DependencyRule<TClass, TOtherProp> MustNotAppearIf<TOtherProp>(Func<TClass, TOtherProp> property)
 		{
-			DependencyRule<TClass, TOtherProp> rule = new DependencyRule<TClass, TOtherProp>(ArgUtils.PropertyInfoFromExpression(property), DependencyRequiredness.MustNotAppear);
+			DependencyRule<TClass, TOtherProp> rule = new DependencyRule<TClass, TOtherProp>(property, DependencyRequiredness.MustNotAppear);
 			rules.Add(rule);
 			return rule;
 		}

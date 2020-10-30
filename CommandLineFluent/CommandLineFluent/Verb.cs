@@ -11,6 +11,9 @@
 		{
 			ShortName = shortName;
 			LongName = longName;
+			HelpText = "No help available.";
+			Invoke = () => throw new CliParserBuilderException(string.Concat("Invoke for verb ", LongName, " has not been configured"));
+			InvokeAsync = () => throw new CliParserBuilderException(string.Concat("InvokeAsync for verb ", LongName, " has not been configured"));
 		}
 		public string? ShortName { get; }
 		public string LongName { get; }
@@ -23,6 +26,11 @@
 		/// The asynchronous action that's invoked when parsing is successful and this verb was provided.
 		/// </summary>
 		public Func<Task> InvokeAsync { get; set; }
+		/// <summary>
+		/// If <paramref name="args"/> is empty, returns a <see cref="SuccessfulParse"/>.
+		/// Otherwise, returns a <see cref="FailedParseWithVerb"/>.
+		/// </summary>
+		/// <param name="args">The arguments.</param>
 		public IParseResult Parse(IEnumerable<string> args)
 		{
 			if (args.Any())

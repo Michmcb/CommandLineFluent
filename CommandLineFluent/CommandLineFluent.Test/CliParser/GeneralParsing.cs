@@ -20,59 +20,59 @@
 			All = Value | Option | Switch
 		}
 		[Fact]
-		public void JustValue_Good() { SimpleParsing(true, Components.Value, new string[] { "default", "Value" }); }
+		public void JustValue_Good() { SimpleParsing(true, true, Components.Value, new string[] { "default", "Value" }); }
 		[Fact]
-		public void JustShortOption_Good() { SimpleParsing(true, Components.Option, new string[] { "default", "-o", "Option" }); }
+		public void JustShortOption_Good() { SimpleParsing(true, true, Components.Option, new string[] { "default", "-o", "30" }); }
 		[Fact]
-		public void JustLongOption_Good() { SimpleParsing(true, Components.Option, new string[] { "default", "--option", "Option" }); }
+		public void JustLongOption_Good() { SimpleParsing(true, true, Components.Option, new string[] { "default", "--option", "30" }); }
 		[Fact]
-		public void JustShortSwitch_Good() { SimpleParsing(true, Components.Switch, new string[] { "default", "-s" }); }
+		public void JustShortSwitch_Good() { SimpleParsing(true, true, Components.Switch, new string[] { "default", "-s" }); }
 		[Fact]
-		public void JustLongSwitch_Good() { SimpleParsing(true, Components.Switch, new string[] { "default", "--switch" }); }
+		public void JustLongSwitch_Good() { SimpleParsing(true, true, Components.Switch, new string[] { "default", "--switch" }); }
 		[Fact]
-		public void ShortValueAndOption_Good() { SimpleParsing(true, Components.ValueOption, new string[] { "default", "Value", "-o", "Option" }); }
+		public void ShortValueAndOption_Good() { SimpleParsing(true, true, Components.ValueOption, new string[] { "default", "Value", "-o", "30" }); }
 		[Fact]
-		public void LongValueAndOption_Good() { SimpleParsing(true, Components.ValueOption, new string[] { "default", "Value", "--option", "Option" }); }
+		public void LongValueAndOption_Good() { SimpleParsing(true, true, Components.ValueOption, new string[] { "default", "Value", "--option", "30" }); }
 		[Fact]
-		public void ShortSwitchAndOption_Good() { SimpleParsing(true, Components.SwitchOption, new string[] { "default", "-s", "-o", "Option" }); }
+		public void ShortSwitchAndOption_Good() { SimpleParsing(true, true, Components.SwitchOption, new string[] { "default", "-s", "-o", "30" }); }
 		[Fact]
-		public void LongSwitchAndOption_Good() { SimpleParsing(true, Components.SwitchOption, new string[] { "default", "--switch", "--option", "Option" }); }
+		public void LongSwitchAndOption_Good() { SimpleParsing(true, true, Components.SwitchOption, new string[] { "default", "--switch", "--option", "30" }); }
 		[Fact]
-		public void ShortValueAndSwitch_Good() { SimpleParsing(true, Components.ValueSwitch, new string[] { "default", "Value", "-s" }); }
+		public void ShortValueAndSwitch_Good() { SimpleParsing(true, true, Components.ValueSwitch, new string[] { "default", "Value", "-s" }); }
 		[Fact]
-		public void LongValueAndSwitch_Good() { SimpleParsing(true, Components.ValueSwitch, new string[] { "default", "Value", "--switch" }); }
+		public void LongValueAndSwitch_Good() { SimpleParsing(true, true, Components.ValueSwitch, new string[] { "default", "Value", "--switch" }); }
 		[Fact]
-		public void ValueShortOptionSwitch_Good() { SimpleParsing(true, Components.All, new string[] { "default", "Value", "-s", "-o", "Option" }); }
+		public void ValueShortOptionSwitch_Good() { SimpleParsing(true, true, Components.All, new string[] { "default", "Value", "-s", "-o", "30" }); }
 		[Fact]
-		public void ValueLongOptionShortSwitch_Good() { SimpleParsing(true, Components.All, new string[] { "default", "Value", "-s", "--option", "Option" }); }
+		public void ValueLongOptionShortSwitch_Good() { SimpleParsing(true, true, Components.All, new string[] { "default", "Value", "-s", "--option", "30" }); }
 		[Fact]
-		public void ValueShortOptionLongSwitch_Good() { SimpleParsing(true, Components.All, new string[] { "default", "Value", "--switch", "-o", "Option" }); }
+		public void ValueShortOptionLongSwitch_Good() { SimpleParsing(true, true, Components.All, new string[] { "default", "Value", "--switch", "-o", "30" }); }
 		[Fact]
-		public void ValueLongOptionLongSwitch_Good() { SimpleParsing(true, Components.All, new string[] { "default", "Value", "--switch", "--option", "Option" }); }
+		public void ValueLongOptionLongSwitch_Good() { SimpleParsing(true, true, Components.All, new string[] { "default", "Value", "--switch", "--option", "30" }); }
 		[Fact]
-		public void Nothing_Bad() { SimpleParsing(false, Components.None, new string[] { "" }); }
+		public void Nothing_Bad() { SimpleParsing(false, false, Components.None, new string[] { "" }); }
 		[Fact]
-		public void InvalidVerb_Bad() { SimpleParsing(false, Components.None, new string[] { "knuckles" }); }
+		public void InvalidVerb_Bad() { SimpleParsing(false, false, Components.None, new string[] { "knuckles" }); }
 		[Fact]
-		public void InvalidArgument_Bad() { SimpleParsing(false, Components.None, new string[] { "default", "Value", "--hey" }); }
+		public void InvalidArgument_Bad() { SimpleParsing(false, true, Components.None, new string[] { "default", "Value", "--hey" }); }
 		[Fact]
-		public void OptionMissingvalue_Bad() { SimpleParsing(false, Components.None, new string[] { "default", "Value", "--option" }); }
-		internal void SimpleParsing(bool outcome, Components components, string[] args)
+		public void OptionMissingvalue_Bad() { SimpleParsing(false, true, Components.None, new string[] { "default", "Value", "--option" }); }
+		internal void SimpleParsing(bool outcome, bool isValidVerb, Components components, string[] args)
 		{
 			CliParser fp = new CliParserBuilder()
 				.AddVerb<OptOneOfEach>("default", verb =>
 				{
 					if ((components & Components.Value) == Components.Value)
 					{
-						verb.AddValueString(x => x.ForProperty(o => o.Value).WithHelpText("h"));
+						verb.AddValue(x => x.Value, x => { x.HelpText = "h"; });
 					}
 					if ((components & Components.Switch) == Components.Switch)
 					{
-						verb.AddSwitchBool("-s", "--switch", x => x.ForProperty(o => o.Switch).WithHelpText("h"));
+						verb.AddSwitch(x => x.Switch, x => { x.ShortName = "-s"; x.LongName = "--switch"; x.HelpText = "h"; });
 					}
 					if ((components & Components.Option) == Components.Option)
 					{
-						verb.AddOptionString("-o", "--option", x => x.ForProperty(o => o.Option).WithHelpText("h"));
+						verb.AddOption(x => x.Option, x => { x.ShortName = "-o"; x.LongName = "--option"; x.HelpText = "h"; });
 					}
 				}).Build();
 
@@ -99,12 +99,22 @@
 				}
 				if ((components & Components.Option) == Components.Option)
 				{
-					Assert.Equal("Option", parsedObject.Option);
+					Assert.Equal(30, parsedObject.Option);
 				}
 			}
 			else
 			{
-				// TODO test some crappy parsing
+				Assert.False(parsed.Ok);
+				// Verb still shouldn't be null, since for our test cases we DO pass the verb
+				if (isValidVerb)
+				{
+					Assert.NotNull(parsed.Verb);
+				}
+				else
+				{
+					Assert.Null(parsed.Verb);
+				}
+				Assert.NotEmpty(parsed.Errors);
 			}
 		}
 		[Fact]
@@ -221,53 +231,36 @@
 				{
 					verb.HelpText = "My Test Verb";
 
-					verb.AddValueString(val =>
-						val.ForProperty(x => x.RequiredValue)
-						.IsRequired()
-						.WithHelpText("h"));
+					verb.AddValue(x => x.RequiredValue, x => { x.HelpText = "h"; });
 
-					verb.AddValueInt(v =>
-						v.ForProperty(x => x.ConvertedValue)
-						.WithHelpText("h"));
+					verb.AddValue(x => x.ConvertedValue, x => { x.HelpText = "h"; });
 
-					verb.AddValueNullableString(v => v
-						.ForProperty(x => x.OptionalValue)
-						.IsOptional(null)
-						.WithHelpText("h"));
+					verb.AddValueNullable(x => x.OptionalValue, x => { x.DefaultValue = null; x.HelpText = "h"; });
 
-					verb.AddSwitchBool("s1", "ss1", s => s
-						.ForProperty(x => x.Switch1)
-						.WithHelpText("h"));
+					verb.AddSwitch(x => x.Switch1, x => { x.ShortName = "s1"; x.LongName = "ss1"; x.HelpText = "h"; });
 
-					verb.AddSwitchBool("s2", "ss2", s => s
-						.ForProperty(x => x.DefaultValueSwitch)
-						.IsOptional(true)
-						.WithHelpText("h"));
+					verb.AddSwitch(x => x.DefaultValueSwitch, x => { x.ShortName = "s2"; x.LongName = "ss2"; x.DefaultValue = true; x.HelpText = "h"; });
 
-					verb.AddSwitch<string>("s3", "ss3", s => s
-						.ForProperty(x => x.ConvertedSwitch)
-						.WithConverter(v => Converted<string, string>.Value(v.ToString()))
-						.WithHelpText("h"));
+					verb.AddSwitchCore(a => a.ConvertedSwitch, new Arguments.Config.NamedArgConfig<ComplexVerb1, string, bool>()
+					{
+						Converter = v => Converted<string, string>.Value(v.ToString()),
+						HelpText = "h",
+						ShortName = "s3",
+						LongName = "ss3"
+					});
 
-					verb.AddSwitch<string>("s4", "ss4", s => s
-						.ForProperty(x => x.DefaultValueConvertedSwitch)
-						.WithConverter(v => Converted<string, string>.Value(v.ToString()))
-						.IsOptional("Default")
-						.WithHelpText("h"));
+					verb.AddSwitchCore(a => a.DefaultValueConvertedSwitch, new Arguments.Config.NamedArgConfig<ComplexVerb1, string, bool>()
+					{
+						Converter = v => Converted<string, string>.Value(v.ToString()),
+						DefaultValue = "Default",
+						HelpText = "h",
+						ShortName = "s4",
+						LongName = "ss4"
+					});
 
-					verb.AddOptionString("o1", "oo1", o => o
-						.ForProperty(x => x.RequiredOption)
-						.IsRequired()
-						.WithHelpText("h"));
-
-					verb.AddOptionString("o2", "oo2", o => o
-						.ForProperty(x => x.OptionalOption)
-						.IsOptional("Default")
-						.WithHelpText("h"));
-
-					verb.AddOptionInt("o3", "oo3", o => o
-						.ForProperty(x => x.ConvertedOption)
-						.WithHelpText("h"));
+					verb.AddOption(x => x.RequiredOption, x => { x.ShortName = "o1"; x.LongName = "oo1"; x.HelpText = "h"; });
+					verb.AddOption(x => x.OptionalOption, x => { x.ShortName = "o2"; x.LongName = "oo2"; x.DefaultValue = "Default"; x.HelpText = "h"; });
+					verb.AddOption(x => x.ConvertedOption, x => { x.ShortName = "o3"; x.LongName = "oo3"; x.HelpText = "h"; });
 				}).Build();
 
 			IParseResult result = fp.Parse(args);
@@ -290,41 +283,207 @@
 			}
 		}
 		[Fact]
-		public void ManyValuesAllNormal_Good()
-		{
-			ManyValueParsing(new string[] { "default", "value1", "value2", "-o", "Opt", "value3", "-s", "value4", "value5" }, true, new ManyValuesVerb() { Option = "Opt", Switch = true, ManyValues = new string[] { "value1", "value2", "value3", "value4", "value5", } });
-			ManyValueParsing(new string[] { "default", "value1", "value2", "value3", "-s", "value4", "value5", "-o", "Opt" }, true, new ManyValuesVerb() { Option = "Opt", Switch = true, ManyValues = new string[] { "value1", "value2", "value3", "value4", "value5", } });
-			ManyValueParsing(new string[] { "default", "value1", "value2", "-o", "Opt", "value3", "-s", "value4", "value5", "value6", "value7", "value8", "value9", "value10" }, true, new ManyValuesVerb() { Option = "Opt", Switch = true, ManyValues = new string[] { "value1", "value2", "value3", "value4", "value5", "value6", "value7", "value8", "value9", "value10" } });
-		}
-		//[Fact]
-		//public void ManyValuesIgnoredPrefix_Fail()
-		//{
-		//	ManyValueParsing(new string[] { "default", "value1", "value2", "-o", "Opt", "value3", "-s", "value4", "value5", "--sneakyErrorInDisguise", "-notAValue" }, false, null);
-		//}
-		internal void ManyValueParsing(string[] args, bool shouldBeSuccessful, ManyValuesVerb expectedResult)
+		public void ParsingConverters_Required()
 		{
 			CliParser fp = new CliParserBuilder()
-				.AddVerb<ManyValuesVerb>("default", verb =>
+				.AddVerb<EveryPrimitiveType>("default", verb =>
 				{
-					verb.AddMultiValueString(mv => mv
-						.ForProperty(x => x.ManyValues)
-						//.IgnorePrefixes("-", "--")
-						.WithHelpText("h"));
-					verb.AddOptionString("o", "oo", o => o
-						.ForProperty(x => x.Option)
-						.IsOptional("default")
-						.WithHelpText("h"));
-					verb.AddSwitchBool("s", "ss", s => s
-						.ForProperty(x => x.Switch)
-						.WithHelpText("h"));
+					verb.AddOption(x => x.Str, x => { x.ShortName = "-Str"; });
+					verb.AddOption(x => x.Short, x => { x.ShortName = "-Short"; });
+					verb.AddOption(x => x.UShort, x => { x.ShortName = "-UShort"; });
+					verb.AddOption(x => x.Int, x => { x.ShortName = "-Int"; });
+					verb.AddOption(x => x.UInt, x => { x.ShortName = "-UInt"; });
+					verb.AddOption(x => x.Long, x => { x.ShortName = "-Long"; });
+					verb.AddOption(x => x.ULong, x => { x.ShortName = "-ULong"; });
+					verb.AddOption(x => x.Float, x => { x.ShortName = "-Float"; });
+					verb.AddOption(x => x.Double, x => { x.ShortName = "-Double"; });
+					verb.AddOption(x => x.Decimal, x => { x.ShortName = "-Decimal"; });
+					verb.AddOption(x => x.MyEnum, x => { x.ShortName = "-MyEnum"; });
+					verb.AddOption(x => x.DateTime, x => { x.ShortName = "-DateTime"; });
+					verb.AddOption(x => x.TimeSpan, x => { x.ShortName = "-TimeSpan"; });
+					verb.AddOption(x => x.Guid, x => { x.ShortName = "-Guid"; });
+				}).Build();
+
+			IParseResult parseResult = fp.Parse(new string[]
+			{ "default",
+				"-Str", "SomeString",
+				"-Short", "10",
+				"-UShort", "20",
+				"-Int", "-30",
+				"-UInt", "40",
+				"-Long", "50",
+				"-ULong", "60",
+				"-Float", "70.5",
+				"-Double", "95.2",
+				"-Decimal", "100.130",
+				"-MyEnum", "SomeValue",
+				"-DateTime", "2020-10-10T05:05:05.123",
+				"-TimeSpan", "12:00:00",
+				"-Guid", "123e4567-e89b-12d3-a456-426614174000"
+			});
+
+			EveryPrimitiveType pr = Assert.IsType<SuccessfulParse<EveryPrimitiveType>>(parseResult).Object;
+			Assert.Equal("SomeString", pr.Str);
+			Assert.Equal(10, pr.Short);
+			Assert.Equal(20, pr.UShort);
+			Assert.Equal(-30, pr.Int);
+			Assert.True(40U == pr.UInt);
+			Assert.Equal(50, pr.Long);
+			Assert.True(60UL == pr.ULong);
+			Assert.Equal(70.5, pr.Float);
+			Assert.Equal(95.2, pr.Double);
+			Assert.True(100.130m == pr.Decimal);
+			Assert.Equal(MyEnum.SomeValue, pr.MyEnum);
+			Assert.Equal(new DateTime(2020, 10, 10, 5, 5, 5, 123), pr.DateTime);
+			Assert.Equal(new TimeSpan(12, 0, 0), pr.TimeSpan);
+			Assert.Equal(new Guid(0x123e4567, 0xe89b, 0x12d3, 0xa4, 0x56, 0x42, 0x66, 0x14, 0x17, 0x40, 0x00), pr.Guid);
+		}
+		[Fact]
+		public void ParsingConverters_Nullable()
+		{
+			CliParser fp = new CliParserBuilder()
+				.AddVerb<EveryPrimitiveTypeNullable>("default", verb =>
+				{
+					verb.AddOptionNullable(x => x.Str, x => { x.ShortName = "-Str"; });
+					verb.AddOption(x => x.Short, x => { x.ShortName = "-Short"; });
+					verb.AddOption(x => x.UShort, x => { x.ShortName = "-UShort"; });
+					verb.AddOption(x => x.Int, x => { x.ShortName = "-Int"; });
+					verb.AddOption(x => x.UInt, x => { x.ShortName = "-UInt"; });
+					verb.AddOption(x => x.Long, x => { x.ShortName = "-Long"; });
+					verb.AddOption(x => x.ULong, x => { x.ShortName = "-ULong"; });
+					verb.AddOption(x => x.Float, x => { x.ShortName = "-Float"; });
+					verb.AddOption(x => x.Double, x => { x.ShortName = "-Double"; });
+					verb.AddOption(x => x.Decimal, x => { x.ShortName = "-Decimal"; });
+					verb.AddOption(x => x.MyEnum, x => { x.ShortName = "-MyEnum"; });
+					verb.AddOption(x => x.DateTime, x => { x.ShortName = "-DateTime"; });
+					verb.AddOption(x => x.TimeSpan, x => { x.ShortName = "-TimeSpan"; });
+					verb.AddOption(x => x.Guid, x => { x.ShortName = "-Guid"; });
+				}).Build();
+
+			IParseResult parseResult = fp.Parse(new string[]
+			{ "default",
+				"-Str", "SomeString",
+				"-Short", "10",
+				"-UShort", "20",
+				"-Int", "-30",
+				"-UInt", "40",
+				"-Long", "50",
+				"-ULong", "60",
+				"-Float", "70.5",
+				"-Double", "95.2",
+				"-Decimal", "100.130",
+				"-MyEnum", "SomeValue",
+				"-DateTime", "2020-10-10T05:05:05.123",
+				"-TimeSpan", "12:00:00",
+				"-Guid", "123e4567-e89b-12d3-a456-426614174000"
+			});
+
+			EveryPrimitiveTypeNullable pr = Assert.IsType<SuccessfulParse<EveryPrimitiveTypeNullable>>(parseResult).Object;
+			Assert.Equal("SomeString", pr.Str);
+			Assert.Equal(10, pr.Short.Value);
+			Assert.Equal(20, pr.UShort.Value);
+			Assert.Equal(-30, pr.Int);
+			Assert.True(40U == pr.UInt);
+			Assert.Equal(50, pr.Long);
+			Assert.True(60UL == pr.ULong);
+			Assert.Equal(70.5, pr.Float.Value);
+			Assert.Equal(95.2, pr.Double);
+			Assert.True(100.130m == pr.Decimal);
+			Assert.Equal(MyEnum.SomeValue, pr.MyEnum);
+			Assert.Equal(new DateTime(2020, 10, 10, 5, 5, 5, 123), pr.DateTime);
+			Assert.Equal(new TimeSpan(12, 0, 0), pr.TimeSpan);
+			Assert.Equal(new Guid(0x123e4567, 0xe89b, 0x12d3, 0xa4, 0x56, 0x42, 0x66, 0x14, 0x17, 0x40, 0x00), pr.Guid);
+		}
+		[Fact]
+		public void ManyValueAccumulators()
+		{
+			CliParser fp = new CliParserBuilder().AddVerb<OptArray>("default", verb => { verb.AddMultiValue(x => x.Collection, x => { }); }).Build();
+			var objOptArray = Assert.IsType<SuccessfulParse<OptArray>>(fp.Parse(new string[] { "default", "String1", "String2", "String3" })).Object;
+			Assert.Contains("String1", objOptArray.Collection);
+			Assert.Contains("String2", objOptArray.Collection);
+			Assert.Contains("String3", objOptArray.Collection);
+
+			fp = new CliParserBuilder().AddVerb<OptList>("default", verb => { verb.AddMultiValue(x => x.Collection, x => { }); }).Build();
+			var objOptList = Assert.IsType<SuccessfulParse<OptList>>(fp.Parse(new string[] { "default", "String1", "String2", "String3" })).Object;
+			Assert.Contains("String1", objOptList.Collection);
+			Assert.Contains("String2", objOptList.Collection);
+			Assert.Contains("String3", objOptList.Collection);
+
+			fp = new CliParserBuilder().AddVerb<OptIList>("default", verb => { verb.AddMultiValue(x => x.Collection, x => { }); }).Build();
+			var objOptIList = Assert.IsType<SuccessfulParse<OptIList>>(fp.Parse(new string[] { "default", "String1", "String2", "String3" })).Object;
+			Assert.Contains("String1", objOptIList.Collection);
+			Assert.Contains("String2", objOptIList.Collection);
+			Assert.Contains("String3", objOptIList.Collection);
+
+			fp = new CliParserBuilder().AddVerb<OptIReadOnlyList>("default", verb => { verb.AddMultiValue(x => x.Collection, x => { }); }).Build();
+			var objOptIReadOnlyList = Assert.IsType<SuccessfulParse<OptIReadOnlyList>>(fp.Parse(new string[] { "default", "String1", "String2", "String3" })).Object;
+			Assert.Contains("String1", objOptIReadOnlyList.Collection);
+			Assert.Contains("String2", objOptIReadOnlyList.Collection);
+			Assert.Contains("String3", objOptIReadOnlyList.Collection);
+
+			fp = new CliParserBuilder().AddVerb<OptICollection>("default", verb => { verb.AddMultiValue(x => x.Collection, x => { }); }).Build();
+			var objOptICollection = Assert.IsType<SuccessfulParse<OptICollection>>(fp.Parse(new string[] { "default", "String1", "String2", "String3" })).Object;
+			Assert.Contains("String1", objOptICollection.Collection);
+			Assert.Contains("String2", objOptICollection.Collection);
+			Assert.Contains("String3", objOptICollection.Collection);
+
+			fp = new CliParserBuilder().AddVerb<OptIReadOnlyCollection>("default", verb => { verb.AddMultiValue(x => x.Collection, x => { }); }).Build();
+			var objOptIReadOnlyCollection = Assert.IsType<SuccessfulParse<OptIReadOnlyCollection>>(fp.Parse(new string[] { "default", "String1", "String2", "String3" })).Object;
+			Assert.Contains("String1", objOptIReadOnlyCollection.Collection);
+			Assert.Contains("String2", objOptIReadOnlyCollection.Collection);
+			Assert.Contains("String3", objOptIReadOnlyCollection.Collection);
+
+			fp = new CliParserBuilder().AddVerb<OptIEnumerable>("default", verb => { verb.AddMultiValue(x => x.Collection, x => { }); }).Build();
+			var objOptIEnumerable = Assert.IsType<SuccessfulParse<OptIEnumerable>>(fp.Parse(new string[] { "default", "String1", "String2", "String3" })).Object;
+			Assert.Contains("String1", objOptIEnumerable.Collection);
+			Assert.Contains("String2", objOptIEnumerable.Collection);
+			Assert.Contains("String3", objOptIEnumerable.Collection);
+
+			fp = new CliParserBuilder().AddVerb<OptHashSet>("default", verb => { verb.AddMultiValue(x => x.Collection, x => { }); }).Build();
+			var objOptHashSet = Assert.IsType<SuccessfulParse<OptHashSet>>(fp.Parse(new string[] { "default", "String1", "String2", "String3" })).Object;
+			Assert.Contains("String1", objOptHashSet.Collection);
+			Assert.Contains("String2", objOptHashSet.Collection);
+			Assert.Contains("String3", objOptHashSet.Collection);
+
+			fp = new CliParserBuilder().AddVerb<OptStack>("default", verb => { verb.AddMultiValue(x => x.Collection, x => { }); }).Build();
+			var objOptStack = Assert.IsType<SuccessfulParse<OptStack>>(fp.Parse(new string[] { "default", "String1", "String2", "String3" })).Object;
+			Assert.Contains("String1", objOptStack.Collection);
+			Assert.Contains("String2", objOptStack.Collection);
+			Assert.Contains("String3", objOptStack.Collection);
+
+			fp = new CliParserBuilder().AddVerb<OptQueue>("default", verb => { verb.AddMultiValue(x => x.Collection, x => { }); }).Build();
+			var objOptQueue = Assert.IsType<SuccessfulParse<OptQueue>>(fp.Parse(new string[] { "default", "String1", "String2", "String3" })).Object;
+			Assert.Contains("String1", objOptQueue.Collection);
+			Assert.Contains("String2", objOptQueue.Collection);
+			Assert.Contains("String3", objOptQueue.Collection);
+		}
+		
+		[Fact]
+		public void ManyValuesAllNormal_Good()
+		{
+			ManyValueParsing(new string[] { "default", "value1", "value2", "-o", "55", "value3", "-s", "value4", "value5" }, true, new OptOneOfEach() { Option = 55, Switch = true, ManyValues = new string[] { "value1", "value2", "value3", "value4", "value5", } });
+			ManyValueParsing(new string[] { "default", "value1", "value2", "value3", "-s", "value4", "value5", "-o", "55" }, true, new OptOneOfEach() { Option = 55, Switch = true, ManyValues = new string[] { "value1", "value2", "value3", "value4", "value5", } });
+			ManyValueParsing(new string[] { "default", "value1", "value2", "-o", "55", "value3", "-s", "value4", "value5", "value6", "value7", "value8", "value9", "value10" }, true, new OptOneOfEach() { Option = 55, Switch = true, ManyValues = new string[] { "value1", "value2", "value3", "value4", "value5", "value6", "value7", "value8", "value9", "value10" } });
+		}
+		internal void ManyValueParsing(string[] args, bool shouldBeSuccessful, OptOneOfEach expectedResult)
+		{
+			CliParser fp = new CliParserBuilder()
+				.AddVerb<OptOneOfEach>("default", verb =>
+				{
+					verb.AddMultiValue(x => x.ManyValues, x =>
+					{
+						x.HelpText = "h";
+					});
+					verb.AddOption(x => x.Option, x => { x.ShortName = "o"; x.LongName = "oo"; x.DefaultValue = 0; x.HelpText = "h"; });
+					verb.AddSwitch(x => x.Switch, x => { x.ShortName = "s"; x.LongName = "ss"; x.HelpText = "h"; });
 				}).Build();
 
 			IParseResult result = fp.Parse(args);
 			Assert.Equal(shouldBeSuccessful, result.Ok);
 			if (shouldBeSuccessful)
 			{
-				SuccessfulParse<ManyValuesVerb> tResult = Assert.IsType<SuccessfulParse<ManyValuesVerb>>(result);
-				ManyValuesVerb x = tResult.Object!;
+				SuccessfulParse<OptOneOfEach> tResult = Assert.IsType<SuccessfulParse<OptOneOfEach>>(result);
+				OptOneOfEach x = tResult.Object!;
 				Assert.NotNull(x);
 				Assert.True(expectedResult.Option == x.Option);
 				Assert.True(expectedResult.Switch == x.Switch);
@@ -335,22 +494,22 @@
 		public void VerbParsing()
 		{
 			CliParser fp = new CliParserBuilder()
-				.AddVerb<Verb1>("verb1", v => v.AddValueString(v => v.ForProperty(x => x.Value).WithHelpText("h")))
-				.AddVerb<Verb2>("verb2", v => v.AddValueString(v => v.ForProperty(x => x.Value).WithHelpText("h")))
-				.AddVerb<Verb3>("verb3", v => v.AddValueString(v => v.ForProperty(x => x.Value).WithHelpText("h")))
-				.AddVerb<Verb4>("verb4", v => v.AddValueString(v => v.ForProperty(x => x.Value).WithHelpText("h")))
-				.AddVerb<Verb5>("verb5", v => v.AddValueString(v => v.ForProperty(x => x.Value).WithHelpText("h")))
-				.AddVerb<Verb6>("verb6", v => v.AddValueString(v => v.ForProperty(x => x.Value).WithHelpText("h")))
-				.AddVerb<Verb7>("verb7", v => v.AddValueString(v => v.ForProperty(x => x.Value).WithHelpText("h")))
-				.AddVerb<Verb8>("verb8", v => v.AddValueString(v => v.ForProperty(x => x.Value).WithHelpText("h")))
-				.AddVerb<Verb9>("verb9", v => v.AddValueString(v => v.ForProperty(x => x.Value).WithHelpText("h")))
-				.AddVerb<Verb10>("verb10", v => v.AddValueString(v => v.ForProperty(x => x.Value).WithHelpText("h")))
-				.AddVerb<Verb11>("verb11", v => v.AddValueString(v => v.ForProperty(x => x.Value).WithHelpText("h")))
-				.AddVerb<Verb12>("verb12", v => v.AddValueString(v => v.ForProperty(x => x.Value).WithHelpText("h")))
-				.AddVerb<Verb13>("verb13", v => v.AddValueString(v => v.ForProperty(x => x.Value).WithHelpText("h")))
-				.AddVerb<Verb14>("verb14", v => v.AddValueString(v => v.ForProperty(x => x.Value).WithHelpText("h")))
-				.AddVerb<Verb15>("verb15", v => v.AddValueString(v => v.ForProperty(x => x.Value).WithHelpText("h")))
-				.AddVerb<Verb16>("verb16", v => v.AddValueString(v => v.ForProperty(x => x.Value).WithHelpText("h")))
+				.AddVerb<Verb1>("verb1", v => v.AddValue(v => v.Value, x => { x.HelpText = "h"; }))
+				.AddVerb<Verb2>("verb2", v => v.AddValue(v => v.Value, x => { x.HelpText = "h"; }))
+				.AddVerb<Verb3>("verb3", v => v.AddValue(v => v.Value, x => { x.HelpText = "h"; }))
+				.AddVerb<Verb4>("verb4", v => v.AddValue(v => v.Value, x => { x.HelpText = "h"; }))
+				.AddVerb<Verb5>("verb5", v => v.AddValue(v => v.Value, x => { x.HelpText = "h"; }))
+				.AddVerb<Verb6>("verb6", v => v.AddValue(v => v.Value, x => { x.HelpText = "h"; }))
+				.AddVerb<Verb7>("verb7", v => v.AddValue(v => v.Value, x => { x.HelpText = "h"; }))
+				.AddVerb<Verb8>("verb8", v => v.AddValue(v => v.Value, x => { x.HelpText = "h"; }))
+				.AddVerb<Verb9>("verb9", v => v.AddValue(v => v.Value, x => { x.HelpText = "h"; }))
+				.AddVerb<Verb10>("verb10", v => v.AddValue(v => v.Value, x => { x.HelpText = "h"; }))
+				.AddVerb<Verb11>("verb11", v => v.AddValue(v => v.Value, x => { x.HelpText = "h"; }))
+				.AddVerb<Verb12>("verb12", v => v.AddValue(v => v.Value, x => { x.HelpText = "h"; }))
+				.AddVerb<Verb13>("verb13", v => v.AddValue(v => v.Value, x => { x.HelpText = "h"; }))
+				.AddVerb<Verb14>("verb14", v => v.AddValue(v => v.Value, x => { x.HelpText = "h"; }))
+				.AddVerb<Verb15>("verb15", v => v.AddValue(v => v.Value, x => { x.HelpText = "h"; }))
+				.AddVerb<Verb16>("verb16", v => v.AddValue(v => v.Value, x => { x.HelpText = "h"; }))
 				.Build();
 
 			string[] args = new string[2];
@@ -381,18 +540,6 @@
 				Assert.Equal(args[0], parsed.Verb!.LongName);
 				i++;
 			}
-		}
-		[Fact]
-		public void Conversion()
-		{
-			CliParser fp = new CliParserBuilder()
-				.AddVerb<OptPrimitives>("verb", verb =>
-				{
-					verb.AddOptionDateTime("o1", "opt1", o => o
-						.ForProperty(x => x.DateTime)
-						.WithHelpText("H"));
-				})
-				.Build();
 		}
 	}
 }

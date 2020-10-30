@@ -1,7 +1,6 @@
 ﻿namespace CommandLineFluent.Arguments
 {
 	using System;
-	using System.Reflection;
 
 	/// <summary>
 	/// A switch that can be toggled on or off
@@ -10,10 +9,10 @@
 	{
 		public string? ShortName { get; }
 		public string? LongName { get; }
-		public string? Name { get; }
+		public string? DescriptiveName { get; }
 		public string HelpText { get; }
 		public ArgumentRequired ArgumentRequired { get; }
-		public PropertyInfo TargetProperty { get; }
+		public Action<TClass, TProp> PropertySetter { get; }
 		/// <summary>
 		/// The default value to use when nothing is provided.
 		/// </summary>
@@ -25,16 +24,16 @@
 		/// <summary>
 		/// Converts from a bool into <typeparamref name="TProp"/>, or returns an error message.
 		/// </summary>
-		public Func<bool, Converted<TProp, string>>? Converter { get; }
-		internal Switch(string? shortName, string? longName, string? name, string helpText, ArgumentRequired argumentRequired, PropertyInfo targetProperty,
-			TProp defaultValue, Dependencies<TClass>? dependencies, Func<bool, Converted<TProp, string>>? converter)
+		public Func<bool, Converted<TProp, string>> Converter { get; }
+		internal Switch(string? shortName, string? longName, string? name, string helpText, ArgumentRequired argumentRequired, Action<TClass, TProp> propertySetter,
+			TProp defaultValue, Dependencies<TClass>? dependencies, Func<bool, Converted<TProp, string>> converter)
 		{
 			ShortName = shortName;
 			LongName = longName;
-			Name = name;
+			DescriptiveName = name;
 			HelpText = helpText;
 			ArgumentRequired = argumentRequired;
-			TargetProperty = targetProperty;
+			PropertySetter = propertySetter;
 			DefaultValue = defaultValue;
 			Dependencies = dependencies;
 			Converter = converter;
@@ -43,40 +42,33 @@
 		{
 			if (rawValue != null)
 			{
-				if (Converter != null)
+				Converted<TProp, string> converted;
+				try
 				{
-					Converted<TProp, string> converted;
-					try
-					{
-						converted = Converter.Invoke(true);
-					}
-					catch (Exception ex)
-					{
-						return new Error(ErrorCode.SwitchFailedConversion, $"Converter for Switch {Name} threw an exception ({ex.Message})");
-					}
-					if (converted.Success(out TProp val, out string error))
-					{
-						TargetProperty.SetValue(target, val);
-					}
-					else
-					{
-						return new Error(ErrorCode.SwitchFailedConversion, error);
-					}
+					converted = Converter.Invoke(true);
+				}
+				catch (Exception ex)
+				{
+					return new Error(ErrorCode.SwitchFailedConversion, $"Converter for Switch {DescriptiveName} threw an exception ({ex.ToString()})");
+				}
+				if (converted.Success(out TProp val, out string error))
+				{
+					PropertySetter(target, val);
 				}
 				else
 				{
-					TargetProperty.SetValue(target, true);
+					return new Error(ErrorCode.SwitchFailedConversion, error);
 				}
 			}
 			else
 			{
 				if (ArgumentRequired == ArgumentRequired.Required)
 				{
-					return new Error(ErrorCode.MissingRequiredSwitch, $"Switch {Name} ({ArgUtils.ShortAndLongName(ShortName, LongName)}) is required and was not present");
+					return new Error(ErrorCode.MissingRequiredSwitch, $"Switch {DescriptiveName} ({ArgUtils.ShortAndLongName(ShortName, LongName)}) is required and was not present");
 				}
 				else
 				{
-					TargetProperty.SetValue(target, DefaultValue);
+					PropertySetter(target, DefaultValue);
 				}
 			}
 			return default;

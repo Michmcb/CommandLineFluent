@@ -3,31 +3,31 @@
 	using System;
 	using System.ComponentModel;
 	using System.Linq.Expressions;
-	using System.Reflection;
 
 	/// <summary>
 	/// Configures an Option.
 	/// </summary>
 	/// <typeparam name="TClass">The type of the target class.</typeparam>
 	/// <typeparam name="TProp">The type of the target property.</typeparam>
+	[Obsolete("Use NamedArgConfig instead")]
 	public sealed class OptionConfig<TClass, TProp> where TClass : class, new()
 	{
 		private readonly string? shortName;
 		private readonly string? longName;
-		private PropertyInfo? targetProperty;
+		private Action<TClass, TProp>? targetProperty;
 		private ArgumentRequired argumentRequired;
 		private TProp defaultValue;
 		private Dependencies<TClass>? dependencies;
 		private string? helpText;
 		private string? name;
-		private Func<string, Converted<TProp, string>>? converter;
+		private Func<string, Converted<TProp, string>> converter;
 		/// <summary>
 		/// Creates a new <see cref="OptionConfig{TClass, TProp}"/>. You shouldn't need to create this manually.
 		/// </summary>
 		/// <param name="shortName">The short name the user can use to provide this.</param>
-		/// <param name="shortName">The long name the user can use to provide this.</param>
+		/// <param name="longName">The long name the user can use to provide this.</param>
 		/// <param name="converter">The converter to use to convert from string to <typeparamref name="TProp"/>.</param>
-		public OptionConfig(string? shortName, string? longName, Func<string, Converted<TProp, string>>? converter)
+		public OptionConfig(string? shortName, string? longName, Func<string, Converted<TProp, string>> converter)
 		{
 			this.shortName = shortName;
 			this.longName = longName;
@@ -41,7 +41,7 @@
 		/// <param name="expression">The property to set.</param>
 		public OptionConfig<TClass, TProp> ForProperty(Expression<Func<TClass, TProp>> expression)
 		{
-			targetProperty = ArgUtils.PropertyInfoFromExpression(expression);
+			targetProperty = CliParserBuilder.GetSetMethodDelegateFromExpression(expression, out _);
 			return this;
 		}
 		/// <summary>
@@ -122,16 +122,19 @@
 			{
 				throw new CliParserBuilderException("You need to set a target property for Option " + name);
 			}
-			if (converter == null && typeof(TProp) != typeof(string))
+			if (converter == null)
 			{
-				throw new CliParserBuilderException(string.Concat("You need to provide a converter from string to ", typeof(TProp).FullName, " for Option ", name));
+				throw new CliParserBuilderException("You need to set a converter for Option " + name);
 			}
 			if (dependencies != null)
 			{
 				dependencies.Validate();
 			}
 
+			// helpText is never null here
+#pragma warning disable CS8604 // Possible null reference argument.
 			return new Option<TClass, TProp>(shortName, longName, name, helpText, argumentRequired, targetProperty, defaultValue, dependencies, converter);
+#pragma warning restore CS8604 // Possible null reference argument.
 		}
 		// This stuff is useless and just adds clutter, so hide it
 		[EditorBrowsable(EditorBrowsableState.Never)]
