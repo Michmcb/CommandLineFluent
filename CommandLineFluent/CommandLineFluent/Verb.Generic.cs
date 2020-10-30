@@ -114,7 +114,7 @@
 				throw new CliParserBuilderException(string.Concat("You need to provide a converter for the property ", pi.Name, " of the class ", typeof(TClass).Name));
 			}
 			config.configuredDependencies?.Validate();
-			ArgumentRequired ar = config.configuredDependencies != null ? ArgumentRequired.HasDependencies : config.IsRequired ? ArgumentRequired.Required : ArgumentRequired.Optional;
+			ArgumentRequired ar = config.configuredDependencies != null ? ArgumentRequired.HasDependencies : config.Required ? ArgumentRequired.Required : ArgumentRequired.Optional;
 			Value<TClass, TProp> thing = new Value<TClass, TProp>(config.DescriptiveName, config.HelpText ?? "No help available.", ar, setter, config.DefaultValue, config.configuredDependencies, config.Converter);
 			allValues.Add(thing);
 			return thing;
@@ -156,7 +156,7 @@
 			string? shortName = config.ShortName;
 			string? longName = config.LongName;
 			ApplyDefaultPrefixAndCheck(ref shortName, ref longName, "option");
-			ArgumentRequired ar = config.configuredDependencies != null ? ArgumentRequired.HasDependencies : config.IsRequired ? ArgumentRequired.Required : ArgumentRequired.Optional;
+			ArgumentRequired ar = config.configuredDependencies != null ? ArgumentRequired.HasDependencies : config.Required ? ArgumentRequired.Required : ArgumentRequired.Optional;
 			Option<TClass, TProp> arg = new Option<TClass, TProp>(shortName, longName, config.DescriptiveName, config.HelpText ?? "No help available.", ar, setter, config.DefaultValue, config.configuredDependencies, config.Converter);
 			AddToDictionary(arg.ShortName, arg.LongName, arg, allOptionsByShortName, allOptionsByLongName);
 			allOptions.Add(arg);
@@ -199,7 +199,7 @@
 			string? shortName = config.ShortName;
 			string? longName = config.LongName;
 			ApplyDefaultPrefixAndCheck(ref shortName, ref longName, "switch");
-			ArgumentRequired ar = config.configuredDependencies != null ? ArgumentRequired.HasDependencies : config.IsRequired ? ArgumentRequired.Required : ArgumentRequired.Optional;
+			ArgumentRequired ar = config.configuredDependencies != null ? ArgumentRequired.HasDependencies : config.Required ? ArgumentRequired.Required : ArgumentRequired.Optional;
 			Switch<TClass, TProp> arg = new Switch<TClass, TProp>(shortName, longName, config.DescriptiveName, config.HelpText ?? "No help available.", ar, setter, config.DefaultValue, config.configuredDependencies, config.Converter);
 			AddToDictionary(arg.ShortName, arg.LongName, arg, allSwitchesByShortName, allSwitchesByLongName);
 			allSwitches.Add(arg);
@@ -239,7 +239,7 @@
 				throw new CliParserBuilderException(string.Concat("You need to provide a converter for the property ", pi.Name, " of the class ", typeof(TClass).Name));
 			}
 			config.configuredDependencies?.Validate();
-			ArgumentRequired ar = config.configuredDependencies != null ? ArgumentRequired.HasDependencies : config.IsRequired ? ArgumentRequired.Required : ArgumentRequired.Optional;
+			ArgumentRequired ar = config.configuredDependencies != null ? ArgumentRequired.HasDependencies : config.Required ? ArgumentRequired.Required : ArgumentRequired.Optional;
 
 			MultiValue<TClass, TProp, TPropCollection> arg = new MultiValue<TClass, TProp, TPropCollection>(config.DescriptiveName, config.HelpText ?? "No help available.", ar,
 				setter, config.DefaultValue, config.configuredDependencies, config.Converter, config.Accumulator);

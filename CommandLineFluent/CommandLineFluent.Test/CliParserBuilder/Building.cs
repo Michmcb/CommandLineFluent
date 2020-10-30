@@ -59,7 +59,7 @@
 					MultiValue<OptOneOfEach, string, IReadOnlyCollection<string>> vals =
 					verb.AddMultiValue(x => x.ManyValues, x =>
 					{
-						x.IsRequired = true;
+						x.Required = true;
 						x.DescriptiveName = "Name";
 						x.HelpText = "Help";
 					});

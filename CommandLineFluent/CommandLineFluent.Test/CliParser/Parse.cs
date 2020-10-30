@@ -23,7 +23,7 @@
 				verb.AddOption(x => x.Option1, x => { x.ShortName = "-o1"; x.LongName = "--option1"; x.DescriptiveName = "Option"; x.HelpText = "help me please"; });
 				verb.AddOption(x => x.Option2, x => { x.ShortName = "-o2"; x.LongName = "--option2"; x.DescriptiveName = "Option"; x.HelpText = "help me please"; });
 
-				verb.AddMultiValue(a => a.Values, x => { x.HelpText = "help"; x.IsRequired = true; });
+				verb.AddMultiValue(a => a.Values, x => { x.HelpText = "help"; x.Required = true; });
 			}
 			).Build();
 		[Fact]

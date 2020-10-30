@@ -20,7 +20,7 @@
     <PackageReleaseNotes>- Adding a MultiValue will automatically configure it to create the correct collection type (If it's an Array, List, IList, IReadOnlyList, ICollection, IReadOnlyCollection, IEnumerable, Stack, HashSet, or Queue)
 - Reflected property setters are now cached as delegates to performance for repeated invocations
 - Adding arguments, the Property comes first, so you don't need to repeat yourself about the type. That is, instead of e.g. AddOptionInt, it's just AddOption, with an overload for an int property.
-- Configuring arguments is done by just setting properties now
+- Configuring arguments can also be done by just setting properties now. You can still configure them using fluent calls, too.
 - Old way of adding arguments is obsoleted (again), it's still around but will be removed eventually
 - Name is now called DescriptiveName to differentiate it more clearly from ShortName and LongName
 - Passing null to Parse no longer throws an ArgumentNullException, it returns a failed parse result
