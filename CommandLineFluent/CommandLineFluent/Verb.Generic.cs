@@ -62,13 +62,35 @@
 		public string? ShortName { get; }
 		public string LongName { get; }
 		public string HelpText { get; set; }
+		/// <summary>
+		/// Writes help to <paramref name="console"/>, formatted using <paramref name="msgFormatter"/>.
+		/// </summary>
+		/// <param name="console"></param>
+		/// <param name="msgFormatter"></param>
 		public void WriteSpecificHelp(IConsole console, IMessageFormatter msgFormatter)
 		{
 			msgFormatter.WriteSpecificHelp(console, this);
 		}
+		/// <summary>
+		/// Returns a string which has the <see cref="ShortName"/> and <see cref="LongName"/> separated by a pipe, like this: shortName|longName.
+		/// Or just <see cref="LongName"/> if <see cref="ShortName"/> is null.
+		/// </summary>
+		/// <returns></returns>
+		public string ShortAndLongName()
+		{
+			return ArgUtils.ShortAndLongName(ShortName, LongName);
+		}
+		/// <summary>
+		/// Adds a new Value.
+		/// This is entirely unconfigured; you must set the converter and whether or not it is required.
+		/// </summary>
+		/// <typeparam name="TProp">The type of the target property.</typeparam>
+		/// <param name="expression">The property.</param>
+		/// <param name="config">The action to configure the Value.</param>
+		/// <returns>A configured Value.</returns>
 		public Value<TClass, TProp> AddValueCore<TProp>(Expression<Func<TClass, TProp>> expression, Action<NamelessArgConfig<TClass, TProp>> config)
 		{
-			var obj = new NamelessArgConfig<TClass, TProp>();
+			NamelessArgConfig<TClass, TProp> obj = new NamelessArgConfig<TClass, TProp>();
 			config(obj);
 			return AddValueCore(expression, obj);
 		}
@@ -97,6 +119,14 @@
 			allValues.Add(thing);
 			return thing;
 		}
+		/// <summary>
+		/// Adds a new Option.
+		/// This is entirely unconfigured; you must set the converter and whether or not it is required.
+		/// </summary>
+		/// <typeparam name="TProp">The type of the target property.</typeparam>
+		/// <param name="expression">The property.</param>
+		/// <param name="config">The action to configure the Value.</param>
+		/// <returns>A configured Option.</returns>
 		public Option<TClass, TProp> AddOptionCore<TProp>(Expression<Func<TClass, TProp>> expression, Action<NamedArgConfig<TClass, TProp, string>> config)
 		{
 			var obj = new NamedArgConfig<TClass, TProp, string>();
@@ -132,6 +162,14 @@
 			allOptions.Add(arg);
 			return arg;
 		}
+		/// <summary>
+		/// Adds a new Switch.
+		/// This is entirely unconfigured; you must set the converter and whether or not it is required.
+		/// </summary>
+		/// <typeparam name="TProp">The type of the target property.</typeparam>
+		/// <param name="expression">The property.</param>
+		/// <param name="config">The action to configure the Value.</param>
+		/// <returns>A configured Switch.</returns>
 		public Switch<TClass, TProp> AddSwitchCore<TProp>(Expression<Func<TClass, TProp>> expression, Action<NamedArgConfig<TClass, TProp, bool>> config)
 		{
 			var obj = new NamedArgConfig<TClass, TProp, bool>();
@@ -167,6 +205,14 @@
 			allSwitches.Add(arg);
 			return arg;
 		}
+		/// <summary>
+		/// Adds a new MultiValue.
+		/// This is entirely unconfigured; you must set the converter and whether or not it is required.
+		/// </summary>
+		/// <typeparam name="TProp">The type of the target property.</typeparam>
+		/// <param name="expression">The property.</param>
+		/// <param name="config">The action to configure the Value.</param>
+		/// <returns>A configured MultiValue.</returns>
 		public MultiValue<TClass, TProp, TPropCollection> AddMultiValueCore<TProp, TPropCollection>(Expression<Func<TClass, TPropCollection>> expression, Action<NamelessMultiArgConfig<TClass, TProp, TPropCollection>> config)
 		{
 			var obj = new NamelessMultiArgConfig<TClass, TProp, TPropCollection>();
@@ -268,7 +314,7 @@
 			}
 			if (shortName == null && longName == null)
 			{
-				throw new ArgumentException(string.Concat("Short Name and Long Name for a new switch for verb ", LongName, " cannot both be null"));
+				throw new ArgumentNullException(string.Concat("Short Name and Long Name for a new switch for verb ", LongName, " cannot both be null"));
 			}
 			if (shortName != null && shortName.Length == 0)
 			{
@@ -286,7 +332,6 @@
 			allSwitches.Add(thing);
 			return thing;
 		}
-
 		public IParseResult Parse(IEnumerable<string> args)
 		{
 			TClass parsedClass = new TClass();
@@ -453,21 +498,17 @@
 			}
 			return new SuccessfulParse<TClass>(this, parsedClass);
 		}
-		public string ShortAndLongName()
-		{
-			return ArgUtils.ShortAndLongName(ShortName, LongName);
-		}
 		private void ApplyDefaultPrefixAndCheck(ref string? shortName, ref string? longName, string type)
 		{
 			if (shortName == null && longName == null)
 			{
-				throw new ArgumentException(string.Concat("Short name and long name for a new ", type, " for verb ", LongName, " cannot both be null"));
+				throw new CliParserBuilderException(string.Concat("Short name and long name for a new ", type, " for verb ", LongName, " cannot both be null"));
 			}
 			if (shortName != null)
 			{
 				if (string.IsNullOrWhiteSpace(shortName))
 				{
-					throw new ArgumentException($"Short name for {type} for verb {LongName} was empty or entirely whitespace");
+					throw new CliParserBuilderException($"Short name for {type} for verb {LongName} was empty or entirely whitespace");
 				}
 				if (!string.IsNullOrEmpty(config.DefaultShortPrefix) && !shortName.StartsWith(config.DefaultShortPrefix))
 				{
@@ -475,18 +516,18 @@
 				}
 				if (shortName == config.ShortHelpSwitch || shortName == config.LongHelpSwitch)
 				{
-					throw new ArgumentException($"Short name for {type} for verb {LongName} is already used by a help switch ({config.ShortHelpSwitch} or {config.LongHelpSwitch})");
+					throw new CliParserBuilderException($"Short name for {type} for verb {LongName} is already used by a help switch ({config.ShortHelpSwitch} or {config.LongHelpSwitch})");
 				}
 				if (allOptionsByShortName.ContainsKey(shortName) || allOptionsByLongName.ContainsKey(shortName) || allSwitchesByShortName.ContainsKey(shortName) || allSwitchesByLongName.ContainsKey(shortName))
 				{
-					throw new ArgumentException($"The short name {shortName} for {type} for verb {LongName} has already been used");
+					throw new CliParserBuilderException($"The short name {shortName} for {type} for verb {LongName} has already been used");
 				}
 			}
 			if (longName != null)
 			{
 				if (string.IsNullOrWhiteSpace(longName))
 				{
-					throw new ArgumentException($"Long name for {type} for verb {LongName} was empty or entirely whitespace");
+					throw new CliParserBuilderException($"Long name for {type} for verb {LongName} was empty or entirely whitespace");
 				}
 				if (!string.IsNullOrEmpty(config.DefaultLongPrefix) && !longName.StartsWith(config.DefaultLongPrefix))
 				{
@@ -494,11 +535,11 @@
 				}
 				if (longName == config.ShortHelpSwitch || longName == config.LongHelpSwitch)
 				{
-					throw new ArgumentException($"Long name for {type} for verb {LongName} is already used by a help switch ({config.ShortHelpSwitch} or {config.LongHelpSwitch})");
+					throw new CliParserBuilderException($"Long name for {type} for verb {LongName} is already used by a help switch ({config.ShortHelpSwitch} or {config.LongHelpSwitch})");
 				}
 				if (allOptionsByShortName.ContainsKey(longName) || allOptionsByLongName.ContainsKey(longName) || allSwitchesByShortName.ContainsKey(longName) || allSwitchesByLongName.ContainsKey(longName))
 				{
-					throw new ArgumentException($"The short name {longName} for {type} for verb {LongName} has already been used");
+					throw new CliParserBuilderException($"The short name {longName} for {type} for verb {LongName} has already been used");
 				}
 			}
 		}

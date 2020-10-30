@@ -116,7 +116,7 @@
 		{
 			if (args == null)
 			{
-				throw new ArgumentNullException(nameof(args));
+				return new FailedParseNoVerb(new Error[] { new Error(ErrorCode.NoVerbFound, "No input") });
 			}
 			return Parse(Tokenizer.Tokenize(args));
 		}
@@ -129,7 +129,7 @@
 		{
 			if (args == null)
 			{
-				throw new ArgumentNullException(nameof(args));
+				return new FailedParseNoVerb(new Error[] { new Error(ErrorCode.NoVerbFound, "No input") });
 			}
 			string? firstArg = args.FirstOrDefault();
 			if (firstArg != null)

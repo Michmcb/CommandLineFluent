@@ -81,7 +81,7 @@
 		{
 			if (config == null)
 			{
-				throw new ArgumentNullException(nameof(config), "You need to configure the verb");
+				throw new ArgumentNullException(nameof(config), "You cannot pass a null configuration action");
 			}
 			if (string.IsNullOrEmpty(longName))
 			{
@@ -108,7 +108,7 @@
 		{
 			if (config == null)
 			{
-				throw new ArgumentNullException(nameof(config), "You need to configure the verb");
+				throw new ArgumentNullException(nameof(config), "You cannot pass a null configuration action");
 			}
 			if (string.IsNullOrEmpty(longName))
 			{
@@ -144,7 +144,7 @@
 		{
 			if (config == null)
 			{
-				throw new ArgumentNullException(nameof(config), "You need to configure the verb");
+				throw new ArgumentNullException(nameof(config), "You cannot pass a null configuration action");
 			}
 			if (string.IsNullOrEmpty(longName))
 			{
@@ -172,7 +172,7 @@
 		{
 			if (config == null)
 			{
-				throw new ArgumentNullException(nameof(config), "You need to configure the verb");
+				throw new ArgumentNullException(nameof(config), "You cannot pass a null configuration action");
 			}
 			if (string.IsNullOrEmpty(longName))
 			{

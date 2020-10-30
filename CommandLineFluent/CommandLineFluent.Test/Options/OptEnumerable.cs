@@ -1,6 +1,6 @@
 ﻿namespace CommandLineFluent.Test.Options
 {
-using System.Collections.Generic;
+	using System.Collections.Generic;
 	public sealed class OptArray { public string[] Collection { get; set; } }
 	public sealed class OptList { public List<string> Collection { get; set; } }
 	public sealed class OptIList { public IList<string> Collection { get; set; } }
