@@ -32,6 +32,18 @@
 			return rule;
 		}
 		/// <summary>
+		///  Specifies that the argument is required to be provided under specific circumstances, and also configures the dependency rule to apply when the provided <paramref name="predicate"/> evaluates to true.
+		/// Shorthand for RequiredIf(x => x).When(<paramref name="predicate"/>).
+		/// </summary>
+		/// <param name="predicate">The predicate which determines whether or not this rule applies</param>
+		public DependencyRule<TClass, TClass> RequiredWhen(Func<TClass, bool> predicate)
+		{
+			DependencyRule<TClass, TClass> rule = new DependencyRule<TClass, TClass>(x => x, DependencyRequiredness.Required);
+			rules.Add(rule);
+			rule.When(predicate);
+			return rule;
+		}
+		/// <summary>
 		/// Specifies that a property of type <typeparamref name="TOtherProp"/> of an object of type <typeparamref name="TClass"/>
 		/// MUST NOT be provided under specific circumstances.
 		/// </summary>
@@ -41,6 +53,18 @@
 		{
 			DependencyRule<TClass, TOtherProp> rule = new DependencyRule<TClass, TOtherProp>(property, DependencyRequiredness.MustNotAppear);
 			rules.Add(rule);
+			return rule;
+		}
+		/// <summary>
+		/// Specifies that the argument MUST NOT be provided under specific circumstances, and also configures the dependency rule to apply when the provided <paramref name="predicate"/> evaluates to true.
+		/// Shorthand for MustNotAppearIf(x => x).When(<paramref name="predicate"/>).
+		/// </summary>
+		/// <param name="predicate">The predicate which determines whether or not this rule applies</param>
+		public DependencyRule<TClass, TClass> MustNotAppearWhen(Func<TClass, bool> predicate)
+		{
+			DependencyRule<TClass, TClass> rule = new DependencyRule<TClass, TClass>(x => x, DependencyRequiredness.MustNotAppear);
+			rules.Add(rule);
+			rule.When(predicate);
 			return rule;
 		}
 		/// <summary>

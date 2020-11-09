@@ -95,15 +95,15 @@
 				.AddVerb<Verb1>("default", verb =>
 				{
 					verb.AddOption(x => x.Option, x => { x.ShortName = "-o"; x.LongName = "--o"; });
-					Assert.Throws<ArgumentException>(() => verb.AddOption(x => x.Option, x => { x.ShortName = "-o"; x.LongName = "--o"; }));
-					Assert.Throws<ArgumentException>(() => verb.AddOption(x => x.Option, x => { x.ShortName = "--o"; x.LongName = "-o"; }));
-					Assert.Throws<ArgumentException>(() => verb.AddOption(x => x.Option, x => { x.ShortName = "-?"; x.LongName = "--help"; }));
-					Assert.Throws<ArgumentException>(() => verb.AddOption(x => x.Option, x => { x.ShortName = "--help"; x.LongName = "-?"; }));
+					Assert.Throws<CliParserBuilderException>(() => verb.AddOption(x => x.Option, x => { x.ShortName = "-o"; x.LongName = "--o"; }));
+					Assert.Throws<CliParserBuilderException>(() => verb.AddOption(x => x.Option, x => { x.ShortName = "--o"; x.LongName = "-o"; }));
+					Assert.Throws<CliParserBuilderException>(() => verb.AddOption(x => x.Option, x => { x.ShortName = "-?"; x.LongName = "--help"; }));
+					Assert.Throws<CliParserBuilderException>(() => verb.AddOption(x => x.Option, x => { x.ShortName = "--help"; x.LongName = "-?"; }));
 
-					Assert.Throws<ArgumentException>(() => verb.AddSwitch(x => x.Switch, x => { x.ShortName = "-o"; x.LongName = "--o"; }));
-					Assert.Throws<ArgumentException>(() => verb.AddSwitch(x => x.Switch, x => { x.ShortName = "--o"; x.LongName = "-o"; }));
-					Assert.Throws<ArgumentException>(() => verb.AddSwitch(x => x.Switch, x => { x.ShortName = "-?"; x.LongName = "--help"; }));
-					Assert.Throws<ArgumentException>(() => verb.AddSwitch(x => x.Switch, x => { x.ShortName = "--help"; x.LongName = "-?"; }));
+					Assert.Throws<CliParserBuilderException>(() => verb.AddSwitch(x => x.Switch, x => { x.ShortName = "-o"; x.LongName = "--o"; }));
+					Assert.Throws<CliParserBuilderException>(() => verb.AddSwitch(x => x.Switch, x => { x.ShortName = "--o"; x.LongName = "-o"; }));
+					Assert.Throws<CliParserBuilderException>(() => verb.AddSwitch(x => x.Switch, x => { x.ShortName = "-?"; x.LongName = "--help"; }));
+					Assert.Throws<CliParserBuilderException>(() => verb.AddSwitch(x => x.Switch, x => { x.ShortName = "--help"; x.LongName = "-?"; }));
 				})
 				.Build();
 		}
@@ -113,25 +113,25 @@
 			CliParser fp = new CliParserBuilder()
 				.AddVerb<Verb1>("default", verb =>
 				{
-					Assert.Throws<ArgumentException>(() => verb.AddOption(x => x.Option, x => { x.ShortName = null; x.LongName = null; }));
-					Assert.Throws<ArgumentException>(() => verb.AddOption(x => x.Option, x => { x.ShortName = ""; x.LongName = null; }));
-					Assert.Throws<ArgumentException>(() => verb.AddOption(x => x.Option, x => { x.ShortName = " "; x.LongName = null; }));
-					Assert.Throws<ArgumentException>(() => verb.AddOption(x => x.Option, x => { x.ShortName = null; x.LongName = ""; }));
-					Assert.Throws<ArgumentException>(() => verb.AddOption(x => x.Option, x => { x.ShortName = null; x.LongName = " "; }));
-					Assert.Throws<ArgumentException>(() => verb.AddOption(x => x.Option, x => { x.ShortName = ""; x.LongName = ""; }));
-					Assert.Throws<ArgumentException>(() => verb.AddOption(x => x.Option, x => { x.ShortName = " "; x.LongName = ""; }));
-					Assert.Throws<ArgumentException>(() => verb.AddOption(x => x.Option, x => { x.ShortName = ""; x.LongName = " "; }));
-					Assert.Throws<ArgumentException>(() => verb.AddOption(x => x.Option, x => { x.ShortName = " "; x.LongName = " "; }));
+					Assert.Throws<CliParserBuilderException>(() => verb.AddOption(x => x.Option, x => { x.ShortName = null; x.LongName = null; }));
+					Assert.Throws<CliParserBuilderException>(() => verb.AddOption(x => x.Option, x => { x.ShortName = ""; x.LongName = null; }));
+					Assert.Throws<CliParserBuilderException>(() => verb.AddOption(x => x.Option, x => { x.ShortName = " "; x.LongName = null; }));
+					Assert.Throws<CliParserBuilderException>(() => verb.AddOption(x => x.Option, x => { x.ShortName = null; x.LongName = ""; }));
+					Assert.Throws<CliParserBuilderException>(() => verb.AddOption(x => x.Option, x => { x.ShortName = null; x.LongName = " "; }));
+					Assert.Throws<CliParserBuilderException>(() => verb.AddOption(x => x.Option, x => { x.ShortName = ""; x.LongName = ""; }));
+					Assert.Throws<CliParserBuilderException>(() => verb.AddOption(x => x.Option, x => { x.ShortName = " "; x.LongName = ""; }));
+					Assert.Throws<CliParserBuilderException>(() => verb.AddOption(x => x.Option, x => { x.ShortName = ""; x.LongName = " "; }));
+					Assert.Throws<CliParserBuilderException>(() => verb.AddOption(x => x.Option, x => { x.ShortName = " "; x.LongName = " "; }));
 
-					Assert.Throws<ArgumentException>(() => verb.AddSwitch(x => x.Switch, x => { x.ShortName = null; x.LongName = null; }));
-					Assert.Throws<ArgumentException>(() => verb.AddSwitch(x => x.Switch, x => { x.ShortName = ""; x.LongName = null; }));
-					Assert.Throws<ArgumentException>(() => verb.AddSwitch(x => x.Switch, x => { x.ShortName = " "; x.LongName = null; }));
-					Assert.Throws<ArgumentException>(() => verb.AddSwitch(x => x.Switch, x => { x.ShortName = null; x.LongName = ""; }));
-					Assert.Throws<ArgumentException>(() => verb.AddSwitch(x => x.Switch, x => { x.ShortName = null; x.LongName = " "; }));
-					Assert.Throws<ArgumentException>(() => verb.AddSwitch(x => x.Switch, x => { x.ShortName = ""; x.LongName = ""; }));
-					Assert.Throws<ArgumentException>(() => verb.AddSwitch(x => x.Switch, x => { x.ShortName = " "; x.LongName = ""; }));
-					Assert.Throws<ArgumentException>(() => verb.AddSwitch(x => x.Switch, x => { x.ShortName = ""; x.LongName = " "; }));
-					Assert.Throws<ArgumentException>(() => verb.AddSwitch(x => x.Switch, x => { x.ShortName = " "; x.LongName = " "; }));
+					Assert.Throws<CliParserBuilderException>(() => verb.AddSwitch(x => x.Switch, x => { x.ShortName = null; x.LongName = null; }));
+					Assert.Throws<CliParserBuilderException>(() => verb.AddSwitch(x => x.Switch, x => { x.ShortName = ""; x.LongName = null; }));
+					Assert.Throws<CliParserBuilderException>(() => verb.AddSwitch(x => x.Switch, x => { x.ShortName = " "; x.LongName = null; }));
+					Assert.Throws<CliParserBuilderException>(() => verb.AddSwitch(x => x.Switch, x => { x.ShortName = null; x.LongName = ""; }));
+					Assert.Throws<CliParserBuilderException>(() => verb.AddSwitch(x => x.Switch, x => { x.ShortName = null; x.LongName = " "; }));
+					Assert.Throws<CliParserBuilderException>(() => verb.AddSwitch(x => x.Switch, x => { x.ShortName = ""; x.LongName = ""; }));
+					Assert.Throws<CliParserBuilderException>(() => verb.AddSwitch(x => x.Switch, x => { x.ShortName = " "; x.LongName = ""; }));
+					Assert.Throws<CliParserBuilderException>(() => verb.AddSwitch(x => x.Switch, x => { x.ShortName = ""; x.LongName = " "; }));
+					Assert.Throws<CliParserBuilderException>(() => verb.AddSwitch(x => x.Switch, x => { x.ShortName = " "; x.LongName = " "; }));
 				})
 				.Build();
 		}

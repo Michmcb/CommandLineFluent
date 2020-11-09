@@ -35,10 +35,10 @@
 			Assert.False(rParse.Ok);
 		}
 		[Fact]
-		public void NullArgs_Exception()
+		public void NullArgs_FailedResult()
 		{
-			Assert.Throws<ArgumentNullException>(() => parser.Parse((string)null!));
-			Assert.Throws<ArgumentNullException>(() => parser.Parse((IEnumerable<string>)null!));
+			Assert.IsType<FailedParseNoVerb>(parser.Parse((string)null!));
+			Assert.IsType<FailedParseNoVerb>(parser.Parse((IEnumerable<string>)null!));
 		}
 		[Fact]
 		public void DefaultHelpSwitch_ErrorCodeHelpRequested()

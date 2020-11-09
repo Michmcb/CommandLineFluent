@@ -277,6 +277,56 @@
 			Assert.True(res.Ok);
 		}
 		[Fact]
+		public void DependencyWhenShorthand()
+		{
+			CliParser fp = new CliParserBuilder()
+				.AddVerb<VerbVariety>("default", verb =>
+				{
+					verb.AddValue(x => x.Value, x =>
+					{
+						x.HelpText = "h"; x.HasDependency.RequiredWhen(x => x.OptionNullable > 50).WithErrorMessage("Only required if OptionNullable is larger than 50");
+					});
+
+					verb.AddOption(x => x.OptionNullable, x => { x.ShortName = "o"; x.LongName = "option"; x.DefaultValue = null; x.HelpText = "h"; });
+				})
+				.Build();
+
+			// We're basically saying first: MyValue is required
+			IParseResult res = fp.Parse(new string[] { "default", "MyValue", "-o", "55" });
+			Assert.True(res.Ok);
+			res = fp.Parse(new string[] { "default", "-o", "55" });
+			Assert.False(res.Ok);
+			// And now we're saying MyValue is not required (So it should work either way)
+			res = fp.Parse(new string[] { "default", "MyValue", "-o", "30" });
+			Assert.True(res.Ok);
+			res = fp.Parse(new string[] { "default", "-o", "30" });
+			Assert.True(res.Ok);
+
+
+			fp = new CliParserBuilder()
+				.AddVerb<VerbVariety>("default", verb =>
+				{
+					verb.AddValue(x => x.Value, x =>
+					{
+						x.HelpText = "h"; x.HasDependency.MustNotAppearWhen(x => x.OptionNullable > 50).WithErrorMessage("Shouldn't appear if OptionNullable is larger than 50");
+					});
+
+					verb.AddOption(x => x.OptionNullable, x => { x.ShortName = "o"; x.LongName = "option"; x.DefaultValue = null; x.HelpText = "h"; });
+				})
+				.Build();
+
+			// We're basically saying first: MyValue is required
+			res = fp.Parse(new string[] { "default", "MyValue", "-o", "55" });
+			Assert.False(res.Ok);
+			res = fp.Parse(new string[] { "default", "-o", "55" });
+			Assert.True(res.Ok);
+			// And now we're saying MyValue is not required (So it should work either way)
+			res = fp.Parse(new string[] { "default", "MyValue", "-o", "30" });
+			Assert.True(res.Ok);
+			res = fp.Parse(new string[] { "default", "-o", "30" });
+			Assert.True(res.Ok);
+		}
+		[Fact]
 		public void DependencyMultipleRules()
 		{
 			CliParser fp = new CliParserBuilder()
