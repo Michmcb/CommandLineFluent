@@ -1,5 +1,6 @@
 ﻿namespace CommandLineFluent.CodeGen
 {
+	using System;
 	using System.IO;
 	using System.Text;
 	internal class Program
@@ -14,6 +15,7 @@
 			//GenerateSwitches(args[2]);
 			GenerateMultiValues("Verb.MultiValues.cs");
 			//GenerateMultiOptions(args[4]);
+
 		}
 		private static void GenerateValues(string name)
 		{
@@ -30,7 +32,7 @@
 				( true, "float", "ToFloat", "AddValue", string.Empty ),
 				( true, "double", "ToDouble", "AddValue", string.Empty ),
 				( true, "decimal", "ToDecimal", "AddValue", string.Empty ),
-				( true, "TEnum", "ToEnum<TEnum>", "AddValue<TEnum>", " where TEnum : struct, Enum"),
+				( true, "TEnum", "(x) => ToEnum<TEnum>(x, this.config.IsCaseSensitive)", "AddValue<TEnum>", " where TEnum : struct, Enum"),
 				( true, "DateTime", "ToDateTime", "AddValue", string.Empty ),
 				( true, "TimeSpan", "ToTimeSpan", "AddValue", string.Empty ),
 				( true, "Guid", "ToGuid", "AddValue", string.Empty ),
@@ -45,7 +47,7 @@
 				( false, "float?", "ToNullableFloat", "AddValue", string.Empty ),
 				( false, "double?", "ToNullableDouble", "AddValue", string.Empty ),
 				( false, "decimal?", "ToNullableDecimal", "AddValue", string.Empty ),
-				( false, "TEnum?", "ToNullableEnum<TEnum>", "AddValue<TEnum>", " where TEnum : struct, Enum"),
+				( false, "TEnum?", "(x) => ToNullableEnum<TEnum>(x, this.config.IsCaseSensitive)", "AddValue<TEnum>", " where TEnum : struct, Enum"),
 				( false, "DateTime?", "ToNullableDateTime", "AddValue", string.Empty ),
 				( false, "TimeSpan?", "ToNullableTimeSpan", "AddValue", string.Empty ),
 				( false, "Guid?", "ToNullableGuid" , "AddValue", string.Empty )
@@ -93,7 +95,7 @@
 				( true, "float", "ToFloat", "AddOption", string.Empty ),
 				( true, "double", "ToDouble", "AddOption", string.Empty ),
 				( true, "decimal", "ToDecimal", "AddOption", string.Empty ),
-				( true, "TEnum", "ToEnum<TEnum>", "AddOption<TEnum>", " where TEnum : struct, Enum"),
+				( true, "TEnum", "(x) => ToEnum<TEnum>(x, this.config.IsCaseSensitive)", "AddOption<TEnum>", " where TEnum : struct, Enum"),
 				( true, "DateTime", "ToDateTime", "AddOption", string.Empty ),
 				( true, "TimeSpan", "ToTimeSpan", "AddOption", string.Empty ),
 				( true, "Guid", "ToGuid", "AddOption", string.Empty ),
@@ -108,7 +110,7 @@
 				( false, "float?", "ToNullableFloat", "AddOption", string.Empty ),
 				( false, "double?", "ToNullableDouble", "AddOption", string.Empty ),
 				( false, "decimal?", "ToNullableDecimal", "AddOption", string.Empty ),
-				( false, "TEnum?", "ToNullableEnum<TEnum>", "AddOption<TEnum>", " where TEnum : struct, Enum"),
+				( false, "TEnum?", "(x) => ToNullableEnum<TEnum>(x, this.config.IsCaseSensitive)", "AddOption<TEnum>", " where TEnum : struct, Enum"),
 				( false, "DateTime?", "ToNullableDateTime", "AddOption", string.Empty ),
 				( false, "TimeSpan?", "ToNullableTimeSpan", "AddOption", string.Empty ),
 				( false, "Guid?", "ToNullableGuid" , "AddOption", string.Empty )
@@ -168,7 +170,7 @@
 				( "float", "ToFloat", "AddMultiValue", string.Empty ),
 				( "double", "ToDouble", "AddMultiValue", string.Empty ),
 				( "decimal", "ToDecimal", "AddMultiValue", string.Empty ),
-				( "TEnum", "ToEnum<TEnum>", "AddMultiValue<TEnum>", " where TEnum : struct, Enum"),
+				( "TEnum", "(x) => ToEnum<TEnum>(x, this.config.IsCaseSensitive)", "AddMultiValue<TEnum>", " where TEnum : struct, Enum"),
 				( "DateTime", "ToDateTime", "AddMultiValue", string.Empty ),
 				( "TimeSpan", "ToTimeSpan", "AddMultiValue", string.Empty ),
 				( "Guid", "ToGuid", "AddMultiValue", string.Empty ),
@@ -183,7 +185,7 @@
 				( "float?", "ToNullableFloat", "AddMultiValue", string.Empty ),
 				( "double?", "ToNullableDouble", "AddMultiValue", string.Empty ),
 				( "decimal?", "ToNullableDecimal", "AddMultiValue", string.Empty ),
-				( "TEnum?", "ToNullableEnum<TEnum>", "AddMultiValue<TEnum>", " where TEnum : struct, Enum"),
+				( "TEnum?", "(x) => ToNullableEnum<TEnum>(x, this.config.IsCaseSensitive)", "AddMultiValue<TEnum>", " where TEnum : struct, Enum"),
 				( "DateTime?", "ToNullableDateTime", "AddMultiValue", string.Empty ),
 				( "TimeSpan?", "ToNullableTimeSpan", "AddMultiValue", string.Empty ),
 				( "Guid?", "ToNullableGuid" , "AddMultiValue", string.Empty )

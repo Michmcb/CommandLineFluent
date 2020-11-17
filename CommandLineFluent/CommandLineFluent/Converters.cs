@@ -203,6 +203,26 @@
 			return Enum.TryParse(s, out TEnum v) ? v : (Converted<TEnum?, string>)string.Concat(s, " should be one of: ", string.Join(", ", Enum.GetNames(typeof(TEnum))));
 		}
 		/// <summary>
+		/// Converts the provided string to the Enum <typeparamref name="TEnum"/>.
+		/// </summary>
+		/// <typeparam name="TEnum">The type of the enum to parse</typeparam>
+		/// <param name="s">The string to convert</param>
+		/// <param name="caseSensitive">If true, case must match. Otherwise, it doesn't have to match.</param>
+		public static Converted<TEnum, string> ToEnum<TEnum>(string s, bool caseSensitive) where TEnum : struct, Enum
+		{
+			return Enum.TryParse(s, !caseSensitive, out TEnum v) ? v : (Converted<TEnum, string>)string.Concat(s, " should be one of: ", string.Join(", ", Enum.GetNames(typeof(TEnum))));
+		}
+		/// <summary>
+		/// Converts the provided string to the Enum <typeparamref name="TEnum"/>?.
+		/// </summary>
+		/// <typeparam name="TEnum">The type of the enum to parse</typeparam>
+		/// <param name="s">The string to convert</param>
+		/// <param name="caseSensitive">If true, case must match. Otherwise, it doesn't have to match.</param>
+		public static Converted<TEnum?, string> ToNullableEnum<TEnum>(string s, bool caseSensitive) where TEnum : struct, Enum
+		{
+			return Enum.TryParse(s, !caseSensitive, out TEnum v) ? v : (Converted<TEnum?, string>)string.Concat(s, " should be one of: ", string.Join(", ", Enum.GetNames(typeof(TEnum))));
+		}
+		/// <summary>
 		/// Converts the provided string to DateTime.
 		/// </summary>
 		/// <param name="s">The string to convert</param>

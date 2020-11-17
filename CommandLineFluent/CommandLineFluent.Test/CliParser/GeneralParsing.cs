@@ -285,7 +285,7 @@
 		[Fact]
 		public void ParsingConverters_Required()
 		{
-			CliParser fp = new CliParserBuilder()
+			CliParser fp = new CliParserBuilder(new CliParserConfig() { StringComparer = StringComparer.OrdinalIgnoreCase })
 				.AddVerb<EveryPrimitiveType>("default", verb =>
 				{
 					verb.AddOption(x => x.Str, x => { x.ShortName = "-Str"; });
@@ -316,7 +316,7 @@
 				"-Float", "70.5",
 				"-Double", "95.2",
 				"-Decimal", "100.130",
-				"-MyEnum", "SomeValue",
+				"-MyEnum", "somevalue",
 				"-DateTime", "2020-10-10T05:05:05.123",
 				"-TimeSpan", "12:00:00",
 				"-Guid", "123e4567-e89b-12d3-a456-426614174000"

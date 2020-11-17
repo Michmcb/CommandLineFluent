@@ -135,7 +135,7 @@
 		/// <returns>A configured Value.</returns>
 		public Value<TClass, TEnum> AddValue<TEnum>(Expression<Func<TClass, TEnum>> expression, Action<NamelessArgConfig<TClass, TEnum>> config) where TEnum : struct, Enum
 		{
-			var obj = new NamelessArgConfig<TClass, TEnum>(true, ToEnum<TEnum>);
+			var obj = new NamelessArgConfig<TClass, TEnum>(true, (x) => ToEnum<TEnum>(x, this.config.IsCaseSensitive));
 			config(obj);
 			return AddValueCore(expression, obj);
 		}
@@ -303,7 +303,7 @@
 		/// <returns>A configured Value.</returns>
 		public Value<TClass, TEnum?> AddValue<TEnum>(Expression<Func<TClass, TEnum?>> expression, Action<NamelessArgConfig<TClass, TEnum?>> config) where TEnum : struct, Enum
 		{
-			var obj = new NamelessArgConfig<TClass, TEnum?>(false, ToNullableEnum<TEnum>);
+			var obj = new NamelessArgConfig<TClass, TEnum?>(false, (x) => ToNullableEnum<TEnum>(x, this.config.IsCaseSensitive));
 			config(obj);
 			return AddValueCore(expression, obj);
 		}

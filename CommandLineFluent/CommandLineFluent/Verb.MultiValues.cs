@@ -1318,7 +1318,7 @@
 		/// <returns>A configured MultiValue.</returns>
 		public MultiValue<TClass, TEnum, TEnum[]> AddMultiValue<TEnum>(Expression<Func<TClass, TEnum[]>> expression, Action<NamelessMultiArgConfig<TClass, TEnum, TEnum[]>> config) where TEnum : struct, Enum
 		{
-			var obj = new NamelessMultiArgConfig<TClass, TEnum, TEnum[]>(false, ToEnum<TEnum>, Array);
+			var obj = new NamelessMultiArgConfig<TClass, TEnum, TEnum[]>(false, (x) => ToEnum<TEnum>(x, this.config.IsCaseSensitive), Array);
 			config(obj);
 			return AddMultiValueCore(expression, obj);
 		}
@@ -1331,7 +1331,7 @@
 		/// <returns>A configured MultiValue.</returns>
 		public MultiValue<TClass, TEnum, List<TEnum>> AddMultiValue<TEnum>(Expression<Func<TClass, List<TEnum>>> expression, Action<NamelessMultiArgConfig<TClass, TEnum, List<TEnum>>> config) where TEnum : struct, Enum
 		{
-			var obj = new NamelessMultiArgConfig<TClass, TEnum, List<TEnum>>(false, ToEnum<TEnum>, List);
+			var obj = new NamelessMultiArgConfig<TClass, TEnum, List<TEnum>>(false, (x) => ToEnum<TEnum>(x, this.config.IsCaseSensitive), List);
 			config(obj);
 			return AddMultiValueCore(expression, obj);
 		}
@@ -1344,7 +1344,7 @@
 		/// <returns>A configured MultiValue.</returns>
 		public MultiValue<TClass, TEnum, IList<TEnum>> AddMultiValue<TEnum>(Expression<Func<TClass, IList<TEnum>>> expression, Action<NamelessMultiArgConfig<TClass, TEnum, IList<TEnum>>> config) where TEnum : struct, Enum
 		{
-			var obj = new NamelessMultiArgConfig<TClass, TEnum, IList<TEnum>>(false, ToEnum<TEnum>, List);
+			var obj = new NamelessMultiArgConfig<TClass, TEnum, IList<TEnum>>(false, (x) => ToEnum<TEnum>(x, this.config.IsCaseSensitive), List);
 			config(obj);
 			return AddMultiValueCore(expression, obj);
 		}
@@ -1357,7 +1357,7 @@
 		/// <returns>A configured MultiValue.</returns>
 		public MultiValue<TClass, TEnum, IReadOnlyList<TEnum>> AddMultiValue<TEnum>(Expression<Func<TClass, IReadOnlyList<TEnum>>> expression, Action<NamelessMultiArgConfig<TClass, TEnum, IReadOnlyList<TEnum>>> config) where TEnum : struct, Enum
 		{
-			var obj = new NamelessMultiArgConfig<TClass, TEnum, IReadOnlyList<TEnum>>(false, ToEnum<TEnum>, List);
+			var obj = new NamelessMultiArgConfig<TClass, TEnum, IReadOnlyList<TEnum>>(false, (x) => ToEnum<TEnum>(x, this.config.IsCaseSensitive), List);
 			config(obj);
 			return AddMultiValueCore(expression, obj);
 		}
@@ -1370,7 +1370,7 @@
 		/// <returns>A configured MultiValue.</returns>
 		public MultiValue<TClass, TEnum, ICollection<TEnum>> AddMultiValue<TEnum>(Expression<Func<TClass, ICollection<TEnum>>> expression, Action<NamelessMultiArgConfig<TClass, TEnum, ICollection<TEnum>>> config) where TEnum : struct, Enum
 		{
-			var obj = new NamelessMultiArgConfig<TClass, TEnum, ICollection<TEnum>>(false, ToEnum<TEnum>, List);
+			var obj = new NamelessMultiArgConfig<TClass, TEnum, ICollection<TEnum>>(false, (x) => ToEnum<TEnum>(x, this.config.IsCaseSensitive), List);
 			config(obj);
 			return AddMultiValueCore(expression, obj);
 		}
@@ -1383,7 +1383,7 @@
 		/// <returns>A configured MultiValue.</returns>
 		public MultiValue<TClass, TEnum, IReadOnlyCollection<TEnum>> AddMultiValue<TEnum>(Expression<Func<TClass, IReadOnlyCollection<TEnum>>> expression, Action<NamelessMultiArgConfig<TClass, TEnum, IReadOnlyCollection<TEnum>>> config) where TEnum : struct, Enum
 		{
-			var obj = new NamelessMultiArgConfig<TClass, TEnum, IReadOnlyCollection<TEnum>>(false, ToEnum<TEnum>, List);
+			var obj = new NamelessMultiArgConfig<TClass, TEnum, IReadOnlyCollection<TEnum>>(false, (x) => ToEnum<TEnum>(x, this.config.IsCaseSensitive), List);
 			config(obj);
 			return AddMultiValueCore(expression, obj);
 		}
@@ -1396,7 +1396,7 @@
 		/// <returns>A configured MultiValue.</returns>
 		public MultiValue<TClass, TEnum, IEnumerable<TEnum>> AddMultiValue<TEnum>(Expression<Func<TClass, IEnumerable<TEnum>>> expression, Action<NamelessMultiArgConfig<TClass, TEnum, IEnumerable<TEnum>>> config) where TEnum : struct, Enum
 		{
-			var obj = new NamelessMultiArgConfig<TClass, TEnum, IEnumerable<TEnum>>(false, ToEnum<TEnum>, Enumerable);
+			var obj = new NamelessMultiArgConfig<TClass, TEnum, IEnumerable<TEnum>>(false, (x) => ToEnum<TEnum>(x, this.config.IsCaseSensitive), Enumerable);
 			config(obj);
 			return AddMultiValueCore(expression, obj);
 		}
@@ -1409,7 +1409,7 @@
 		/// <returns>A configured MultiValue.</returns>
 		public MultiValue<TClass, TEnum, HashSet<TEnum>> AddMultiValue<TEnum>(Expression<Func<TClass, HashSet<TEnum>>> expression, Action<NamelessMultiArgConfig<TClass, TEnum, HashSet<TEnum>>> config) where TEnum : struct, Enum
 		{
-			var obj = new NamelessMultiArgConfig<TClass, TEnum, HashSet<TEnum>>(false, ToEnum<TEnum>, HashSet);
+			var obj = new NamelessMultiArgConfig<TClass, TEnum, HashSet<TEnum>>(false, (x) => ToEnum<TEnum>(x, this.config.IsCaseSensitive), HashSet);
 			config(obj);
 			return AddMultiValueCore(expression, obj);
 		}
@@ -1422,7 +1422,7 @@
 		/// <returns>A configured MultiValue.</returns>
 		public MultiValue<TClass, TEnum, Stack<TEnum>> AddMultiValue<TEnum>(Expression<Func<TClass, Stack<TEnum>>> expression, Action<NamelessMultiArgConfig<TClass, TEnum, Stack<TEnum>>> config) where TEnum : struct, Enum
 		{
-			var obj = new NamelessMultiArgConfig<TClass, TEnum, Stack<TEnum>>(false, ToEnum<TEnum>, Stack);
+			var obj = new NamelessMultiArgConfig<TClass, TEnum, Stack<TEnum>>(false, (x) => ToEnum<TEnum>(x, this.config.IsCaseSensitive), Stack);
 			config(obj);
 			return AddMultiValueCore(expression, obj);
 		}
@@ -1435,7 +1435,7 @@
 		/// <returns>A configured MultiValue.</returns>
 		public MultiValue<TClass, TEnum, Queue<TEnum>> AddMultiValue<TEnum>(Expression<Func<TClass, Queue<TEnum>>> expression, Action<NamelessMultiArgConfig<TClass, TEnum, Queue<TEnum>>> config) where TEnum : struct, Enum
 		{
-			var obj = new NamelessMultiArgConfig<TClass, TEnum, Queue<TEnum>>(false, ToEnum<TEnum>, Queue);
+			var obj = new NamelessMultiArgConfig<TClass, TEnum, Queue<TEnum>>(false, (x) => ToEnum<TEnum>(x, this.config.IsCaseSensitive), Queue);
 			config(obj);
 			return AddMultiValueCore(expression, obj);
 		}
@@ -3138,7 +3138,7 @@
 		/// <returns>A configured MultiValue.</returns>
 		public MultiValue<TClass, TEnum?, TEnum?[]> AddMultiValue<TEnum>(Expression<Func<TClass, TEnum?[]>> expression, Action<NamelessMultiArgConfig<TClass, TEnum?, TEnum?[]>> config) where TEnum : struct, Enum
 		{
-			var obj = new NamelessMultiArgConfig<TClass, TEnum?, TEnum?[]>(false, ToNullableEnum<TEnum>, Array);
+			var obj = new NamelessMultiArgConfig<TClass, TEnum?, TEnum?[]>(false, (x) => ToNullableEnum<TEnum>(x, this.config.IsCaseSensitive), Array);
 			config(obj);
 			return AddMultiValueCore(expression, obj);
 		}
@@ -3151,7 +3151,7 @@
 		/// <returns>A configured MultiValue.</returns>
 		public MultiValue<TClass, TEnum?, List<TEnum?>> AddMultiValue<TEnum>(Expression<Func<TClass, List<TEnum?>>> expression, Action<NamelessMultiArgConfig<TClass, TEnum?, List<TEnum?>>> config) where TEnum : struct, Enum
 		{
-			var obj = new NamelessMultiArgConfig<TClass, TEnum?, List<TEnum?>>(false, ToNullableEnum<TEnum>, List);
+			var obj = new NamelessMultiArgConfig<TClass, TEnum?, List<TEnum?>>(false, (x) => ToNullableEnum<TEnum>(x, this.config.IsCaseSensitive), List);
 			config(obj);
 			return AddMultiValueCore(expression, obj);
 		}
@@ -3164,7 +3164,7 @@
 		/// <returns>A configured MultiValue.</returns>
 		public MultiValue<TClass, TEnum?, IList<TEnum?>> AddMultiValue<TEnum>(Expression<Func<TClass, IList<TEnum?>>> expression, Action<NamelessMultiArgConfig<TClass, TEnum?, IList<TEnum?>>> config) where TEnum : struct, Enum
 		{
-			var obj = new NamelessMultiArgConfig<TClass, TEnum?, IList<TEnum?>>(false, ToNullableEnum<TEnum>, List);
+			var obj = new NamelessMultiArgConfig<TClass, TEnum?, IList<TEnum?>>(false, (x) => ToNullableEnum<TEnum>(x, this.config.IsCaseSensitive), List);
 			config(obj);
 			return AddMultiValueCore(expression, obj);
 		}
@@ -3177,7 +3177,7 @@
 		/// <returns>A configured MultiValue.</returns>
 		public MultiValue<TClass, TEnum?, IReadOnlyList<TEnum?>> AddMultiValue<TEnum>(Expression<Func<TClass, IReadOnlyList<TEnum?>>> expression, Action<NamelessMultiArgConfig<TClass, TEnum?, IReadOnlyList<TEnum?>>> config) where TEnum : struct, Enum
 		{
-			var obj = new NamelessMultiArgConfig<TClass, TEnum?, IReadOnlyList<TEnum?>>(false, ToNullableEnum<TEnum>, List);
+			var obj = new NamelessMultiArgConfig<TClass, TEnum?, IReadOnlyList<TEnum?>>(false, (x) => ToNullableEnum<TEnum>(x, this.config.IsCaseSensitive), List);
 			config(obj);
 			return AddMultiValueCore(expression, obj);
 		}
@@ -3190,7 +3190,7 @@
 		/// <returns>A configured MultiValue.</returns>
 		public MultiValue<TClass, TEnum?, ICollection<TEnum?>> AddMultiValue<TEnum>(Expression<Func<TClass, ICollection<TEnum?>>> expression, Action<NamelessMultiArgConfig<TClass, TEnum?, ICollection<TEnum?>>> config) where TEnum : struct, Enum
 		{
-			var obj = new NamelessMultiArgConfig<TClass, TEnum?, ICollection<TEnum?>>(false, ToNullableEnum<TEnum>, List);
+			var obj = new NamelessMultiArgConfig<TClass, TEnum?, ICollection<TEnum?>>(false, (x) => ToNullableEnum<TEnum>(x, this.config.IsCaseSensitive), List);
 			config(obj);
 			return AddMultiValueCore(expression, obj);
 		}
@@ -3203,7 +3203,7 @@
 		/// <returns>A configured MultiValue.</returns>
 		public MultiValue<TClass, TEnum?, IReadOnlyCollection<TEnum?>> AddMultiValue<TEnum>(Expression<Func<TClass, IReadOnlyCollection<TEnum?>>> expression, Action<NamelessMultiArgConfig<TClass, TEnum?, IReadOnlyCollection<TEnum?>>> config) where TEnum : struct, Enum
 		{
-			var obj = new NamelessMultiArgConfig<TClass, TEnum?, IReadOnlyCollection<TEnum?>>(false, ToNullableEnum<TEnum>, List);
+			var obj = new NamelessMultiArgConfig<TClass, TEnum?, IReadOnlyCollection<TEnum?>>(false, (x) => ToNullableEnum<TEnum>(x, this.config.IsCaseSensitive), List);
 			config(obj);
 			return AddMultiValueCore(expression, obj);
 		}
@@ -3216,7 +3216,7 @@
 		/// <returns>A configured MultiValue.</returns>
 		public MultiValue<TClass, TEnum?, IEnumerable<TEnum?>> AddMultiValue<TEnum>(Expression<Func<TClass, IEnumerable<TEnum?>>> expression, Action<NamelessMultiArgConfig<TClass, TEnum?, IEnumerable<TEnum?>>> config) where TEnum : struct, Enum
 		{
-			var obj = new NamelessMultiArgConfig<TClass, TEnum?, IEnumerable<TEnum?>>(false, ToNullableEnum<TEnum>, Enumerable);
+			var obj = new NamelessMultiArgConfig<TClass, TEnum?, IEnumerable<TEnum?>>(false, (x) => ToNullableEnum<TEnum>(x, this.config.IsCaseSensitive), Enumerable);
 			config(obj);
 			return AddMultiValueCore(expression, obj);
 		}
@@ -3229,7 +3229,7 @@
 		/// <returns>A configured MultiValue.</returns>
 		public MultiValue<TClass, TEnum?, HashSet<TEnum?>> AddMultiValue<TEnum>(Expression<Func<TClass, HashSet<TEnum?>>> expression, Action<NamelessMultiArgConfig<TClass, TEnum?, HashSet<TEnum?>>> config) where TEnum : struct, Enum
 		{
-			var obj = new NamelessMultiArgConfig<TClass, TEnum?, HashSet<TEnum?>>(false, ToNullableEnum<TEnum>, HashSet);
+			var obj = new NamelessMultiArgConfig<TClass, TEnum?, HashSet<TEnum?>>(false, (x) => ToNullableEnum<TEnum>(x, this.config.IsCaseSensitive), HashSet);
 			config(obj);
 			return AddMultiValueCore(expression, obj);
 		}
@@ -3242,7 +3242,7 @@
 		/// <returns>A configured MultiValue.</returns>
 		public MultiValue<TClass, TEnum?, Stack<TEnum?>> AddMultiValue<TEnum>(Expression<Func<TClass, Stack<TEnum?>>> expression, Action<NamelessMultiArgConfig<TClass, TEnum?, Stack<TEnum?>>> config) where TEnum : struct, Enum
 		{
-			var obj = new NamelessMultiArgConfig<TClass, TEnum?, Stack<TEnum?>>(false, ToNullableEnum<TEnum>, Stack);
+			var obj = new NamelessMultiArgConfig<TClass, TEnum?, Stack<TEnum?>>(false, (x) => ToNullableEnum<TEnum>(x, this.config.IsCaseSensitive), Stack);
 			config(obj);
 			return AddMultiValueCore(expression, obj);
 		}
@@ -3255,7 +3255,7 @@
 		/// <returns>A configured MultiValue.</returns>
 		public MultiValue<TClass, TEnum?, Queue<TEnum?>> AddMultiValue<TEnum>(Expression<Func<TClass, Queue<TEnum?>>> expression, Action<NamelessMultiArgConfig<TClass, TEnum?, Queue<TEnum?>>> config) where TEnum : struct, Enum
 		{
-			var obj = new NamelessMultiArgConfig<TClass, TEnum?, Queue<TEnum?>>(false, ToNullableEnum<TEnum>, Queue);
+			var obj = new NamelessMultiArgConfig<TClass, TEnum?, Queue<TEnum?>>(false, (x) => ToNullableEnum<TEnum>(x, this.config.IsCaseSensitive), Queue);
 			config(obj);
 			return AddMultiValueCore(expression, obj);
 		}

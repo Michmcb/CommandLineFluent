@@ -135,7 +135,7 @@
 		/// <returns>A configured Option.</returns>
 		public Option<TClass, TEnum> AddOption<TEnum>(Expression<Func<TClass, TEnum>> expression, Action<NamedArgConfig<TClass, TEnum, string>> config) where TEnum : struct, Enum
 		{
-			var obj = new NamedArgConfig<TClass, TEnum, string>(true, ToEnum<TEnum>);
+			var obj = new NamedArgConfig<TClass, TEnum, string>(true, (x) => ToEnum<TEnum>(x, this.config.IsCaseSensitive));
 			config(obj);
 			return AddOptionCore(expression, obj);
 		}
@@ -303,7 +303,7 @@
 		/// <returns>A configured Option.</returns>
 		public Option<TClass, TEnum?> AddOption<TEnum>(Expression<Func<TClass, TEnum?>> expression, Action<NamedArgConfig<TClass, TEnum?, string>> config) where TEnum : struct, Enum
 		{
-			var obj = new NamedArgConfig<TClass, TEnum?, string>(false, ToNullableEnum<TEnum>);
+			var obj = new NamedArgConfig<TClass, TEnum?, string>(false, (x) => ToNullableEnum<TEnum>(x, this.config.IsCaseSensitive));
 			config(obj);
 			return AddOptionCore(expression, obj);
 		}

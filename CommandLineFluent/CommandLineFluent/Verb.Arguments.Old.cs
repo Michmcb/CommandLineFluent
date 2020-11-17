@@ -51,7 +51,7 @@
 		}
 		[Obsolete("Prefer AddOption and pass a NamedArgConfig instead")]public Option<TClass, TEnum> AddOptionEnum<TEnum>(string? shortName, string? longName, Action<OptionConfig<TClass, TEnum>> optionConfig) where TEnum : struct, Enum
 		{
-			return AddOptionWithConverter(shortName, longName, optionConfig, ToEnum<TEnum>);
+			return AddOptionWithConverter(shortName, longName, optionConfig, x => ToEnum<TEnum>(x, config.IsCaseSensitive));
 		}
 		[Obsolete("Prefer AddOption and pass a NamedArgConfig instead")]public Option<TClass, DateTime> AddOptionDateTime(string? shortName, string? longName, Action<OptionConfig<TClass, DateTime>> optionConfig)
 		{
@@ -111,7 +111,7 @@
 		}
 		[Obsolete("Prefer AddOption and pass a NamedArgConfig instead")]public Option<TClass, TEnum?> AddOptionNullableEnum<TEnum>(string? shortName, string? longName, Action<OptionConfig<TClass, TEnum?>> optionConfig) where TEnum : struct, Enum
 		{
-			return AddOptionWithConverter(shortName, longName, optionConfig, ToNullableEnum<TEnum>);
+			return AddOptionWithConverter(shortName, longName, optionConfig, x => ToNullableEnum<TEnum>(x, config.IsCaseSensitive));
 		}
 		[Obsolete("Prefer AddOption and pass a NamedArgConfig instead")]public Option<TClass, DateTime?> AddOptionNullableDateTime(string? shortName, string? longName, Action<OptionConfig<TClass, DateTime?>> optionConfig)
 		{
@@ -171,7 +171,7 @@
 		}
 		[Obsolete("Prefer AddValue and pass a NamelessArgConfig instead")]public Value<TClass, TEnum> AddValueEnum<TEnum>(Action<ValueConfig<TClass, TEnum>> valueConfig) where TEnum : struct, Enum
 		{
-			return AddValueWithConverter(valueConfig, ToEnum<TEnum>);
+			return AddValueWithConverter(valueConfig, x => ToEnum<TEnum>(x, config.IsCaseSensitive));
 		}
 		[Obsolete("Prefer AddValue and pass a NamelessArgConfig instead")]public Value<TClass, DateTime> AddValueDateTime(Action<ValueConfig<TClass, DateTime>> valueConfig)
 		{
@@ -231,7 +231,7 @@
 		}
 		[Obsolete("Prefer AddValue and pass a NamelessArgConfig instead")]public Value<TClass, TEnum?> AddValueNullableEnum<TEnum>(Action<ValueConfig<TClass, TEnum?>> valueConfig) where TEnum : struct, Enum
 		{
-			return AddValueWithConverter(valueConfig, ToNullableEnum<TEnum>);
+			return AddValueWithConverter(valueConfig, x => ToNullableEnum<TEnum>(x, config.IsCaseSensitive));
 		}
 		[Obsolete("Prefer AddValue and pass a NamelessArgConfig instead")]public Value<TClass, DateTime?> AddValueNullableDateTime(Action<ValueConfig<TClass, DateTime?>> valueConfig)
 		{
