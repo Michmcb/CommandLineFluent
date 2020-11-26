@@ -15,7 +15,6 @@
 			//GenerateSwitches(args[2]);
 			GenerateMultiValues("Verb.MultiValues.cs");
 			//GenerateMultiOptions(args[4]);
-
 		}
 		private static void GenerateValues(string name)
 		{
@@ -36,6 +35,7 @@
 				( true, "DateTime", "ToDateTime", "AddValue", string.Empty ),
 				( true, "TimeSpan", "ToTimeSpan", "AddValue", string.Empty ),
 				( true, "Guid", "ToGuid", "AddValue", string.Empty ),
+				( true, "Uri", "ToAbsoluteUri", "AddValue", string.Empty ),
 
 				( false, "string?", "NoConversionNullable", "AddValueNullable", string.Empty ),
 				( false, "short?", "ToNullableShort", "AddValue", string.Empty ),
@@ -50,7 +50,8 @@
 				( false, "TEnum?", "(x) => ToNullableEnum<TEnum>(x, this.config.IsCaseSensitive)", "AddValue<TEnum>", " where TEnum : struct, Enum"),
 				( false, "DateTime?", "ToNullableDateTime", "AddValue", string.Empty ),
 				( false, "TimeSpan?", "ToNullableTimeSpan", "AddValue", string.Empty ),
-				( false, "Guid?", "ToNullableGuid" , "AddValue", string.Empty )
+				( false, "Guid?", "ToNullableGuid" , "AddValue", string.Empty ),
+				( false, "Uri?", "ToAbsoluteNullableUri", "AddValueNullable", string.Empty ),
 			};
 
 			using StreamWriter csOut = new StreamWriter(new FileStream(name, FileMode.Create, FileAccess.Write), Encoding.UTF8);
@@ -99,6 +100,7 @@
 				( true, "DateTime", "ToDateTime", "AddOption", string.Empty ),
 				( true, "TimeSpan", "ToTimeSpan", "AddOption", string.Empty ),
 				( true, "Guid", "ToGuid", "AddOption", string.Empty ),
+				( true, "Uri", "ToAbsoluteUri", "AddOption", string.Empty ),
 
 				( false, "string?", "NoConversionNullable", "AddOptionNullable", string.Empty ),
 				( false, "short?", "ToNullableShort", "AddOption", string.Empty ),
@@ -113,7 +115,8 @@
 				( false, "TEnum?", "(x) => ToNullableEnum<TEnum>(x, this.config.IsCaseSensitive)", "AddOption<TEnum>", " where TEnum : struct, Enum"),
 				( false, "DateTime?", "ToNullableDateTime", "AddOption", string.Empty ),
 				( false, "TimeSpan?", "ToNullableTimeSpan", "AddOption", string.Empty ),
-				( false, "Guid?", "ToNullableGuid" , "AddOption", string.Empty )
+				( false, "Guid?", "ToNullableGuid" , "AddOption", string.Empty ),
+				( false, "Uri?", "ToAbsoluteNullableUri", "AddOptionNullable", string.Empty ),
 			};
 
 			using StreamWriter csOut = new StreamWriter(new FileStream(name, FileMode.Create, FileAccess.Write), Encoding.UTF8);
@@ -174,6 +177,7 @@
 				( "DateTime", "ToDateTime", "AddMultiValue", string.Empty ),
 				( "TimeSpan", "ToTimeSpan", "AddMultiValue", string.Empty ),
 				( "Guid", "ToGuid", "AddMultiValue", string.Empty ),
+				( "Uri", "ToAbsoluteUri", "AddMultiValue", string.Empty ),
 
 				( "string?", "NoConversionNullable", "AddMultiValueNullable", string.Empty ),
 				( "short?", "ToNullableShort", "AddMultiValue", string.Empty ),
@@ -188,7 +192,8 @@
 				( "TEnum?", "(x) => ToNullableEnum<TEnum>(x, this.config.IsCaseSensitive)", "AddMultiValue<TEnum>", " where TEnum : struct, Enum"),
 				( "DateTime?", "ToNullableDateTime", "AddMultiValue", string.Empty ),
 				( "TimeSpan?", "ToNullableTimeSpan", "AddMultiValue", string.Empty ),
-				( "Guid?", "ToNullableGuid" , "AddMultiValue", string.Empty )
+				( "Guid?", "ToNullableGuid" , "AddMultiValue", string.Empty ),
+				( "Uri?", "ToAbsoluteNullableUri", "AddMultiValueNullable", string.Empty ),
 			};
 
 			using StreamWriter csOut = new StreamWriter(new FileStream(name, FileMode.Create, FileAccess.Write), Encoding.UTF8);

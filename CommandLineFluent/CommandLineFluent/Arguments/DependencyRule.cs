@@ -31,7 +31,7 @@
 			PropertyGetter = propertyGetter;
 			Requiredness = required;
 			Predicate = null!;
-			ErrorMessage = "";
+			ErrorMessage = string.Empty;
 		}
 		/// <summary>
 		/// A helper validation method that throws an exception if a DependencyRule gets configured twice

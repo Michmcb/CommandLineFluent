@@ -283,6 +283,34 @@
 			}
 		}
 		[Fact]
+		public void ObjectValidator()
+		{
+			CliParser fp = new CliParserBuilder()
+				.AddVerb<OptOneOfEach>("verb", verb =>
+				{
+					verb.AddOption(x => x.Option, x =>
+					{
+						x.WithShortAndLongName("o", "opt");
+					});
+
+					verb.ValidateObject = (obj) => obj.Option < 50 ? null : "Too much!";
+				})
+				.Build();
+
+			IParseResult pr = fp.Parse(new string[] { "verb", "-o", "10" });
+			Assert.IsType<SuccessfulParse<OptOneOfEach>>(pr);
+			Assert.True(pr.Ok);
+			Assert.Empty(pr.Errors);
+
+			pr = fp.Parse(new string[] { "verb", "--opt", "999" });
+			Assert.IsType<FailedParseWithVerb<OptOneOfEach>>(pr);
+			Assert.False(pr.Ok);
+			Assert.Equal(1, pr.Errors.Count);
+			var error = pr.Errors.First();
+			Assert.Equal(ErrorCode.ObjectFailedValidation, error.ErrorCode);
+			Assert.Equal("Too much!", error.Message);
+		}
+		[Fact]
 		public void ParsingConverters_Required()
 		{
 			CliParser fp = new CliParserBuilder(new CliParserConfig() { StringComparer = StringComparer.OrdinalIgnoreCase })

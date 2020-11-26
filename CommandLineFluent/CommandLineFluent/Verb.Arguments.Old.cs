@@ -67,7 +67,7 @@
 		}
 		[Obsolete("Prefer AddOption and pass a NamedArgConfig instead")]public Option<TClass, Uri> AddOptionUri(string? shortName, string? longName, Action<OptionConfig<TClass, Uri>> optionConfig)
 		{
-			return AddOptionWithConverter(shortName, longName, optionConfig, ToUri);
+			return AddOptionWithConverter(shortName, longName, optionConfig, ToAbsoluteUri);
 		}
 		[Obsolete("Prefer AddOption and pass a NamedArgConfig instead")]public Option<TClass, string?> AddOptionNullableString(string? shortName, string? longName, Action<OptionConfig<TClass, string?>> optionConfig)
 		{
@@ -127,7 +127,7 @@
 		}
 		[Obsolete("Prefer AddOption and pass a NamedArgConfig instead")]public Option<TClass, Uri?> AddOptionNullableUri(string? shortName, string? longName, Action<OptionConfig<TClass, Uri?>> optionConfig)
 		{
-			return AddOptionWithConverter(shortName, longName, optionConfig, ToNullableUri);
+			return AddOptionWithConverter(shortName, longName, optionConfig, ToAbsoluteNullableUri);
 		}
 		[Obsolete("Prefer AddValue and pass a NamelessArgConfig instead")]public Value<TClass, string> AddValueString(Action<ValueConfig<TClass, string>> valueConfig)
 		{
@@ -187,7 +187,7 @@
 		}
 		[Obsolete("Prefer AddValue and pass a NamelessArgConfig instead")]public Value<TClass, Uri> AddValueUrl(Action<ValueConfig<TClass, Uri>> valueConfig)
 		{
-			return AddValueWithConverter(valueConfig, ToUri);
+			return AddValueWithConverter(valueConfig, ToAbsoluteUri);
 		}
 		[Obsolete("Prefer AddValue and pass a NamelessArgConfig instead")]public Value<TClass, string?> AddValueNullableString(Action<ValueConfig<TClass, string?>> valueConfig)
 		{
@@ -247,7 +247,7 @@
 		}
 		[Obsolete("Prefer AddValue and pass a NamelessArgConfig instead")]public Value<TClass, Uri?> AddValueNullableUrl(Action<ValueConfig<TClass, Uri?>> valueConfig)
 		{
-			return AddValueWithConverter(valueConfig, ToNullableUri);
+			return AddValueWithConverter(valueConfig, ToAbsoluteNullableUri);
 		}
 		[Obsolete("Prefer AddSwitch and pass a NamedArgConfig instead")]
 		public Switch<TClass, bool> AddSwitchBool(string? shortName, string? longName, Action<SwitchConfig<TClass, bool>> switchConfig)

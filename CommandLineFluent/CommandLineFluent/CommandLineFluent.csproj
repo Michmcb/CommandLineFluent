@@ -7,7 +7,7 @@
     <Authors>Michael McBride</Authors>
     <Product />
     <Company />
-    <Version>2.3.2</Version>
+    <Version>2.3.3</Version>
     <PackageLicenseFile>LICENSE</PackageLicenseFile>
     <Description>A .NET Command Line Parsing library which is set up and parsed using fluent syntax. It parses command line arguments into strongly-typed classes which you define. Supports conditional dependencies between arguments, conversion, default values, a basic shell, and automatic help/usage text. It also supports invoking awaitable or asynchronous actions with the classes you define.</Description>
     <PackageTags>commandline, parsing, parser, option, command, line, argument, library, fluent, async</PackageTags>
@@ -17,12 +17,12 @@
     <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
     <RepositoryUrl>https://github.com/Michmcb/CommandLineFluent</RepositoryUrl>
     <RepositoryType>Github</RepositoryType>
-    <PackageReleaseNotes>- Parsing Enums now respects the case sensitivity or insensitivity of the configured StringComparer
-- QuotedStringTokenizer can use ', ", and ` to quote strings. Quotes still can't be escaped though
-- Unit tests for QuotedStringTokenizer</PackageReleaseNotes>
+    <PackageReleaseNotes>- Codegen for coverters to URIs, by default it expects UriKind.Absolute
+- Verbs can be given a function that, after successful parsing, is invoked to check that the object's values as a whole are valid
+	</PackageReleaseNotes>
     <PackageIcon>CommandLineFluent.png</PackageIcon>
-    <AssemblyVersion>2.3.2.0</AssemblyVersion>
-    <FileVersion>2.3.2.0</FileVersion>
+    <AssemblyVersion>2.3.3.0</AssemblyVersion>
+    <FileVersion>2.3.3.0</FileVersion>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">

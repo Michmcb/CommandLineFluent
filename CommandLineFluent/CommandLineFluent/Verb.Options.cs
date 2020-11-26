@@ -176,6 +176,18 @@
 			return AddOptionCore(expression, obj);
 		}
 		/// <summary>
+		/// Adds a new Option to set the Uri specified by <paramref name="expression"/>. By default this Option is required.
+		/// </summary>
+		/// <param name="expression">The property.</param>
+		/// <param name="config">The action to configure the Option.</param>
+		/// <returns>A configured Option.</returns>
+		public Option<TClass, Uri> AddOption(Expression<Func<TClass, Uri>> expression, Action<NamedArgConfig<TClass, Uri, string>> config)
+		{
+			var obj = new NamedArgConfig<TClass, Uri, string>(true, ToAbsoluteUri);
+			config(obj);
+			return AddOptionCore(expression, obj);
+		}
+		/// <summary>
 		/// Adds a new Option to set the string? specified by <paramref name="expression"/>. By default this Option is not required.
 		/// </summary>
 		/// <param name="expression">The property.</param>
@@ -340,6 +352,18 @@
 		public Option<TClass, Guid?> AddOption(Expression<Func<TClass, Guid?>> expression, Action<NamedArgConfig<TClass, Guid?, string>> config)
 		{
 			var obj = new NamedArgConfig<TClass, Guid?, string>(false, ToNullableGuid);
+			config(obj);
+			return AddOptionCore(expression, obj);
+		}
+		/// <summary>
+		/// Adds a new Option to set the Uri? specified by <paramref name="expression"/>. By default this Option is not required.
+		/// </summary>
+		/// <param name="expression">The property.</param>
+		/// <param name="config">The action to configure the Option.</param>
+		/// <returns>A configured Option.</returns>
+		public Option<TClass, Uri?> AddOptionNullable(Expression<Func<TClass, Uri?>> expression, Action<NamedArgConfig<TClass, Uri?, string>> config)
+		{
+			var obj = new NamedArgConfig<TClass, Uri?, string>(false, ToAbsoluteNullableUri);
 			config(obj);
 			return AddOptionCore(expression, obj);
 		}

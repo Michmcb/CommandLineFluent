@@ -99,6 +99,10 @@
 		/// </summary>
 		NoVerbFound,
 		/// <summary>
+		/// The object was successfully parsed, but the resultant object failed to be validated.
+		/// </summary>
+		ObjectFailedValidation,
+		/// <summary>
 		/// The user requested help
 		/// </summary>
 		HelpRequested,

@@ -118,7 +118,9 @@
 			{
 				return new FailedParseNoVerb(new Error[] { new Error(ErrorCode.NoVerbFound, "No input") });
 			}
-			return Parse(Tokenizer.Tokenize(args));
+			IEnumerable<string> tokens = Tokenizer.Tokenize(args);
+			using IEnumerator<string> e = tokens.GetEnumerator();
+			return Parse(e);
 		}
 		/// <summary>
 		/// Parses the provided args and turns them into a class.
@@ -131,19 +133,32 @@
 			{
 				return new FailedParseNoVerb(new Error[] { new Error(ErrorCode.NoVerbFound, "No input") });
 			}
-			string? firstArg = args.FirstOrDefault();
-			if (firstArg != null)
+			using IEnumerator<string> e = args.GetEnumerator();
+			return Parse(e);
+		}
+		/// <summary>
+		/// Parses the provided args and turns them into a class.
+		/// </summary>
+		/// <param name="argsEnum">An enumerator providing the args to parse.</param>
+		/// <returns>An IParseResult. You can call <see cref="Handle(IParseResult)"/>, to handle it automatically.</returns>
+		public IParseResult Parse(IEnumerator<string> argsEnum)
+		{
+			if (argsEnum.MoveNext())
 			{
-				if (verbsByName.TryGetValue(firstArg, out IVerb? verb))
+				string? firstArg = argsEnum.Current;
+				if (firstArg != null)
 				{
-					return verb.Parse(args.Skip(1));
+					if (verbsByName.TryGetValue(firstArg, out IVerb? verb))
+					{
+						return verb.Parse(argsEnum);
+					}
+					// If the verb isn't found, it might be just the help switch
+					else if (firstArg.Equals(config.ShortHelpSwitch, StringComparison.OrdinalIgnoreCase) || firstArg.Equals(config.LongHelpSwitch, StringComparison.OrdinalIgnoreCase))
+					{
+						return new FailedParseNoVerb(new Error[] { new Error(ErrorCode.HelpRequested, "") });
+					}
+					return new FailedParseNoVerb(new Error[] { new Error(ErrorCode.InvalidVerb, "The verb provided was not valid: " + firstArg) });
 				}
-				// If the verb isn't found, it might be just the help switch
-				else if (firstArg.Equals(config.ShortHelpSwitch, StringComparison.OrdinalIgnoreCase) || firstArg.Equals(config.LongHelpSwitch, StringComparison.OrdinalIgnoreCase))
-				{
-					return new FailedParseNoVerb(new Error[] { new Error(ErrorCode.HelpRequested, "") });
-				}
-				return new FailedParseNoVerb(new Error[] { new Error(ErrorCode.InvalidVerb, "The verb provided was not valid: " + firstArg) });
 			}
 			return new FailedParseNoVerb(new Error[] { new Error(ErrorCode.NoVerbFound, "No input") });
 		}

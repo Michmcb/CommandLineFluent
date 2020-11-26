@@ -32,8 +32,8 @@
 			allSwitchesByLongName = new Dictionary<string, ISwitch<TClass>>(config.StringComparer);
 			allOptionsByLongName = new Dictionary<string, IOption<TClass>>(config.StringComparer);
 			HelpText = "No help available.";
-			Invoke = x => throw new CliParserBuilderException(string.Concat("Invoke for verb ", LongName, " has not been configured"));
-			InvokeAsync = x => throw new CliParserBuilderException(string.Concat("InvokeAsync for verb ", LongName, " has not been configured"));
+			Invoke = x => throw new CliParserBuilderException(string.Concat("Invoke for verb ", ShortAndLongName(), " has not been configured"));
+			InvokeAsync = x => throw new CliParserBuilderException(string.Concat("InvokeAsync for verb ", ShortAndLongName(), " has not been configured"));
 		}
 		/// <summary>
 		/// If not null, the MultiValue for this verb which picks up all extra arguments.
@@ -59,6 +59,12 @@
 		/// The asynchronous action that's invoked when parsing is successful and this verb was provided.
 		/// </summary>
 		public Func<TClass, Task> InvokeAsync { get; set; }
+		/// <summary>
+		/// A function invoked after parsing is successful, for any additional validation.
+		/// If a null/empty string is returned, that is taken as passing validation.
+		/// Returning a non-null/empty string indicates failure (<see cref="ErrorCode.ObjectFailedValidation"/>), and the returned string will be shown to the user.
+		/// </summary>
+		public Func<TClass, string?>? ValidateObject { get; set; }
 		public string? ShortName { get; }
 		public string LongName { get; }
 		public string HelpText { get; set; }
@@ -129,7 +135,7 @@
 		/// <returns>A configured Option.</returns>
 		public Option<TClass, TProp> AddOptionCore<TProp>(Expression<Func<TClass, TProp>> expression, Action<NamedArgConfig<TClass, TProp, string>> config)
 		{
-			var obj = new NamedArgConfig<TClass, TProp, string>();
+			NamedArgConfig<TClass, TProp, string>? obj = new NamedArgConfig<TClass, TProp, string>();
 			config(obj);
 			return AddOptionCore(expression, obj);
 		}
@@ -172,7 +178,7 @@
 		/// <returns>A configured Switch.</returns>
 		public Switch<TClass, TProp> AddSwitchCore<TProp>(Expression<Func<TClass, TProp>> expression, Action<NamedArgConfig<TClass, TProp, bool>> config)
 		{
-			var obj = new NamedArgConfig<TClass, TProp, bool>();
+			NamedArgConfig<TClass, TProp, bool>? obj = new NamedArgConfig<TClass, TProp, bool>();
 			config(obj);
 			return AddSwitchCore(expression, obj);
 		}
@@ -215,7 +221,7 @@
 		/// <returns>A configured MultiValue.</returns>
 		public MultiValue<TClass, TProp, TPropCollection> AddMultiValueCore<TProp, TPropCollection>(Expression<Func<TClass, TPropCollection>> expression, Action<NamelessMultiArgConfig<TClass, TProp, TPropCollection>> config)
 		{
-			var obj = new NamelessMultiArgConfig<TClass, TProp, TPropCollection>();
+			NamelessMultiArgConfig<TClass, TProp, TPropCollection>? obj = new NamelessMultiArgConfig<TClass, TProp, TPropCollection>();
 			config(obj);
 			return AddMultiValueCore(expression, obj);
 		}
@@ -334,55 +340,37 @@
 		}
 		public IParseResult Parse(IEnumerable<string> args)
 		{
+			using IEnumerator<string> e = args.GetEnumerator();
+			return Parse(e);
+		}
+		public IParseResult Parse(IEnumerator<string> argsEnum)
+		{
 			TClass parsedClass = new TClass();
 			List<Error> errors = new List<Error>();
 			HashSet<IOption<TClass>> optionsRemaining = new HashSet<IOption<TClass>>(allOptions);
-			HashSet<ISwitch<TClass>> switchesRemaining = new HashSet<ISwitch<TClass>>(AllSwitches);
+			HashSet<ISwitch<TClass>> switchesRemaining = new HashSet<ISwitch<TClass>>(allSwitches);
 			List<string> multiValuesFound = new List<string>();
 			int valuesFound = 0;
 
-			using (IEnumerator<string> aEnum = args.GetEnumerator())
+			while (argsEnum.MoveNext())
 			{
-				while (aEnum.MoveNext())
+				string arg = argsEnum.Current;
+				// If the user asks for help, immediately stop parsing
+				if (arg == config.ShortHelpSwitch || arg == config.LongHelpSwitch)
 				{
-					string arg = aEnum.Current;
-					// If the user asks for help, immediately stop parsing
-					if (arg == config.ShortHelpSwitch || arg == config.LongHelpSwitch)
-					{
-						errors.Add(new Error(ErrorCode.HelpRequested, string.Empty));
-						return new FailedParseWithVerb<TClass>(this, errors);
-					}
+					errors.Add(new Error(ErrorCode.HelpRequested, string.Empty));
+					return new FailedParseWithVerb<TClass>(this, errors);
+				}
 
-					if (allOptionsByShortName.TryGetValue(arg, out IOption<TClass>? oval) || allOptionsByLongName.TryGetValue(arg, out oval))
+				if (allOptionsByShortName.TryGetValue(arg, out IOption<TClass>? oval) || allOptionsByLongName.TryGetValue(arg, out oval))
+				{
+					if (argsEnum.MoveNext())
 					{
-						if (aEnum.MoveNext())
+						arg = argsEnum.Current;
+						// The option might only have a short or long name. However if both return false, that means we already saw it.
+						if (optionsRemaining.Remove(oval))
 						{
-							arg = aEnum.Current;
-							// The option might only have a short or long name. However if both return false, that means we already saw it.
-							if (optionsRemaining.Remove(oval))
-							{
-								Error error = oval.SetValue(parsedClass, arg);
-								if (error.ErrorCode != ErrorCode.Ok)
-								{
-									errors.Add(error);
-								}
-							}
-							else
-							{
-								errors.Add(new Error(ErrorCode.DuplicateOption, "An Option appeared twice: " + arg));
-							}
-						}
-						else
-						{
-							errors.Add(new Error(ErrorCode.OptionMissingValue, "An Option was missing a value: " + arg));
-						}
-					}
-					else if (allSwitchesByShortName.TryGetValue(arg, out ISwitch<TClass>? sval) || allSwitchesByLongName.TryGetValue(arg, out sval))
-					{
-						// The switch might only have a short or long name. However if both return false, that means we already saw it.
-						if (switchesRemaining.Remove(sval))
-						{
-							Error error = sval.SetValue(parsedClass, string.Empty);
+							Error error = oval.SetValue(parsedClass, arg);
 							if (error.ErrorCode != ErrorCode.Ok)
 							{
 								errors.Add(error);
@@ -390,28 +378,48 @@
 						}
 						else
 						{
-							errors.Add(new Error(ErrorCode.DuplicateSwitch, "A Switch appeared twice: " + arg));
+							errors.Add(new Error(ErrorCode.DuplicateOption, "An Option appeared twice: " + arg));
 						}
 					}
-					// Might be a Value
-					else if (valuesFound < AllValues.Count)
+					else
 					{
-						Error error = AllValues[valuesFound++].SetValue(parsedClass, arg);
+						errors.Add(new Error(ErrorCode.OptionMissingValue, "An Option was missing a value: " + arg));
+					}
+				}
+				else if (allSwitchesByShortName.TryGetValue(arg, out ISwitch<TClass>? sval) || allSwitchesByLongName.TryGetValue(arg, out sval))
+				{
+					// The switch might only have a short or long name. However if both return false, that means we already saw it.
+					if (switchesRemaining.Remove(sval))
+					{
+						Error error = sval.SetValue(parsedClass, string.Empty);
 						if (error.ErrorCode != ErrorCode.Ok)
 						{
 							errors.Add(error);
 						}
 					}
-					// Might be a MultiValue, unless it starts with something that should be ignored
-					else if (MultiValue != null)// && !MultiValue.HasIgnoredPrefix(arg))
-					{
-						multiValuesFound.Add(arg);
-					}
-					// It's something unrecognized
 					else
 					{
-						errors.Add(new Error(ErrorCode.UnexpectedArgument, "Found an unexpected argument: " + arg));
+						errors.Add(new Error(ErrorCode.DuplicateSwitch, "A Switch appeared twice: " + arg));
 					}
+				}
+				// Might be a Value
+				else if (valuesFound < AllValues.Count)
+				{
+					Error error = AllValues[valuesFound++].SetValue(parsedClass, arg);
+					if (error.ErrorCode != ErrorCode.Ok)
+					{
+						errors.Add(error);
+					}
+				}
+				// Might be a MultiValue, unless it starts with something that should be ignored
+				else if (MultiValue != null)// && !MultiValue.HasIgnoredPrefix(arg))
+				{
+					multiValuesFound.Add(arg);
+				}
+				// It's something unrecognized
+				else
+				{
+					errors.Add(new Error(ErrorCode.UnexpectedArgument, "Found an unexpected argument: " + arg));
 				}
 			}
 			// Set all remaining values to default
@@ -496,7 +504,16 @@
 			{
 				return new FailedParseWithVerb<TClass>(this, errors);
 			}
-			return new SuccessfulParse<TClass>(this, parsedClass);
+			string? errMsg = ValidateObject?.Invoke(parsedClass);
+			if (string.IsNullOrEmpty(errMsg))
+			{
+				return new SuccessfulParse<TClass>(this, parsedClass);
+			}
+			else
+			{
+				errors.Add(new Error(ErrorCode.ObjectFailedValidation, errMsg));
+				return new FailedParseWithVerb<TClass>(this, errors);
+			}
 		}
 		private void ApplyDefaultPrefixAndCheck(ref string? shortName, ref string? longName, string type)
 		{

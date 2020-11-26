@@ -108,7 +108,7 @@
 		/// </summary>
 		public override string ToString()
 		{
-			return Ok ? value?.ToString() ?? "" : error?.ToString() ?? "";
+			return Ok ? value?.ToString() ?? string.Empty : error?.ToString() ?? string.Empty;
 		}
 		public override bool Equals(object obj)
 		{

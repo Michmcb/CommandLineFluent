@@ -1830,6 +1830,136 @@
 			return AddMultiValueCore(expression, obj);
 		}
 		/// <summary>
+		/// Adds a new MultiValue to set the Uri[] specified by <paramref name="expression"/>. By default this MultiValue is not required.
+		/// Adds a new MultiValue, by default it is not required. The elements will be converted to Uri and stored in a collection of type Array.
+		/// </summary>
+		/// <param name="expression">The property.</param>
+		/// <param name="config">The action to configure the MultiValue.</param>
+		/// <returns>A configured MultiValue.</returns>
+		public MultiValue<TClass, Uri, Uri[]> AddMultiValue(Expression<Func<TClass, Uri[]>> expression, Action<NamelessMultiArgConfig<TClass, Uri, Uri[]>> config)
+		{
+			var obj = new NamelessMultiArgConfig<TClass, Uri, Uri[]>(false, ToAbsoluteUri, Array);
+			config(obj);
+			return AddMultiValueCore(expression, obj);
+		}
+		/// <summary>
+		/// Adds a new MultiValue to set the List&lt;Uri&gt; specified by <paramref name="expression"/>. By default this MultiValue is not required.
+		/// Adds a new MultiValue, by default it is not required. The elements will be converted to Uri and stored in a collection of type List.
+		/// </summary>
+		/// <param name="expression">The property.</param>
+		/// <param name="config">The action to configure the MultiValue.</param>
+		/// <returns>A configured MultiValue.</returns>
+		public MultiValue<TClass, Uri, List<Uri>> AddMultiValue(Expression<Func<TClass, List<Uri>>> expression, Action<NamelessMultiArgConfig<TClass, Uri, List<Uri>>> config)
+		{
+			var obj = new NamelessMultiArgConfig<TClass, Uri, List<Uri>>(false, ToAbsoluteUri, List);
+			config(obj);
+			return AddMultiValueCore(expression, obj);
+		}
+		/// <summary>
+		/// Adds a new MultiValue to set the IList&lt;Uri&gt; specified by <paramref name="expression"/>. By default this MultiValue is not required.
+		/// Adds a new MultiValue, by default it is not required. The elements will be converted to Uri and stored in a collection of type List.
+		/// </summary>
+		/// <param name="expression">The property.</param>
+		/// <param name="config">The action to configure the MultiValue.</param>
+		/// <returns>A configured MultiValue.</returns>
+		public MultiValue<TClass, Uri, IList<Uri>> AddMultiValue(Expression<Func<TClass, IList<Uri>>> expression, Action<NamelessMultiArgConfig<TClass, Uri, IList<Uri>>> config)
+		{
+			var obj = new NamelessMultiArgConfig<TClass, Uri, IList<Uri>>(false, ToAbsoluteUri, List);
+			config(obj);
+			return AddMultiValueCore(expression, obj);
+		}
+		/// <summary>
+		/// Adds a new MultiValue to set the IReadOnlyList&lt;Uri&gt; specified by <paramref name="expression"/>. By default this MultiValue is not required.
+		/// Adds a new MultiValue, by default it is not required. The elements will be converted to Uri and stored in a collection of type List.
+		/// </summary>
+		/// <param name="expression">The property.</param>
+		/// <param name="config">The action to configure the MultiValue.</param>
+		/// <returns>A configured MultiValue.</returns>
+		public MultiValue<TClass, Uri, IReadOnlyList<Uri>> AddMultiValue(Expression<Func<TClass, IReadOnlyList<Uri>>> expression, Action<NamelessMultiArgConfig<TClass, Uri, IReadOnlyList<Uri>>> config)
+		{
+			var obj = new NamelessMultiArgConfig<TClass, Uri, IReadOnlyList<Uri>>(false, ToAbsoluteUri, List);
+			config(obj);
+			return AddMultiValueCore(expression, obj);
+		}
+		/// <summary>
+		/// Adds a new MultiValue to set the ICollection&lt;Uri&gt; specified by <paramref name="expression"/>. By default this MultiValue is not required.
+		/// Adds a new MultiValue, by default it is not required. The elements will be converted to Uri and stored in a collection of type List.
+		/// </summary>
+		/// <param name="expression">The property.</param>
+		/// <param name="config">The action to configure the MultiValue.</param>
+		/// <returns>A configured MultiValue.</returns>
+		public MultiValue<TClass, Uri, ICollection<Uri>> AddMultiValue(Expression<Func<TClass, ICollection<Uri>>> expression, Action<NamelessMultiArgConfig<TClass, Uri, ICollection<Uri>>> config)
+		{
+			var obj = new NamelessMultiArgConfig<TClass, Uri, ICollection<Uri>>(false, ToAbsoluteUri, List);
+			config(obj);
+			return AddMultiValueCore(expression, obj);
+		}
+		/// <summary>
+		/// Adds a new MultiValue to set the IReadOnlyCollection&lt;Uri&gt; specified by <paramref name="expression"/>. By default this MultiValue is not required.
+		/// Adds a new MultiValue, by default it is not required. The elements will be converted to Uri and stored in a collection of type List.
+		/// </summary>
+		/// <param name="expression">The property.</param>
+		/// <param name="config">The action to configure the MultiValue.</param>
+		/// <returns>A configured MultiValue.</returns>
+		public MultiValue<TClass, Uri, IReadOnlyCollection<Uri>> AddMultiValue(Expression<Func<TClass, IReadOnlyCollection<Uri>>> expression, Action<NamelessMultiArgConfig<TClass, Uri, IReadOnlyCollection<Uri>>> config)
+		{
+			var obj = new NamelessMultiArgConfig<TClass, Uri, IReadOnlyCollection<Uri>>(false, ToAbsoluteUri, List);
+			config(obj);
+			return AddMultiValueCore(expression, obj);
+		}
+		/// <summary>
+		/// Adds a new MultiValue to set the IEnumerable&lt;Uri&gt; specified by <paramref name="expression"/>. By default this MultiValue is not required.
+		/// Adds a new MultiValue, by default it is not required. The elements will be converted to Uri and stored in a collection of type Enumerable.
+		/// </summary>
+		/// <param name="expression">The property.</param>
+		/// <param name="config">The action to configure the MultiValue.</param>
+		/// <returns>A configured MultiValue.</returns>
+		public MultiValue<TClass, Uri, IEnumerable<Uri>> AddMultiValue(Expression<Func<TClass, IEnumerable<Uri>>> expression, Action<NamelessMultiArgConfig<TClass, Uri, IEnumerable<Uri>>> config)
+		{
+			var obj = new NamelessMultiArgConfig<TClass, Uri, IEnumerable<Uri>>(false, ToAbsoluteUri, Enumerable);
+			config(obj);
+			return AddMultiValueCore(expression, obj);
+		}
+		/// <summary>
+		/// Adds a new MultiValue to set the HashSet&lt;Uri&gt; specified by <paramref name="expression"/>. By default this MultiValue is not required.
+		/// Adds a new MultiValue, by default it is not required. The elements will be converted to Uri and stored in a collection of type HashSet.
+		/// </summary>
+		/// <param name="expression">The property.</param>
+		/// <param name="config">The action to configure the MultiValue.</param>
+		/// <returns>A configured MultiValue.</returns>
+		public MultiValue<TClass, Uri, HashSet<Uri>> AddMultiValue(Expression<Func<TClass, HashSet<Uri>>> expression, Action<NamelessMultiArgConfig<TClass, Uri, HashSet<Uri>>> config)
+		{
+			var obj = new NamelessMultiArgConfig<TClass, Uri, HashSet<Uri>>(false, ToAbsoluteUri, HashSet);
+			config(obj);
+			return AddMultiValueCore(expression, obj);
+		}
+		/// <summary>
+		/// Adds a new MultiValue to set the Stack&lt;Uri&gt; specified by <paramref name="expression"/>. By default this MultiValue is not required.
+		/// Adds a new MultiValue, by default it is not required. The elements will be converted to Uri and stored in a collection of type Stack.
+		/// </summary>
+		/// <param name="expression">The property.</param>
+		/// <param name="config">The action to configure the MultiValue.</param>
+		/// <returns>A configured MultiValue.</returns>
+		public MultiValue<TClass, Uri, Stack<Uri>> AddMultiValue(Expression<Func<TClass, Stack<Uri>>> expression, Action<NamelessMultiArgConfig<TClass, Uri, Stack<Uri>>> config)
+		{
+			var obj = new NamelessMultiArgConfig<TClass, Uri, Stack<Uri>>(false, ToAbsoluteUri, Stack);
+			config(obj);
+			return AddMultiValueCore(expression, obj);
+		}
+		/// <summary>
+		/// Adds a new MultiValue to set the Queue&lt;Uri&gt; specified by <paramref name="expression"/>. By default this MultiValue is not required.
+		/// Adds a new MultiValue, by default it is not required. The elements will be converted to Uri and stored in a collection of type Queue.
+		/// </summary>
+		/// <param name="expression">The property.</param>
+		/// <param name="config">The action to configure the MultiValue.</param>
+		/// <returns>A configured MultiValue.</returns>
+		public MultiValue<TClass, Uri, Queue<Uri>> AddMultiValue(Expression<Func<TClass, Queue<Uri>>> expression, Action<NamelessMultiArgConfig<TClass, Uri, Queue<Uri>>> config)
+		{
+			var obj = new NamelessMultiArgConfig<TClass, Uri, Queue<Uri>>(false, ToAbsoluteUri, Queue);
+			config(obj);
+			return AddMultiValueCore(expression, obj);
+		}
+		/// <summary>
 		/// Adds a new MultiValue to set the string?[] specified by <paramref name="expression"/>. By default this MultiValue is not required.
 		/// Adds a new MultiValue, by default it is not required. The elements will be converted to string? and stored in a collection of type Array.
 		/// </summary>
@@ -3646,6 +3776,136 @@
 		public MultiValue<TClass, Guid?, Queue<Guid?>> AddMultiValue(Expression<Func<TClass, Queue<Guid?>>> expression, Action<NamelessMultiArgConfig<TClass, Guid?, Queue<Guid?>>> config)
 		{
 			var obj = new NamelessMultiArgConfig<TClass, Guid?, Queue<Guid?>>(false, ToNullableGuid, Queue);
+			config(obj);
+			return AddMultiValueCore(expression, obj);
+		}
+		/// <summary>
+		/// Adds a new MultiValue to set the Uri?[] specified by <paramref name="expression"/>. By default this MultiValue is not required.
+		/// Adds a new MultiValue, by default it is not required. The elements will be converted to Uri? and stored in a collection of type Array.
+		/// </summary>
+		/// <param name="expression">The property.</param>
+		/// <param name="config">The action to configure the MultiValue.</param>
+		/// <returns>A configured MultiValue.</returns>
+		public MultiValue<TClass, Uri?, Uri?[]> AddMultiValueNullable(Expression<Func<TClass, Uri?[]>> expression, Action<NamelessMultiArgConfig<TClass, Uri?, Uri?[]>> config)
+		{
+			var obj = new NamelessMultiArgConfig<TClass, Uri?, Uri?[]>(false, ToAbsoluteNullableUri, Array);
+			config(obj);
+			return AddMultiValueCore(expression, obj);
+		}
+		/// <summary>
+		/// Adds a new MultiValue to set the List&lt;Uri?&gt; specified by <paramref name="expression"/>. By default this MultiValue is not required.
+		/// Adds a new MultiValue, by default it is not required. The elements will be converted to Uri? and stored in a collection of type List.
+		/// </summary>
+		/// <param name="expression">The property.</param>
+		/// <param name="config">The action to configure the MultiValue.</param>
+		/// <returns>A configured MultiValue.</returns>
+		public MultiValue<TClass, Uri?, List<Uri?>> AddMultiValueNullable(Expression<Func<TClass, List<Uri?>>> expression, Action<NamelessMultiArgConfig<TClass, Uri?, List<Uri?>>> config)
+		{
+			var obj = new NamelessMultiArgConfig<TClass, Uri?, List<Uri?>>(false, ToAbsoluteNullableUri, List);
+			config(obj);
+			return AddMultiValueCore(expression, obj);
+		}
+		/// <summary>
+		/// Adds a new MultiValue to set the IList&lt;Uri?&gt; specified by <paramref name="expression"/>. By default this MultiValue is not required.
+		/// Adds a new MultiValue, by default it is not required. The elements will be converted to Uri? and stored in a collection of type List.
+		/// </summary>
+		/// <param name="expression">The property.</param>
+		/// <param name="config">The action to configure the MultiValue.</param>
+		/// <returns>A configured MultiValue.</returns>
+		public MultiValue<TClass, Uri?, IList<Uri?>> AddMultiValueNullable(Expression<Func<TClass, IList<Uri?>>> expression, Action<NamelessMultiArgConfig<TClass, Uri?, IList<Uri?>>> config)
+		{
+			var obj = new NamelessMultiArgConfig<TClass, Uri?, IList<Uri?>>(false, ToAbsoluteNullableUri, List);
+			config(obj);
+			return AddMultiValueCore(expression, obj);
+		}
+		/// <summary>
+		/// Adds a new MultiValue to set the IReadOnlyList&lt;Uri?&gt; specified by <paramref name="expression"/>. By default this MultiValue is not required.
+		/// Adds a new MultiValue, by default it is not required. The elements will be converted to Uri? and stored in a collection of type List.
+		/// </summary>
+		/// <param name="expression">The property.</param>
+		/// <param name="config">The action to configure the MultiValue.</param>
+		/// <returns>A configured MultiValue.</returns>
+		public MultiValue<TClass, Uri?, IReadOnlyList<Uri?>> AddMultiValueNullable(Expression<Func<TClass, IReadOnlyList<Uri?>>> expression, Action<NamelessMultiArgConfig<TClass, Uri?, IReadOnlyList<Uri?>>> config)
+		{
+			var obj = new NamelessMultiArgConfig<TClass, Uri?, IReadOnlyList<Uri?>>(false, ToAbsoluteNullableUri, List);
+			config(obj);
+			return AddMultiValueCore(expression, obj);
+		}
+		/// <summary>
+		/// Adds a new MultiValue to set the ICollection&lt;Uri?&gt; specified by <paramref name="expression"/>. By default this MultiValue is not required.
+		/// Adds a new MultiValue, by default it is not required. The elements will be converted to Uri? and stored in a collection of type List.
+		/// </summary>
+		/// <param name="expression">The property.</param>
+		/// <param name="config">The action to configure the MultiValue.</param>
+		/// <returns>A configured MultiValue.</returns>
+		public MultiValue<TClass, Uri?, ICollection<Uri?>> AddMultiValueNullable(Expression<Func<TClass, ICollection<Uri?>>> expression, Action<NamelessMultiArgConfig<TClass, Uri?, ICollection<Uri?>>> config)
+		{
+			var obj = new NamelessMultiArgConfig<TClass, Uri?, ICollection<Uri?>>(false, ToAbsoluteNullableUri, List);
+			config(obj);
+			return AddMultiValueCore(expression, obj);
+		}
+		/// <summary>
+		/// Adds a new MultiValue to set the IReadOnlyCollection&lt;Uri?&gt; specified by <paramref name="expression"/>. By default this MultiValue is not required.
+		/// Adds a new MultiValue, by default it is not required. The elements will be converted to Uri? and stored in a collection of type List.
+		/// </summary>
+		/// <param name="expression">The property.</param>
+		/// <param name="config">The action to configure the MultiValue.</param>
+		/// <returns>A configured MultiValue.</returns>
+		public MultiValue<TClass, Uri?, IReadOnlyCollection<Uri?>> AddMultiValueNullable(Expression<Func<TClass, IReadOnlyCollection<Uri?>>> expression, Action<NamelessMultiArgConfig<TClass, Uri?, IReadOnlyCollection<Uri?>>> config)
+		{
+			var obj = new NamelessMultiArgConfig<TClass, Uri?, IReadOnlyCollection<Uri?>>(false, ToAbsoluteNullableUri, List);
+			config(obj);
+			return AddMultiValueCore(expression, obj);
+		}
+		/// <summary>
+		/// Adds a new MultiValue to set the IEnumerable&lt;Uri?&gt; specified by <paramref name="expression"/>. By default this MultiValue is not required.
+		/// Adds a new MultiValue, by default it is not required. The elements will be converted to Uri? and stored in a collection of type Enumerable.
+		/// </summary>
+		/// <param name="expression">The property.</param>
+		/// <param name="config">The action to configure the MultiValue.</param>
+		/// <returns>A configured MultiValue.</returns>
+		public MultiValue<TClass, Uri?, IEnumerable<Uri?>> AddMultiValueNullable(Expression<Func<TClass, IEnumerable<Uri?>>> expression, Action<NamelessMultiArgConfig<TClass, Uri?, IEnumerable<Uri?>>> config)
+		{
+			var obj = new NamelessMultiArgConfig<TClass, Uri?, IEnumerable<Uri?>>(false, ToAbsoluteNullableUri, Enumerable);
+			config(obj);
+			return AddMultiValueCore(expression, obj);
+		}
+		/// <summary>
+		/// Adds a new MultiValue to set the HashSet&lt;Uri?&gt; specified by <paramref name="expression"/>. By default this MultiValue is not required.
+		/// Adds a new MultiValue, by default it is not required. The elements will be converted to Uri? and stored in a collection of type HashSet.
+		/// </summary>
+		/// <param name="expression">The property.</param>
+		/// <param name="config">The action to configure the MultiValue.</param>
+		/// <returns>A configured MultiValue.</returns>
+		public MultiValue<TClass, Uri?, HashSet<Uri?>> AddMultiValueNullable(Expression<Func<TClass, HashSet<Uri?>>> expression, Action<NamelessMultiArgConfig<TClass, Uri?, HashSet<Uri?>>> config)
+		{
+			var obj = new NamelessMultiArgConfig<TClass, Uri?, HashSet<Uri?>>(false, ToAbsoluteNullableUri, HashSet);
+			config(obj);
+			return AddMultiValueCore(expression, obj);
+		}
+		/// <summary>
+		/// Adds a new MultiValue to set the Stack&lt;Uri?&gt; specified by <paramref name="expression"/>. By default this MultiValue is not required.
+		/// Adds a new MultiValue, by default it is not required. The elements will be converted to Uri? and stored in a collection of type Stack.
+		/// </summary>
+		/// <param name="expression">The property.</param>
+		/// <param name="config">The action to configure the MultiValue.</param>
+		/// <returns>A configured MultiValue.</returns>
+		public MultiValue<TClass, Uri?, Stack<Uri?>> AddMultiValueNullable(Expression<Func<TClass, Stack<Uri?>>> expression, Action<NamelessMultiArgConfig<TClass, Uri?, Stack<Uri?>>> config)
+		{
+			var obj = new NamelessMultiArgConfig<TClass, Uri?, Stack<Uri?>>(false, ToAbsoluteNullableUri, Stack);
+			config(obj);
+			return AddMultiValueCore(expression, obj);
+		}
+		/// <summary>
+		/// Adds a new MultiValue to set the Queue&lt;Uri?&gt; specified by <paramref name="expression"/>. By default this MultiValue is not required.
+		/// Adds a new MultiValue, by default it is not required. The elements will be converted to Uri? and stored in a collection of type Queue.
+		/// </summary>
+		/// <param name="expression">The property.</param>
+		/// <param name="config">The action to configure the MultiValue.</param>
+		/// <returns>A configured MultiValue.</returns>
+		public MultiValue<TClass, Uri?, Queue<Uri?>> AddMultiValueNullable(Expression<Func<TClass, Queue<Uri?>>> expression, Action<NamelessMultiArgConfig<TClass, Uri?, Queue<Uri?>>> config)
+		{
+			var obj = new NamelessMultiArgConfig<TClass, Uri?, Queue<Uri?>>(false, ToAbsoluteNullableUri, Queue);
 			config(obj);
 			return AddMultiValueCore(expression, obj);
 		}

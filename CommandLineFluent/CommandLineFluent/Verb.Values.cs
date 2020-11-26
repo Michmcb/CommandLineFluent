@@ -176,6 +176,18 @@
 			return AddValueCore(expression, obj);
 		}
 		/// <summary>
+		/// Adds a new Value to set the Uri specified by <paramref name="expression"/>. By default this Value is required.
+		/// </summary>
+		/// <param name="expression">The property.</param>
+		/// <param name="config">The action to configure the Value.</param>
+		/// <returns>A configured Value.</returns>
+		public Value<TClass, Uri> AddValue(Expression<Func<TClass, Uri>> expression, Action<NamelessArgConfig<TClass, Uri>> config)
+		{
+			var obj = new NamelessArgConfig<TClass, Uri>(true, ToAbsoluteUri);
+			config(obj);
+			return AddValueCore(expression, obj);
+		}
+		/// <summary>
 		/// Adds a new Value to set the string? specified by <paramref name="expression"/>. By default this Value is not required.
 		/// </summary>
 		/// <param name="expression">The property.</param>
@@ -340,6 +352,18 @@
 		public Value<TClass, Guid?> AddValue(Expression<Func<TClass, Guid?>> expression, Action<NamelessArgConfig<TClass, Guid?>> config)
 		{
 			var obj = new NamelessArgConfig<TClass, Guid?>(false, ToNullableGuid);
+			config(obj);
+			return AddValueCore(expression, obj);
+		}
+		/// <summary>
+		/// Adds a new Value to set the Uri? specified by <paramref name="expression"/>. By default this Value is not required.
+		/// </summary>
+		/// <param name="expression">The property.</param>
+		/// <param name="config">The action to configure the Value.</param>
+		/// <returns>A configured Value.</returns>
+		public Value<TClass, Uri?> AddValueNullable(Expression<Func<TClass, Uri?>> expression, Action<NamelessArgConfig<TClass, Uri?>> config)
+		{
+			var obj = new NamelessArgConfig<TClass, Uri?>(false, ToAbsoluteNullableUri);
 			config(obj);
 			return AddValueCore(expression, obj);
 		}

@@ -27,6 +27,12 @@
 		/// <param name="args">The arguments to parse</param>
 		IParseResult Parse(IEnumerable<string> args);
 		/// <summary>
+		/// Parses the provided arguments using this verb's rules. You shouldn't need to use this directly. But if you do,
+		/// the first argument should not be this verb's name; if it is, make sure to use .Skip(1) first.
+		/// </summary>
+		/// <param name="args">The arguments to parse</param>
+		IParseResult Parse(IEnumerator<string> args);
+		/// <summary>
 		/// Calls <see cref="IMessageFormatter.WriteSpecificHelp{TClass}(IConsole, Verb{TClass})"/>, passing this verb as a parameter.
 		/// </summary>
 		void WriteSpecificHelp(IConsole console, IMessageFormatter msgFormatter);

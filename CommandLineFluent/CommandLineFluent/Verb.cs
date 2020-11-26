@@ -33,11 +33,20 @@
 		/// <param name="args">The arguments.</param>
 		public IParseResult Parse(IEnumerable<string> args)
 		{
-			if (args.Any())
-			{
-				return new FailedParseWithVerb(this, new Error[] { new Error(ErrorCode.UnexpectedArgument, "This verb does not take any arguments") });
-			}
-			return new SuccessfulParse(this);
+			return args.Any()
+				? new FailedParseWithVerb(this, new Error[] { new Error(ErrorCode.UnexpectedArgument, "This verb does not take any arguments") })
+				: (IParseResult)new SuccessfulParse(this);
+		}
+		/// <summary>
+		/// If <paramref name="args"/> is empty, returns a <see cref="SuccessfulParse"/>.
+		/// Otherwise, returns a <see cref="FailedParseWithVerb"/>.
+		/// </summary>
+		/// <param name="args">The arguments.</param>
+		public IParseResult Parse(IEnumerator<string> args)
+		{
+			return args.MoveNext()
+				? new FailedParseWithVerb(this, new Error[] { new Error(ErrorCode.UnexpectedArgument, "This verb does not take any arguments") })
+				: (IParseResult)new SuccessfulParse(this);
 		}
 		public string ShortAndLongName()
 		{

@@ -249,6 +249,24 @@ Note, if you need to return Converted<string, string>, you need to use Converted
 	}
 ```
 
+### Post-Parsing Validation
+If you need to validate an object as a whole after it's done parsing, set the ValidateObject `Func<TClass, string?>` to something. Returning null/empty indicates success, and returning a string indicates failure, with the string being the error message itself.
+
+```csharp
+CliParser parser = new CliParserBuilder()
+	.AddVerb<FrobulateFile>(FrobulateFile.verbName, verb =>
+	{
+		verb.AddOption(x => x.InputFile, x => {
+			x.ShortName = "-i";
+			x.LongName = "--inputFile";
+			x.DescriptiveName = "Input File";
+			x.HelpText = "The input file which will get Frobulated";
+		});
+
+		// Just an aside; not the best idea. The file could be deleted by the time you get to using it!
+		verb.ValidateObject = (obj) => File.Exists(obj.InputFile) ? null : "The file doesn't exist: " + obj.InputFile;
+	}).Build();
+```
 
 ### Multiple Verbs
 It's possible to set up multiple different verbs, e.g. git add and git pull.
