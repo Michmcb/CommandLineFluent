@@ -7,7 +7,7 @@
 	/// </summary>
 	public sealed class Value<TClass, TProp> : IValue<TClass> where TClass : class, new()
 	{
-		public string? DescriptiveName { get; }
+		public string DescriptiveName { get; }
 		public string HelpText { get; }
 		public ArgumentRequired ArgumentRequired { get; }
 		public Action<TClass, TProp> PropertySetter { get; }
@@ -23,10 +23,10 @@
 		/// Converts from a string into <typeparamref name="TProp"/>, or returns an error message.
 		/// </summary>
 		public Func<string, Converted<TProp, string>> Converter { get; }
-		internal Value(string? name, string helpText, ArgumentRequired argumentRequired, Action<TClass, TProp> propertySetter,
+		internal Value(string descriptiveName, string helpText, ArgumentRequired argumentRequired, Action<TClass, TProp> propertySetter,
 			TProp defaultValue, Dependencies<TClass>? dependencies, Func<string, Converted<TProp, string>> converter)
 		{
-			DescriptiveName = name;
+			DescriptiveName = descriptiveName;
 			HelpText = helpText;
 			ArgumentRequired = argumentRequired;
 			PropertySetter = propertySetter;

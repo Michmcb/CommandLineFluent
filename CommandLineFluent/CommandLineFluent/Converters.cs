@@ -11,19 +11,28 @@
 		/// </summary>
 		/// <param name="s">The string.</param>
 		/// <returns><paramref name="s"/></returns>
-		public static Converted<string, string> NoConversion(string s) => Converted<string, string>.Value(s);
+		public static Converted<string, string> NoConversion(string s)
+		{
+			return Converted<string, string>.Value(s);
+		}
 		/// <summary>
 		/// Always returns a successfully converted <see cref="string"/>, which is just <paramref name="s"/>.
 		/// </summary>
 		/// <param name="s">The string.</param>
 		/// <returns><paramref name="s"/></returns>
-		public static Converted<string?, string> NoConversionNullable(string? s) => Converted<string?, string>.Value(s);
+		public static Converted<string?, string> NoConversionNullable(string? s)
+		{
+			return Converted<string?, string>.Value(s);
+		}
 		/// <summary>
 		/// Always returns a successfully converted <see cref="bool"/>, which is just <paramref name="b"/>.
 		/// </summary>
 		/// <param name="b">The boolean.</param>
 		/// <returns><paramref name="b"/></returns>
-		public static Converted<bool, string> NoConversion(bool b) => b;
+		public static Converted<bool, string> NoConversion(bool b)
+		{
+			return b;
+		}
 		/// <summary>
 		/// If <paramref name="s"/> is 1 character, returns that. Otherwise, error.
 		/// </summary>

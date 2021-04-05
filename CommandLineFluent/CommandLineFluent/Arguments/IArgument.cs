@@ -1,17 +1,11 @@
 ﻿namespace CommandLineFluent.Arguments
 {
-	using System.Reflection;
-
-	/// <summary>
-	/// An argument on the command line, which can have a single or multiple values.
-	/// </summary>
-	/// <typeparam name="TClass"></typeparam>
-	public interface IArgument<TClass> where TClass : class, new()
+	public interface IArgument
 	{
 		/// <summary>
 		/// A human-readable name which describes this argument.
 		/// </summary>
-		string? DescriptiveName { get; }
+		string DescriptiveName { get; }
 		/// <summary>
 		/// Text that describes this.
 		/// </summary>
@@ -20,6 +14,13 @@
 		/// If the argument is required or not, or if it's sometimes required based on dependencies.
 		/// </summary>
 		ArgumentRequired ArgumentRequired { get; }
+	}
+	/// <summary>
+	/// An argument on the command line, which can have a single or multiple values.
+	/// </summary>
+	/// <typeparam name="TClass"></typeparam>
+	public interface IArgument<TClass> : IArgument where TClass : class, new()
+	{
 		/// <summary>
 		/// Any dependencies that this argument has
 		/// </summary>

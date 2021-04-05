@@ -1,7 +1,6 @@
 ﻿namespace CommandLineFluent.Arguments.Config
 {
 	using System;
-	using System.ComponentModel;
 
 	/// <summary>
 	/// A class to configure a argument which is set with a short/long name.
@@ -16,7 +15,11 @@
 		/// <summary>
 		/// Creates a new instance with nothing configured.
 		/// </summary>
-		public NamedArgConfig() { }
+		public NamedArgConfig()
+		{
+			defaultValue = default!;
+			Converter = null!;
+		}
 		/// <summary>
 		/// Creates a new instance with a few preconfigured properties.
 		/// This is useful when creating an extension method for a certain type; the converter can be set to a default,
@@ -24,6 +27,7 @@
 		/// </summary>
 		public NamedArgConfig(bool required, Func<TRaw, Converted<TProp, string>> converter)
 		{
+			defaultValue = default!;
 			Required = required;
 			Converter = converter;
 		}
@@ -50,6 +54,7 @@
 		public string? HelpText { get; set; }
 		/// <summary>
 		/// A descriptive name, only used to display to the user.
+		/// If this is null, the name of the property to which this is assigned will be used.
 		/// </summary>
 		public string? DescriptiveName { get; set; }
 		/// <summary>
@@ -60,11 +65,7 @@
 		/// Can be used to set dependencies. Each call made on this sets a new rule.
 		/// You should set a default value when using dependencies.
 		/// </summary>
-		public Dependencies<TClass> HasDependency
-		{
-			get => configuredDependencies ??= new Dependencies<TClass>();
-		}
-
+		public Dependencies<TClass> HasDependency => configuredDependencies ??= new Dependencies<TClass>();
 		/// <summary>
 		/// The short name used to provide this argument.
 		/// </summary>
@@ -101,21 +102,5 @@
 		/// Configures dependencies, with a default value when this argument is not required.
 		/// </summary>
 		public NamedArgConfig<TClass, TProp, TRaw> WithDependencies(TProp defaultValue, Action<Dependencies<TClass>> config) { DefaultValue = defaultValue; config(HasDependency); return this; }
-		// This stuff is useless and just adds clutter, so hide it
-		[EditorBrowsable(EditorBrowsableState.Never)]
-		public override bool Equals(object obj)
-		{
-			return base.Equals(obj);
-		}
-		[EditorBrowsable(EditorBrowsableState.Never)]
-		public override int GetHashCode()
-		{
-			return base.GetHashCode();
-		}
-		[EditorBrowsable(EditorBrowsableState.Never)]
-		public override string ToString()
-		{
-			return base.ToString();
-		}
 	}
 }

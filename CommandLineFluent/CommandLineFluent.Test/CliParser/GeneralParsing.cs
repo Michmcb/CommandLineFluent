@@ -57,14 +57,14 @@
 		public void InvalidArgument_Bad() { SimpleParsing(false, true, Components.None, new string[] { "default", "Value", "--hey" }); }
 		[Fact]
 		public void OptionMissingvalue_Bad() { SimpleParsing(false, true, Components.None, new string[] { "default", "Value", "--option" }); }
-		internal void SimpleParsing(bool outcome, bool isValidVerb, Components components, string[] args)
+		internal static void SimpleParsing(bool outcome, bool isValidVerb, Components components, string[] args)
 		{
 			CliParser fp = new CliParserBuilder()
 				.AddVerb<OptOneOfEach>("default", verb =>
 				{
 					if ((components & Components.Value) == Components.Value)
 					{
-						verb.AddValue(x => x.Value, x => { x.HelpText = "h"; });
+						verb.AddValue(x => x.Value, x => x.HelpText = "h");
 					}
 					if ((components & Components.Switch) == Components.Switch)
 					{
@@ -224,16 +224,16 @@
 		{
 			ComplexParsing(new string[] { "default", "-s1", "--oo1", "Option1", "-s3", "-o3", "900", "value1", "47", "valuueee", "ULTRAMEGAVALUE" }, false, null);
 		}
-		internal void ComplexParsing(string[] args, bool shouldBeSuccessful, ComplexVerb1? expectedResult)
+		internal static void ComplexParsing(string[] args, bool shouldBeSuccessful, ComplexVerb1? expectedResult)
 		{
 			CliParser fp = new CliParserBuilder()
 				.AddVerb<ComplexVerb1>("default", verb =>
 				{
 					verb.HelpText = "My Test Verb";
 
-					verb.AddValue(x => x.RequiredValue, x => { x.HelpText = "h"; });
+					verb.AddValue(x => x.RequiredValue, x => x.HelpText = "h");
 
-					verb.AddValue(x => x.ConvertedValue, x => { x.HelpText = "h"; });
+					verb.AddValue(x => x.ConvertedValue, x => x.HelpText = "h");
 
 					verb.AddValueNullable(x => x.OptionalValue, x => { x.DefaultValue = null; x.HelpText = "h"; });
 
@@ -288,10 +288,7 @@
 			CliParser fp = new CliParserBuilder()
 				.AddVerb<OptOneOfEach>("verb", verb =>
 				{
-					verb.AddOption(x => x.Option, x =>
-					{
-						x.WithShortAndLongName("o", "opt");
-					});
+					verb.AddOption(x => x.Option, x => x.WithShortAndLongName("o", "opt"));
 
 					verb.ValidateObject = (obj) => obj.Option < 50 ? null : "Too much!";
 				})
@@ -313,23 +310,23 @@
 		[Fact]
 		public void ParsingConverters_Required()
 		{
-			CliParser fp = new CliParserBuilder(new CliParserConfig() { StringComparer = StringComparer.OrdinalIgnoreCase })
+			CliParser fp = new CliParserBuilder(new CliParserConfig(StringComparer.OrdinalIgnoreCase))
 				.AddVerb<EveryPrimitiveType>("default", verb =>
 				{
-					verb.AddOption(x => x.Str, x => { x.ShortName = "-Str"; });
-					verb.AddOption(x => x.Short, x => { x.ShortName = "-Short"; });
-					verb.AddOption(x => x.UShort, x => { x.ShortName = "-UShort"; });
-					verb.AddOption(x => x.Int, x => { x.ShortName = "-Int"; });
-					verb.AddOption(x => x.UInt, x => { x.ShortName = "-UInt"; });
-					verb.AddOption(x => x.Long, x => { x.ShortName = "-Long"; });
-					verb.AddOption(x => x.ULong, x => { x.ShortName = "-ULong"; });
-					verb.AddOption(x => x.Float, x => { x.ShortName = "-Float"; });
-					verb.AddOption(x => x.Double, x => { x.ShortName = "-Double"; });
-					verb.AddOption(x => x.Decimal, x => { x.ShortName = "-Decimal"; });
-					verb.AddOption(x => x.MyEnum, x => { x.ShortName = "-MyEnum"; });
-					verb.AddOption(x => x.DateTime, x => { x.ShortName = "-DateTime"; });
-					verb.AddOption(x => x.TimeSpan, x => { x.ShortName = "-TimeSpan"; });
-					verb.AddOption(x => x.Guid, x => { x.ShortName = "-Guid"; });
+					verb.AddOption(x => x.Str, x => x.ShortName = "-Str");
+					verb.AddOption(x => x.Short, x => x.ShortName = "-Short");
+					verb.AddOption(x => x.UShort, x => x.ShortName = "-UShort");
+					verb.AddOption(x => x.Int, x => x.ShortName = "-Int");
+					verb.AddOption(x => x.UInt, x => x.ShortName = "-UInt");
+					verb.AddOption(x => x.Long, x => x.ShortName = "-Long");
+					verb.AddOption(x => x.ULong, x => x.ShortName = "-ULong");
+					verb.AddOption(x => x.Float, x => x.ShortName = "-Float");
+					verb.AddOption(x => x.Double, x => x.ShortName = "-Double");
+					verb.AddOption(x => x.Decimal, x => x.ShortName = "-Decimal");
+					verb.AddOption(x => x.MyEnum, x => x.ShortName = "-MyEnum");
+					verb.AddOption(x => x.DateTime, x => x.ShortName = "-DateTime");
+					verb.AddOption(x => x.TimeSpan, x => x.ShortName = "-TimeSpan");
+					verb.AddOption(x => x.Guid, x => x.ShortName = "-Guid");
 				}).Build();
 
 			IParseResult parseResult = fp.Parse(new string[]
@@ -372,20 +369,20 @@
 			CliParser fp = new CliParserBuilder()
 				.AddVerb<EveryPrimitiveTypeNullable>("default", verb =>
 				{
-					verb.AddOptionNullable(x => x.Str, x => { x.ShortName = "-Str"; });
-					verb.AddOption(x => x.Short, x => { x.ShortName = "-Short"; });
-					verb.AddOption(x => x.UShort, x => { x.ShortName = "-UShort"; });
-					verb.AddOption(x => x.Int, x => { x.ShortName = "-Int"; });
-					verb.AddOption(x => x.UInt, x => { x.ShortName = "-UInt"; });
-					verb.AddOption(x => x.Long, x => { x.ShortName = "-Long"; });
-					verb.AddOption(x => x.ULong, x => { x.ShortName = "-ULong"; });
-					verb.AddOption(x => x.Float, x => { x.ShortName = "-Float"; });
-					verb.AddOption(x => x.Double, x => { x.ShortName = "-Double"; });
-					verb.AddOption(x => x.Decimal, x => { x.ShortName = "-Decimal"; });
-					verb.AddOption(x => x.MyEnum, x => { x.ShortName = "-MyEnum"; });
-					verb.AddOption(x => x.DateTime, x => { x.ShortName = "-DateTime"; });
-					verb.AddOption(x => x.TimeSpan, x => { x.ShortName = "-TimeSpan"; });
-					verb.AddOption(x => x.Guid, x => { x.ShortName = "-Guid"; });
+					verb.AddOptionNullable(x => x.Str, x => x.ShortName = "-Str");
+					verb.AddOption(x => x.Short, x => x.ShortName = "-Short");
+					verb.AddOption(x => x.UShort, x => x.ShortName = "-UShort");
+					verb.AddOption(x => x.Int, x => x.ShortName = "-Int");
+					verb.AddOption(x => x.UInt, x => x.ShortName = "-UInt");
+					verb.AddOption(x => x.Long, x => x.ShortName = "-Long");
+					verb.AddOption(x => x.ULong, x => x.ShortName = "-ULong");
+					verb.AddOption(x => x.Float, x => x.ShortName = "-Float");
+					verb.AddOption(x => x.Double, x => x.ShortName = "-Double");
+					verb.AddOption(x => x.Decimal, x => x.ShortName = "-Decimal");
+					verb.AddOption(x => x.MyEnum, x => x.ShortName = "-MyEnum");
+					verb.AddOption(x => x.DateTime, x => x.ShortName = "-DateTime");
+					verb.AddOption(x => x.TimeSpan, x => x.ShortName = "-TimeSpan");
+					verb.AddOption(x => x.Guid, x => x.ShortName = "-Guid");
 				}).Build();
 
 			IParseResult parseResult = fp.Parse(new string[]
@@ -408,13 +405,13 @@
 
 			EveryPrimitiveTypeNullable pr = Assert.IsType<SuccessfulParse<EveryPrimitiveTypeNullable>>(parseResult).Object;
 			Assert.Equal("SomeString", pr.Str);
-			Assert.Equal(10, pr.Short.Value);
-			Assert.Equal(20, pr.UShort.Value);
+			Assert.Equal(10, pr.Short!.Value);
+			Assert.Equal(20, pr.UShort!.Value);
 			Assert.Equal(-30, pr.Int);
 			Assert.True(40U == pr.UInt);
 			Assert.Equal(50, pr.Long);
 			Assert.True(60UL == pr.ULong);
-			Assert.Equal(70.5, pr.Float.Value);
+			Assert.Equal(70.5, pr.Float!.Value);
 			Assert.Equal(95.2, pr.Double);
 			Assert.True(100.130m == pr.Decimal);
 			Assert.Equal(MyEnum.SomeValue, pr.MyEnum);
@@ -425,61 +422,61 @@
 		[Fact]
 		public void ManyValueAccumulators()
 		{
-			CliParser fp = new CliParserBuilder().AddVerb<OptArray>("default", verb => { verb.AddMultiValue(x => x.Collection, x => { }); }).Build();
+			CliParser fp = new CliParserBuilder().AddVerb<OptArray>("default", verb => verb.AddMultiValue(x => x.Collection, x => { })).Build();
 			var objOptArray = Assert.IsType<SuccessfulParse<OptArray>>(fp.Parse(new string[] { "default", "String1", "String2", "String3" })).Object;
 			Assert.Contains("String1", objOptArray.Collection);
 			Assert.Contains("String2", objOptArray.Collection);
 			Assert.Contains("String3", objOptArray.Collection);
 
-			fp = new CliParserBuilder().AddVerb<OptList>("default", verb => { verb.AddMultiValue(x => x.Collection, x => { }); }).Build();
+			fp = new CliParserBuilder().AddVerb<OptList>("default", verb => verb.AddMultiValue(x => x.Collection, x => { })).Build();
 			var objOptList = Assert.IsType<SuccessfulParse<OptList>>(fp.Parse(new string[] { "default", "String1", "String2", "String3" })).Object;
 			Assert.Contains("String1", objOptList.Collection);
 			Assert.Contains("String2", objOptList.Collection);
 			Assert.Contains("String3", objOptList.Collection);
 
-			fp = new CliParserBuilder().AddVerb<OptIList>("default", verb => { verb.AddMultiValue(x => x.Collection, x => { }); }).Build();
+			fp = new CliParserBuilder().AddVerb<OptIList>("default", verb => verb.AddMultiValue(x => x.Collection, x => { })).Build();
 			var objOptIList = Assert.IsType<SuccessfulParse<OptIList>>(fp.Parse(new string[] { "default", "String1", "String2", "String3" })).Object;
 			Assert.Contains("String1", objOptIList.Collection);
 			Assert.Contains("String2", objOptIList.Collection);
 			Assert.Contains("String3", objOptIList.Collection);
 
-			fp = new CliParserBuilder().AddVerb<OptIReadOnlyList>("default", verb => { verb.AddMultiValue(x => x.Collection, x => { }); }).Build();
+			fp = new CliParserBuilder().AddVerb<OptIReadOnlyList>("default", verb => verb.AddMultiValue(x => x.Collection, x => { })).Build();
 			var objOptIReadOnlyList = Assert.IsType<SuccessfulParse<OptIReadOnlyList>>(fp.Parse(new string[] { "default", "String1", "String2", "String3" })).Object;
 			Assert.Contains("String1", objOptIReadOnlyList.Collection);
 			Assert.Contains("String2", objOptIReadOnlyList.Collection);
 			Assert.Contains("String3", objOptIReadOnlyList.Collection);
 
-			fp = new CliParserBuilder().AddVerb<OptICollection>("default", verb => { verb.AddMultiValue(x => x.Collection, x => { }); }).Build();
+			fp = new CliParserBuilder().AddVerb<OptICollection>("default", verb => verb.AddMultiValue(x => x.Collection, x => { })).Build();
 			var objOptICollection = Assert.IsType<SuccessfulParse<OptICollection>>(fp.Parse(new string[] { "default", "String1", "String2", "String3" })).Object;
 			Assert.Contains("String1", objOptICollection.Collection);
 			Assert.Contains("String2", objOptICollection.Collection);
 			Assert.Contains("String3", objOptICollection.Collection);
 
-			fp = new CliParserBuilder().AddVerb<OptIReadOnlyCollection>("default", verb => { verb.AddMultiValue(x => x.Collection, x => { }); }).Build();
+			fp = new CliParserBuilder().AddVerb<OptIReadOnlyCollection>("default", verb => verb.AddMultiValue(x => x.Collection, x => { })).Build();
 			var objOptIReadOnlyCollection = Assert.IsType<SuccessfulParse<OptIReadOnlyCollection>>(fp.Parse(new string[] { "default", "String1", "String2", "String3" })).Object;
 			Assert.Contains("String1", objOptIReadOnlyCollection.Collection);
 			Assert.Contains("String2", objOptIReadOnlyCollection.Collection);
 			Assert.Contains("String3", objOptIReadOnlyCollection.Collection);
 
-			fp = new CliParserBuilder().AddVerb<OptIEnumerable>("default", verb => { verb.AddMultiValue(x => x.Collection, x => { }); }).Build();
+			fp = new CliParserBuilder().AddVerb<OptIEnumerable>("default", verb => verb.AddMultiValue(x => x.Collection, x => { })).Build();
 			var objOptIEnumerable = Assert.IsType<SuccessfulParse<OptIEnumerable>>(fp.Parse(new string[] { "default", "String1", "String2", "String3" })).Object;
 			Assert.Contains("String1", objOptIEnumerable.Collection);
 			Assert.Contains("String2", objOptIEnumerable.Collection);
 			Assert.Contains("String3", objOptIEnumerable.Collection);
 
-			fp = new CliParserBuilder().AddVerb<OptHashSet>("default", verb => { verb.AddMultiValue(x => x.Collection, x => { }); }).Build();
+			fp = new CliParserBuilder().AddVerb<OptHashSet>("default", verb => verb.AddMultiValue(x => x.Collection, x => { })).Build();
 			var objOptHashSet = Assert.IsType<SuccessfulParse<OptHashSet>>(fp.Parse(new string[] { "default", "String1", "String2", "String3" })).Object;
 			Assert.Contains("String1", objOptHashSet.Collection);
 			Assert.Contains("String2", objOptHashSet.Collection);
 			Assert.Contains("String3", objOptHashSet.Collection);
 
-			fp = new CliParserBuilder().AddVerb<OptStack>("default", verb => { verb.AddMultiValue(x => x.Collection, x => { }); }).Build();
+			fp = new CliParserBuilder().AddVerb<OptStack>("default", verb => verb.AddMultiValue(x => x.Collection, x => { })).Build();
 			var objOptStack = Assert.IsType<SuccessfulParse<OptStack>>(fp.Parse(new string[] { "default", "String1", "String2", "String3" })).Object;
 			Assert.Contains("String1", objOptStack.Collection);
 			Assert.Contains("String2", objOptStack.Collection);
 			Assert.Contains("String3", objOptStack.Collection);
 
-			fp = new CliParserBuilder().AddVerb<OptQueue>("default", verb => { verb.AddMultiValue(x => x.Collection, x => { }); }).Build();
+			fp = new CliParserBuilder().AddVerb<OptQueue>("default", verb => verb.AddMultiValue(x => x.Collection, x => { })).Build();
 			var objOptQueue = Assert.IsType<SuccessfulParse<OptQueue>>(fp.Parse(new string[] { "default", "String1", "String2", "String3" })).Object;
 			Assert.Contains("String1", objOptQueue.Collection);
 			Assert.Contains("String2", objOptQueue.Collection);
@@ -493,15 +490,12 @@
 			ManyValueParsing(new string[] { "default", "value1", "value2", "value3", "-s", "value4", "value5", "-o", "55" }, true, new OptOneOfEach() { Option = 55, Switch = true, ManyValues = new string[] { "value1", "value2", "value3", "value4", "value5", } });
 			ManyValueParsing(new string[] { "default", "value1", "value2", "-o", "55", "value3", "-s", "value4", "value5", "value6", "value7", "value8", "value9", "value10" }, true, new OptOneOfEach() { Option = 55, Switch = true, ManyValues = new string[] { "value1", "value2", "value3", "value4", "value5", "value6", "value7", "value8", "value9", "value10" } });
 		}
-		internal void ManyValueParsing(string[] args, bool shouldBeSuccessful, OptOneOfEach expectedResult)
+		internal static void ManyValueParsing(string[] args, bool shouldBeSuccessful, OptOneOfEach expectedResult)
 		{
 			CliParser fp = new CliParserBuilder()
 				.AddVerb<OptOneOfEach>("default", verb =>
 				{
-					verb.AddMultiValue(x => x.ManyValues, x =>
-					{
-						x.HelpText = "h";
-					});
+					verb.AddMultiValue(x => x.ManyValues, x => x.HelpText = "h");
 					verb.AddOption(x => x.Option, x => { x.ShortName = "o"; x.LongName = "oo"; x.DefaultValue = 0; x.HelpText = "h"; });
 					verb.AddSwitch(x => x.Switch, x => { x.ShortName = "s"; x.LongName = "ss"; x.HelpText = "h"; });
 				}).Build();
@@ -522,22 +516,22 @@
 		public void VerbParsing()
 		{
 			CliParser fp = new CliParserBuilder()
-				.AddVerb<Verb1>("verb1", v => v.AddValue(v => v.Value, x => { x.HelpText = "h"; }))
-				.AddVerb<Verb2>("verb2", v => v.AddValue(v => v.Value, x => { x.HelpText = "h"; }))
-				.AddVerb<Verb3>("verb3", v => v.AddValue(v => v.Value, x => { x.HelpText = "h"; }))
-				.AddVerb<Verb4>("verb4", v => v.AddValue(v => v.Value, x => { x.HelpText = "h"; }))
-				.AddVerb<Verb5>("verb5", v => v.AddValue(v => v.Value, x => { x.HelpText = "h"; }))
-				.AddVerb<Verb6>("verb6", v => v.AddValue(v => v.Value, x => { x.HelpText = "h"; }))
-				.AddVerb<Verb7>("verb7", v => v.AddValue(v => v.Value, x => { x.HelpText = "h"; }))
-				.AddVerb<Verb8>("verb8", v => v.AddValue(v => v.Value, x => { x.HelpText = "h"; }))
-				.AddVerb<Verb9>("verb9", v => v.AddValue(v => v.Value, x => { x.HelpText = "h"; }))
-				.AddVerb<Verb10>("verb10", v => v.AddValue(v => v.Value, x => { x.HelpText = "h"; }))
-				.AddVerb<Verb11>("verb11", v => v.AddValue(v => v.Value, x => { x.HelpText = "h"; }))
-				.AddVerb<Verb12>("verb12", v => v.AddValue(v => v.Value, x => { x.HelpText = "h"; }))
-				.AddVerb<Verb13>("verb13", v => v.AddValue(v => v.Value, x => { x.HelpText = "h"; }))
-				.AddVerb<Verb14>("verb14", v => v.AddValue(v => v.Value, x => { x.HelpText = "h"; }))
-				.AddVerb<Verb15>("verb15", v => v.AddValue(v => v.Value, x => { x.HelpText = "h"; }))
-				.AddVerb<Verb16>("verb16", v => v.AddValue(v => v.Value, x => { x.HelpText = "h"; }))
+				.AddVerb<Verb1>("verb1", v => v.AddValue(v => v.Value, x => x.HelpText = "h"))
+				.AddVerb<Verb2>("verb2", v => v.AddValue(v => v.Value, x => x.HelpText = "h"))
+				.AddVerb<Verb3>("verb3", v => v.AddValue(v => v.Value, x => x.HelpText = "h"))
+				.AddVerb<Verb4>("verb4", v => v.AddValue(v => v.Value, x => x.HelpText = "h"))
+				.AddVerb<Verb5>("verb5", v => v.AddValue(v => v.Value, x => x.HelpText = "h"))
+				.AddVerb<Verb6>("verb6", v => v.AddValue(v => v.Value, x => x.HelpText = "h"))
+				.AddVerb<Verb7>("verb7", v => v.AddValue(v => v.Value, x => x.HelpText = "h"))
+				.AddVerb<Verb8>("verb8", v => v.AddValue(v => v.Value, x => x.HelpText = "h"))
+				.AddVerb<Verb9>("verb9", v => v.AddValue(v => v.Value, x => x.HelpText = "h"))
+				.AddVerb<Verb10>("verb10", v => v.AddValue(v => v.Value, x => x.HelpText = "h"))
+				.AddVerb<Verb11>("verb11", v => v.AddValue(v => v.Value, x => x.HelpText = "h"))
+				.AddVerb<Verb12>("verb12", v => v.AddValue(v => v.Value, x => x.HelpText = "h"))
+				.AddVerb<Verb13>("verb13", v => v.AddValue(v => v.Value, x => x.HelpText = "h"))
+				.AddVerb<Verb14>("verb14", v => v.AddValue(v => v.Value, x => x.HelpText = "h"))
+				.AddVerb<Verb15>("verb15", v => v.AddValue(v => v.Value, x => x.HelpText = "h"))
+				.AddVerb<Verb16>("verb16", v => v.AddValue(v => v.Value, x => x.HelpText = "h"))
 				.Build();
 
 			string[] args = new string[2];

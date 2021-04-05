@@ -9,9 +9,11 @@
 		int CurrentWidth { get; }
 		ConsoleColor BackgroundColor { get; set; }
 		ConsoleColor ForegroundColor { get; set; }
-		string ReadLine();
+		string? ReadLine();
 		void WriteLine();
+		void Write(char c);
 		void Write(string str);
+		void WriteLine(char c);
 		void WriteLine(string str);
 #if NETSTANDARD2_0
 		void Write(ConsoleColor color, string str);

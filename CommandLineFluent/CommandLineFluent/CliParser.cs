@@ -2,8 +2,23 @@
 {
 	using System;
 	using System.Collections.Generic;
-	using System.Linq;
 	using System.Threading.Tasks;
+
+	/// <summary>
+	/// Allows you to stop a shell's execution.
+	/// A typical use case is adding an event handler to <see cref="Console.CancelKeyPress"/>, cancelling it, and triggering this switch instead.
+	/// </summary>
+	public sealed class ShellStopSwitch
+	{
+		/// <summary>
+		/// Creates a new instance with <see cref="Go"/> set to true.
+		/// </summary>
+		public ShellStopSwitch() { Go = true; }
+		/// <summary>
+		/// Set this to false to stop the shell.
+		/// </summary>
+		public bool Go { get; set; }
+	}
 	/// <summary>
 	/// Parses arguments into classes.
 	/// Create this class using a CliParserBuilder.
@@ -47,26 +62,28 @@
 		public IReadOnlyCollection<IVerb> Verbs { get; }
 		/// <summary>
 		/// Starts a loop that reads input from <see cref="Console"/>, splits it into tokens using <see cref="Tokenizer"/>, and then parses and invokes it synchronously (using <see cref="Handle(IParseResult)"/>).
-		/// Writes <paramref name="prompt"/> to the console as a prompt when it is ready for input, and will stop looping once it encounters the string <paramref name="exitKeyword"/>.
+		/// Writes <paramref name="prompt"/> to the console as a prompt when it is ready for input, and will stop looping once it encounters the string <paramref name="exitKeyword"/>, or once <paramref name="stopSwitch"/> is toggled.
 		/// Compares with <paramref name="exitKeyword"/> using <see cref="CliParserConfig.StringComparer"/>.
 		/// </summary>
 		/// <param name="prompt">The prompt to write, e.g. MyShell>.</param>
 		/// <param name="exitKeyword">The keyword to use to stop the loop. Cannot be the same as a Verb name.</param>
 		/// <param name="promptColor">The foreground color of <paramref name="prompt"/>.</param>
 		/// <param name="commandColor">The foreground color of the text that the user enters after <paramref name="prompt"/> is written.</param>
-		public void Shell(string prompt, string exitKeyword = "exit", ConsoleColor promptColor = ConsoleColor.White, ConsoleColor commandColor = ConsoleColor.Gray)
+		/// <param name="stopSwitch">A switch can be used to stop execution of the shell.</param>
+		public void Shell(string prompt, string exitKeyword = "exit", ConsoleColor promptColor = ConsoleColor.White, ConsoleColor commandColor = ConsoleColor.Gray, ShellStopSwitch? stopSwitch = null)
 		{
 			if (verbsByName.ContainsKey(exitKeyword))
 			{
 				throw new ArgumentException("The keyword used to exit the loop is already used by a verb: " + exitKeyword, nameof(exitKeyword));
 			}
-			while (true)
+			stopSwitch ??= new();
+			while (stopSwitch.Go)
 			{
 				Console.ForegroundColor = promptColor;
 				Console.Write(prompt);
 				Console.ForegroundColor = commandColor;
-				string line = Console.ReadLine();
-				if (!config.StringComparer.Equals(exitKeyword, line))
+				string? line = Console.ReadLine();
+				if (line != null && !config.StringComparer.Equals(exitKeyword, line))
 				{
 					Handle(Parse(line));
 				}
@@ -78,26 +95,28 @@
 		}
 		/// <summary>
 		/// Starts a loop that reads input from <see cref="Console"/>, splits it into tokens using <see cref="Tokenizer"/>, and then parses and invokes it synchronously (using <see cref="HandleAsync(IParseResult)"/>).
-		/// Writes <paramref name="prompt"/> to the console as a prompt when it is ready for input, and will stop looping once it encounters the string <paramref name="exitKeyword"/>.
+		/// Writes <paramref name="prompt"/> to the console as a prompt when it is ready for input, and will stop looping once it encounters the string <paramref name="exitKeyword"/>, or once <paramref name="stopSwitch"/> is toggled.
 		/// Compares with <paramref name="exitKeyword"/> using <see cref="CliParserConfig.StringComparer"/>.
 		/// </summary>
 		/// <param name="prompt">The prompt to write, e.g. MyShell>.</param>
 		/// <param name="exitKeyword">The keyword to use to stop the loop. Cannot be the same as a Verb name.</param>
 		/// <param name="promptColor">The foreground color of <paramref name="prompt"/>.</param>
 		/// <param name="commandColor">The foreground color of the text that the user enters after <paramref name="prompt"/> is written.</param>
-		public async Task ShellAsync(string prompt, string exitKeyword = "exit", ConsoleColor promptColor = ConsoleColor.White, ConsoleColor commandColor = ConsoleColor.Gray)
+		/// <param name="stopSwitch">A switch can be used to stop execution of the shell.</param>
+		public async Task ShellAsync(string prompt, string exitKeyword = "exit", ConsoleColor promptColor = ConsoleColor.White, ConsoleColor commandColor = ConsoleColor.Gray, ShellStopSwitch? stopSwitch = null)
 		{
 			if (verbsByName.ContainsKey(exitKeyword))
 			{
 				throw new ArgumentException("The keyword used to exit the loop is already used by a verb: " + exitKeyword, nameof(exitKeyword));
 			}
-			while (true)
+			stopSwitch ??= new();
+			while (stopSwitch.Go)
 			{
 				Console.ForegroundColor = promptColor;
 				Console.Write(prompt);
 				Console.ForegroundColor = commandColor;
-				string line = Console.ReadLine();
-				if (!config.StringComparer.Equals(exitKeyword, line))
+				string? line = Console.ReadLine();
+				if (line != null && !config.StringComparer.Equals(exitKeyword, line))
 				{
 					await HandleAsync(Parse(line));
 				}

@@ -30,5 +30,12 @@
 		/// <param name="console">The console to write to.</param>
 		/// <param name="verb">The verb to write help for.</param>
 		void WriteSpecificHelp<TClass>(IConsole console, Verb<TClass> verb) where TClass : class, new();
+		/// <summary>
+		/// Should be used when the user enters a help switch and a verb: "verb -?".
+		/// Writes specific help to <paramref name="console"/> on the provided <paramref name="verb"/>.
+		/// </summary>
+		/// <param name="console">The console to write to.</param>
+		/// <param name="verb">The verb to write help for.</param>
+		void WriteSpecificHelp(IConsole console, Verb verb);
 	}
 }

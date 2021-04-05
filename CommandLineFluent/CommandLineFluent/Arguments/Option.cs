@@ -9,7 +9,7 @@
 	{
 		public string? ShortName { get; }
 		public string? LongName { get; }
-		public string? DescriptiveName { get; }
+		public string DescriptiveName { get; }
 		public string HelpText { get; }
 		public ArgumentRequired ArgumentRequired { get; }
 		public Action<TClass, TProp> PropertySetter { get; }
@@ -25,12 +25,12 @@
 		/// Converts from a string into <typeparamref name="TProp"/>, or returns an error message.
 		/// </summary>
 		public Func<string, Converted<TProp, string>> Converter { get; }
-		internal Option(string? shortName, string? longName, string? name, string helpText, ArgumentRequired argumentRequired, Action<TClass, TProp> propertySetter,
+		internal Option(string? shortName, string? longName, string descriptiveName, string helpText, ArgumentRequired argumentRequired, Action<TClass, TProp> propertySetter,
 			TProp defaultValue, Dependencies<TClass>? dependencies, Func<string, Converted<TProp, string>> converter)
 		{
 			ShortName = shortName;
 			LongName = longName;
-			DescriptiveName = name;
+			DescriptiveName = descriptiveName;
 			HelpText = helpText;
 			ArgumentRequired = argumentRequired;
 			PropertySetter = propertySetter;

@@ -4,7 +4,6 @@
 
 	/// <summary>
 	/// A way of returning either a Value or an Error. Provides methods to safely get either the Value or Error.
-	/// You can also use this type directly if an if statement; it evaluates to true/false based on the value of <see cref="Ok"/>.
 	/// If <see cref="Ok"/> is true, then only <typeparamref name="TVal"/> is valid.
 	/// If <see cref="Ok"/> is false, then only <typeparamref name="TErr"/> is valid.
 	/// </summary>
@@ -43,12 +42,17 @@
 		/// <summary>
 		/// Gets the value, or <paramref name="ifNone"/> if <see cref="Ok"/> is false.
 		/// </summary>
-		public TVal ValueOr(TVal ifNone) => Ok ? value : ifNone!;
+		public TVal ValueOr(TVal ifNone)
+		{
+			return Ok ? value : ifNone!;
+		}
 		/// <summary>
 		/// Gets the error, or <paramref name="ifNone"/> if <see cref="Ok"/> is true.
 		/// </summary>
-		public TErr ErrorOr(TErr ifNone) => Ok ? ifNone! : error;
-#pragma warning disable CS8762 // Parameter must have a non-null value when exiting in some condition.
+		public TErr ErrorOr(TErr ifNone)
+		{
+			return Ok ? ifNone! : error;
+		}
 		/// <summary>
 		/// If <see cref="Ok"/> is true, sets <paramref name="val"/> to the Value for this instance and returns true.
 		/// Otherwise, val is set to the default value for <typeparamref name="TVal"/> and returns false.
@@ -80,7 +84,6 @@
 			error = this.error;
 			return Ok;
 		}
-#pragma warning restore CS8762 // Parameter must have a non-null value when exiting in some condition.
 		public static Converted<TVal, TErr> Value(TVal value)
 		{
 			return new Converted<TVal, TErr>(value, default!, true);
@@ -92,17 +95,11 @@
 		/// <summary>
 		/// Equivalent to new Converted(<paramref name="value"/>, default, true);
 		/// </summary>
-		public static implicit operator Converted<TVal, TErr>(TVal value)
-		{
-			return new Converted<TVal, TErr>(value, default!, true);
-		}
+		public static implicit operator Converted<TVal, TErr>(TVal value) => new(value, default!, true);
 		/// <summary>
 		/// Equivalent to new Converted(default, <paramref name="error"/>, true);
 		/// </summary>
-		public static implicit operator Converted<TVal, TErr>(TErr error)
-		{
-			return new Converted<TVal, TErr>(default!, error, false);
-		}
+		public static implicit operator Converted<TVal, TErr>(TErr error) => new(default!, error, false);
 		/// <summary>
 		/// Calls ToString() on the value if <see cref="Ok"/> is true, otherwise calls ToString() on the error.
 		/// </summary>
@@ -110,23 +107,5 @@
 		{
 			return Ok ? value?.ToString() ?? string.Empty : error?.ToString() ?? string.Empty;
 		}
-		public override bool Equals(object obj)
-		{
-			throw new InvalidOperationException("You cannot compare Converted instances");
-		}
-		public override int GetHashCode()
-		{
-			throw new InvalidOperationException("You cannot get HashCodes of Converted instances");
-		}
-#pragma warning disable IDE0060 // Remove unused parameter
-		public static bool operator ==(Converted<TVal, TErr> left, Converted<TVal, TErr> right)
-		{
-			throw new InvalidOperationException("You cannot compare Converted instances");
-		}
-		public static bool operator !=(Converted<TVal, TErr> left, Converted<TVal, TErr> right)
-		{
-			throw new InvalidOperationException("You cannot compare Converted instances");
-		}
-#pragma warning restore IDE0060 // Remove unused parameter
 	}
 }
