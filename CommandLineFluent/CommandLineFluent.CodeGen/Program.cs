@@ -1,6 +1,5 @@
 ﻿namespace CommandLineFluent.CodeGen
 {
-	using System;
 	using System.IO;
 	using System.Text;
 	internal class Program
@@ -12,9 +11,7 @@
 			Directory.SetCurrentDirectory(@"../../../../CommandLineFluent");
 			GenerateValues("Verb.Values.cs");
 			GenerateOptions("Verb.Options.cs");
-			//GenerateSwitches(args[2]);
 			GenerateMultiValues("Verb.MultiValues.cs");
-			//GenerateMultiOptions(args[4]);
 		}
 		private static void GenerateValues(string name)
 		{

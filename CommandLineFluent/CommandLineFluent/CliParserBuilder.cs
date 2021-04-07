@@ -29,6 +29,18 @@
 			msgFormatter = null;
 		}
 		/// <summary>
+		/// Creates a new instance, using a default <see cref="CliParserConfig"/>.
+		/// </summary>
+		public CliParserBuilder(IConsole? console = null, ITokenizer? tokenizer = null, IMessageFormatter? msgFormatter = null)
+		{
+			config = new CliParserConfig();
+			verbsByName = new Dictionary<string, IVerb>(config.StringComparer);
+			verbs = new List<IVerb>();
+			this.console = console;
+			this.tokenizer = tokenizer;
+			this.msgFormatter = msgFormatter;
+		}
+		/// <summary>
 		/// Creates a new instance.
 		/// </summary>
 		public CliParserBuilder(CliParserConfig config, IConsole? console = null, ITokenizer? tokenizer = null, IMessageFormatter? msgFormatter = null)
@@ -39,6 +51,21 @@
 			this.console = console;
 			this.tokenizer = tokenizer;
 			this.msgFormatter = msgFormatter;
+		}
+		/// <summary>
+		/// Returns the configured things. If any of these are unconfigured, it will return the defaults.
+		/// </summary>
+		/// <param name="config">The config, or the defaults if none was passed.</param>
+		/// <param name="console">The console. Default is <see cref="StandardConsole"/>.</param>
+		/// <param name="tokenizer">The tokenizer. Default is <see cref="QuotedStringTokenizer"/>.</param>
+		/// <param name="msgFormatter">The message formatter. Defaultis <see cref="StandardMessageFormatter"/>.</param>
+		public CliParserBuilder GetConfigured(out CliParserConfig config, out IConsole console, out ITokenizer tokenizer, out IMessageFormatter msgFormatter)
+		{
+			config = this.config;
+			console = (this.console ??= new StandardConsole());
+			tokenizer = (this.tokenizer ??= new QuotedStringTokenizer());
+			msgFormatter = (this.msgFormatter ??= new StandardMessageFormatter(ConsoleColor.Cyan));
+			return this;
 		}
 		/// <summary>
 		/// Specifies the <see cref="IConsole"/> to use.
@@ -52,7 +79,7 @@
 		}
 		/// <summary>
 		/// Specifies the <see cref="ITokenizer"/> to use.
-		/// By default, this is <see cref="QuotedStringTokenizer"/>, which splits strings into tokens based on single or double quotes, or spaces.
+		/// By default, this is <see cref="QuotedStringTokenizer"/>, which splits strings into tokens based on single or double quotes, or backticks, or spaces.
 		/// </summary>
 		/// <param name="tokenizer">The tokenizer to use.</param>
 		public CliParserBuilder UseTokenizer(ITokenizer tokenizer)
