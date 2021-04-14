@@ -1,6 +1,5 @@
 ﻿namespace CommandLineFluent.CodeGen
 {
-	using System;
 	using System.IO;
 	using System.Text;
 	internal class Program
@@ -12,9 +11,7 @@
 			Directory.SetCurrentDirectory(@"../../../../CommandLineFluent");
 			GenerateValues("Verb.Values.cs");
 			GenerateOptions("Verb.Options.cs");
-			//GenerateSwitches(args[2]);
 			GenerateMultiValues("Verb.MultiValues.cs");
-			//GenerateMultiOptions(args[4]);
 		}
 		private static void GenerateValues(string name)
 		{
@@ -54,7 +51,7 @@
 				( false, "Uri?", "ToAbsoluteNullableUri", "AddValueNullable", string.Empty ),
 			};
 
-			using StreamWriter csOut = new StreamWriter(new FileStream(name, FileMode.Create, FileAccess.Write), Encoding.UTF8);
+			using StreamWriter csOut = new(new FileStream(name, FileMode.Create, FileAccess.Write), Encoding.UTF8);
 			csOut.Write("namespace CommandLineFluent\n");
 			csOut.Write("{\n");
 			csOut.Write("\tusing CommandLineFluent.Arguments;\n");
@@ -119,7 +116,7 @@
 				( false, "Uri?", "ToAbsoluteNullableUri", "AddOptionNullable", string.Empty ),
 			};
 
-			using StreamWriter csOut = new StreamWriter(new FileStream(name, FileMode.Create, FileAccess.Write), Encoding.UTF8);
+			using StreamWriter csOut = new(new FileStream(name, FileMode.Create, FileAccess.Write), Encoding.UTF8);
 			csOut.Write("namespace CommandLineFluent\n");
 			csOut.Write("{\n");
 			csOut.Write("\tusing CommandLineFluent.Arguments;\n");
@@ -196,7 +193,7 @@
 				( "Uri?", "ToAbsoluteNullableUri", "AddMultiValueNullable", string.Empty ),
 			};
 
-			using StreamWriter csOut = new StreamWriter(new FileStream(name, FileMode.Create, FileAccess.Write), Encoding.UTF8);
+			using StreamWriter csOut = new(new FileStream(name, FileMode.Create, FileAccess.Write), Encoding.UTF8);
 			csOut.Write("namespace CommandLineFluent\n");
 			csOut.Write("{\n");
 			csOut.Write("\tusing CommandLineFluent.Arguments;\n");
@@ -216,7 +213,7 @@
 					string tPropCollectionXmlEscaped = tPropCollection.Replace(">", "&gt;").Replace("<", "&lt;");
 					csOut.Write("\t\t/// <summary>\n");
 					csOut.Write($"\t\t/// Adds a new MultiValue to set the {tPropCollectionXmlEscaped} specified by <paramref name=\"expression\"/>. By default this MultiValue is not required.\n");
-					csOut.Write($"\t\t/// Adds a new MultiValue, by default it is not required. The elements will be converted to {tProp} and stored in a collection of type {accumulator}.\n");
+					csOut.Write($"\t\t/// The elements will be converted to {tProp} and stored in a collection of type {accumulator}.\n");
 					csOut.Write("\t\t/// </summary>\n\t\t/// <param name=\"expression\">The property.</param>\n\t\t/// <param name=\"config\">The action to configure the MultiValue.</param>\n\t\t/// <returns>A configured MultiValue.</returns>\n");
 
 					csOut.Write($"\t\tpublic MultiValue<TClass, {tProp}, {tPropCollection}> {methodName}(Expression<Func<TClass, {tPropCollection}>> expression, Action<NamelessMultiArgConfig<TClass, {tProp}, {tPropCollection}>> config){genericConstraint}\n");

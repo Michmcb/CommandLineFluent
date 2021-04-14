@@ -111,21 +111,19 @@
 			// TargetProperty's value corresponds to the WhateverIf(e => e.Property) part they write.
 			TOtherProp propertyVal = PropertyGetter(obj);
 			// Requiredness depends on what they said. RequiredIf, OptionalIf, MustNotAppearIf.
-			switch (Requiredness)
+			return Requiredness switch
 			{
-				case DependencyRequiredness.Required:
-					// In this case, RequiredIf(e => e.Property).Predicate();
-					// Meaning it should be required if propertyVal satisfies the predicate.
-					// If it was required, then it's true if it did appear, otherwise false.
-					// If it wasn't required, then it's all good whether or not it appeared.
-					return Predicate(propertyVal) ? didAppear : true;
-				case DependencyRequiredness.MustNotAppear:
-					// In this case, MustNotAppearIf(e => e.Property).Predicate();
-					// Meaning it must not be provided if propertyVal satisfies the predicate
-					// If mustNotAppear is false, we don't care if it appears or not. It doesn't mean "must appear", it just means the rule of "must not appear" does not apply.
-					return Predicate(propertyVal) ? !didAppear : true;
-			}
-			return Predicate(propertyVal);
+				// In this case, RequiredIf(e => e.Property).Predicate();
+				// Meaning it should be required if propertyVal satisfies the predicate.
+				// If it was required, then it's true if it did appear, otherwise false.
+				// If it wasn't required, then it's all good whether or not it appeared.
+				DependencyRequiredness.Required => Predicate(propertyVal) ? didAppear : true,
+				// In this case, MustNotAppearIf(e => e.Property).Predicate();
+				// Meaning it must not be provided if propertyVal satisfies the predicate
+				// If mustNotAppear is false, we don't care if it appears or not. It doesn't mean "must appear", it just means the rule of "must not appear" does not apply.
+				DependencyRequiredness.MustNotAppear => Predicate(propertyVal) ? !didAppear : true,
+				_ => Predicate(propertyVal),
+			};
 		}
 		/// <summary>
 		/// Validates this rule. Returns an Error if something is invalid, or null otherwise.
@@ -136,22 +134,6 @@
 			{
 				throw new CliParserBuilderException($"A rule that is {Requiredness} for a property of type {typeof(TOtherProp).Name} of class {typeof(TClass).Name} has no predicate. Probably missing a When, IsEqualTo, or IsNull call.");
 			}
-		}
-		// This stuff is useless and just adds clutter, so hide it
-		[EditorBrowsable(EditorBrowsableState.Never)]
-		public override bool Equals(object obj)
-		{
-			return base.Equals(obj);
-		}
-		[EditorBrowsable(EditorBrowsableState.Never)]
-		public override int GetHashCode()
-		{
-			return base.GetHashCode();
-		}
-		[EditorBrowsable(EditorBrowsableState.Never)]
-		public override string ToString()
-		{
-			return base.ToString();
 		}
 	}
 }

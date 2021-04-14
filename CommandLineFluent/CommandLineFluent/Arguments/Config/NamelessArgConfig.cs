@@ -1,7 +1,6 @@
 ﻿namespace CommandLineFluent.Arguments.Config
 {
 	using System;
-	using System.ComponentModel;
 
 	/// <summary>
 	/// A class to configure a argument which is set without a short/long name.
@@ -15,7 +14,11 @@
 		/// <summary>
 		/// Creates a new instance with nothing configured.
 		/// </summary>
-		public NamelessArgConfig() { }
+		public NamelessArgConfig() 
+		{
+			defaultValue = default!;
+			Converter = null!;
+		}
 		/// <summary>
 		/// Creates a new instance with a few preconfigured properties.
 		/// This is useful when creating an extension method for a certain type; the converter can be set to a default,
@@ -23,6 +26,7 @@
 		/// </summary>
 		public NamelessArgConfig(bool required, Func<string, Converted<TProp, string>> converter)
 		{
+			defaultValue = default!;
 			Required = required;
 			Converter = converter;
 		}
@@ -41,19 +45,17 @@
 		public string? HelpText { get; set; }
 		/// <summary>
 		/// A descriptive name, only used to display to the user.
+		/// If this is null, the name of the property to which this is assigned will be used.
 		/// </summary>
 		public string? DescriptiveName { get; set; }
 		/// <summary>
-		/// A function to use to convert from <typeparamref name="TRaw"/> into <typeparamref name="TProp"/>.
+		/// A function to use to convert from <see cref="string"/> into <typeparamref name="TProp"/>.
 		/// </summary>
 		public Func<string, Converted<TProp, string>> Converter { get; set; }
 		/// <summary>
 		/// Can be used to set dependencies. Each call made on this sets a new rule.
 		/// </summary>
-		public Dependencies<TClass> HasDependency
-		{
-			get => configuredDependencies ??= new Dependencies<TClass>();
-		}
+		public Dependencies<TClass> HasDependency => configuredDependencies ??= new Dependencies<TClass>();
 
 		/// <summary>
 		/// This argument is required
@@ -79,21 +81,5 @@
 		/// Configures dependencies, with a default value when this argument is not required.
 		/// </summary>
 		public NamelessArgConfig<TClass, TProp> WithDependencies(TProp defaultValue, Action<Dependencies<TClass>> config) { DefaultValue = defaultValue; config(HasDependency); return this; }
-		// This stuff is useless and just adds clutter, so hide it
-		[EditorBrowsable(EditorBrowsableState.Never)]
-		public override bool Equals(object obj)
-		{
-			return base.Equals(obj);
-		}
-		[EditorBrowsable(EditorBrowsableState.Never)]
-		public override int GetHashCode()
-		{
-			return base.GetHashCode();
-		}
-		[EditorBrowsable(EditorBrowsableState.Never)]
-		public override string ToString()
-		{
-			return base.ToString();
-		}
 	}
 }

@@ -2,7 +2,6 @@
 {
 	using System;
 	using System.Collections.Generic;
-	using System.ComponentModel;
 	using System.Linq.Expressions;
 	using System.Reflection;
 
@@ -22,12 +21,24 @@
 		/// </summary>
 		public CliParserBuilder()
 		{
-			verbsByName = new Dictionary<string, IVerb>(StringComparer.OrdinalIgnoreCase);
-			verbs = new List<IVerb>();
 			config = new CliParserConfig();
+			verbsByName = new Dictionary<string, IVerb>(config.StringComparer);
+			verbs = new List<IVerb>();
 			console = null;
 			tokenizer = null;
 			msgFormatter = null;
+		}
+		/// <summary>
+		/// Creates a new instance, using a default <see cref="CliParserConfig"/>.
+		/// </summary>
+		public CliParserBuilder(IConsole? console = null, ITokenizer? tokenizer = null, IMessageFormatter? msgFormatter = null)
+		{
+			config = new CliParserConfig();
+			verbsByName = new Dictionary<string, IVerb>(config.StringComparer);
+			verbs = new List<IVerb>();
+			this.console = console;
+			this.tokenizer = tokenizer;
+			this.msgFormatter = msgFormatter;
 		}
 		/// <summary>
 		/// Creates a new instance.
@@ -42,6 +53,21 @@
 			this.msgFormatter = msgFormatter;
 		}
 		/// <summary>
+		/// Returns the configured things. If any of these are unconfigured, it will return the defaults.
+		/// </summary>
+		/// <param name="config">The config, or the defaults if none was passed.</param>
+		/// <param name="console">The console. Default is <see cref="StandardConsole"/>.</param>
+		/// <param name="tokenizer">The tokenizer. Default is <see cref="QuotedStringTokenizer"/>.</param>
+		/// <param name="msgFormatter">The message formatter. Defaultis <see cref="StandardMessageFormatter"/>.</param>
+		public CliParserBuilder GetConfigured(out CliParserConfig config, out IConsole console, out ITokenizer tokenizer, out IMessageFormatter msgFormatter)
+		{
+			config = this.config;
+			console = (this.console ??= new StandardConsole());
+			tokenizer = (this.tokenizer ??= new QuotedStringTokenizer());
+			msgFormatter = (this.msgFormatter ??= new StandardMessageFormatter(ConsoleColor.Cyan));
+			return this;
+		}
+		/// <summary>
 		/// Specifies the <see cref="IConsole"/> to use.
 		/// By default, this is <see cref="StandardConsole"/>, which just uses the static class <see cref="Console"/>.
 		/// </summary>
@@ -53,7 +79,7 @@
 		}
 		/// <summary>
 		/// Specifies the <see cref="ITokenizer"/> to use.
-		/// By default, this is <see cref="QuotedStringTokenizer"/>, which splits strings into tokens based on single or double quotes, or spaces.
+		/// By default, this is <see cref="QuotedStringTokenizer"/>, which splits strings into tokens based on single or double quotes, or backticks, or spaces.
 		/// </summary>
 		/// <param name="tokenizer">The tokenizer to use.</param>
 		public CliParserBuilder UseTokenizer(ITokenizer tokenizer)
@@ -91,7 +117,7 @@
 			{
 				throw new CliParserBuilderException(string.Concat("The verb name ", longName, " has already been used, you may only use unique verb names"));
 			}
-			Verb v = new Verb(null, longName);
+			Verb v = new(null, longName, null, this.config);
 			config.Invoke(v);
 			verbsByName.Add(longName, v);
 			verbs.Add(v);
@@ -126,7 +152,7 @@
 			{
 				throw new CliParserBuilderException(string.Concat("The verb name ", shortName, " has already been used, you may only use unique verb names"));
 			}
-			Verb v = new Verb(shortName, longName);
+			Verb v = new(shortName, longName, null, this.config);
 			config.Invoke(v);
 			verbsByName.Add(shortName, v);
 			verbsByName.Add(longName, v);
@@ -154,7 +180,7 @@
 			{
 				throw new CliParserBuilderException(string.Concat("The verb name ", longName, " has already been used, you may only use unique verb names"));
 			}
-			Verb<TClass> v = new Verb<TClass>(null, longName, this.config);
+			Verb<TClass> v = new(null, longName, null, this.config);
 			config.Invoke(v);
 			verbsByName.Add(longName, v);
 			verbs.Add(v);
@@ -190,7 +216,7 @@
 			{
 				throw new CliParserBuilderException(string.Concat("The verb name ", shortName, " has already been used, you may only use unique verb names"));
 			}
-			Verb<TClass> v = new Verb<TClass>(shortName, longName, this.config);
+			Verb<TClass> v = new(shortName, longName, null, this.config);
 			config.Invoke(v);
 			verbsByName.Add(shortName, v);
 			verbsByName.Add(longName, v);
@@ -203,19 +229,12 @@
 		/// </summary>
 		public CliParser Build()
 		{
-			List<Error> errors = new List<Error>();
-			if (verbsByName.Values.Count <= 0)
-			{
-				throw new CliParserBuilderException("The parser has no verbs, use AddVerb<TClass> to add some verbs");
-			}
-			if (errors.Count == 0)
-			{
-				return new CliParser(console ?? new StandardConsole(), tokenizer ?? new QuotedStringTokenizer(), msgFormatter ?? new StandardMessageFormatter(ConsoleColor.Cyan), verbsByName, verbs, config);
-			}
-			else
-			{
-				throw new CliParserBuilderException("CliParserBuilder has not been configured correctly", errors);
-			}
+			List<Error> errors = new();
+			return verbsByName.Values.Count <= 0
+				? throw new CliParserBuilderException("The parser has no verbs, use AddVerb to add some verbs")
+				: errors.Count == 0
+					? new CliParser(console ?? new StandardConsole(), tokenizer ?? new QuotedStringTokenizer(), msgFormatter ?? new StandardMessageFormatter(ConsoleColor.Cyan), verbsByName, verbs, config)
+					: throw new CliParserBuilderException("CliParserBuilder has not been configured correctly", errors);
 		}
 		/// <summary>
 		/// Given <paramref name="expression"/>, returns the corresponding <see cref="PropertyInfo"/>. The <paramref name="expression"/> must be a <see cref="MemberExpression"/>, whose Member is a
@@ -227,15 +246,11 @@
 		/// <returns>A PropertyInfo from <paramref name="expression"/>.</returns>
 		public static PropertyInfo PropertyInfoFromExpression<TClass, TProp>(Expression<Func<TClass, TProp>> expression)
 		{
-			if (!(expression.Body is MemberExpression me))
-			{
-				throw new CliParserBuilderException($"Expression has to be a property of type {typeof(TProp)} of class {typeof(TClass)}");
-			}
-			if (!(me.Member is PropertyInfo prop))
-			{
-				throw new CliParserBuilderException($"Expression has to be a property of type {typeof(TProp)} of class {typeof(TClass)}");
-			}
-			return prop;
+			return !(expression.Body is MemberExpression me)
+				? throw new CliParserBuilderException($"Expression has to be a property of type {typeof(TProp)} of class {typeof(TClass)}")
+				: !(me.Member is PropertyInfo prop)
+					? throw new CliParserBuilderException($"Expression has to be a property of type {typeof(TProp)} of class {typeof(TClass)}")
+					: prop;
 		}
 		/// <summary>
 		/// First, calls <see cref="PropertyInfoFromExpression{TClass, TProp}(Expression{Func{TClass, TProp}})"/>.
@@ -246,32 +261,15 @@
 		/// <typeparam name="TClass">Argument which is passed to the expression.</typeparam>
 		/// <typeparam name="TProp">What the expression returns.</typeparam>
 		/// <param name="expression">The expression which must be a property.</param>
+		/// <param name="propertyInfo">A <see cref="PropertyInfo"/> for the property evaluated from <paramref name="expression"/>.</param>
 		/// <returns>A delegate returns the value of the property when passed a <typeparamref name="TClass"/>.</returns>
 		public static Action<TClass, TProp> GetSetMethodDelegateFromExpression<TClass, TProp>(Expression<Func<TClass, TProp>> expression, out PropertyInfo propertyInfo)
 		{
 			propertyInfo = PropertyInfoFromExpression(expression);
 			MethodInfo? m = propertyInfo.GetSetMethod(true);
-			if (m == null)
-			{
-				throw new CliParserBuilderException(string.Concat("There is no accessible setter for the property ", propertyInfo.Name, " on the class ", typeof(TClass).Name));
-			}
-			return (Action<TClass, TProp>)Delegate.CreateDelegate(typeof(Action<TClass, TProp>), m);
-		}
-		// This stuff is useless and just adds clutter, so hide it
-		[EditorBrowsable(EditorBrowsableState.Never)]
-		public override bool Equals(object obj)
-		{
-			return base.Equals(obj);
-		}
-		[EditorBrowsable(EditorBrowsableState.Never)]
-		public override int GetHashCode()
-		{
-			return base.GetHashCode();
-		}
-		[EditorBrowsable(EditorBrowsableState.Never)]
-		public override string ToString()
-		{
-			return base.ToString();
+			return m == null
+				? throw new CliParserBuilderException(string.Concat("There is no accessible setter for the property ", propertyInfo.Name, " on the class ", typeof(TClass).Name))
+				: (Action<TClass, TProp>)Delegate.CreateDelegate(typeof(Action<TClass, TProp>), m);
 		}
 	}
 }

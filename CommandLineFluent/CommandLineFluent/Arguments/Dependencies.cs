@@ -27,7 +27,7 @@
 		/// <param name="property">The rule stipulates this Argument is required if <paramref name="property"/> has a certain value.</param>
 		public DependencyRule<TClass, TOtherProp> RequiredIf<TOtherProp>(Func<TClass, TOtherProp> property)
 		{
-			DependencyRule<TClass, TOtherProp> rule = new DependencyRule<TClass, TOtherProp>(property, DependencyRequiredness.Required);
+			DependencyRule<TClass, TOtherProp> rule = new(property, DependencyRequiredness.Required);
 			rules.Add(rule);
 			return rule;
 		}
@@ -38,7 +38,7 @@
 		/// <param name="predicate">The predicate which determines whether or not this rule applies</param>
 		public DependencyRule<TClass, TClass> RequiredWhen(Func<TClass, bool> predicate)
 		{
-			DependencyRule<TClass, TClass> rule = new DependencyRule<TClass, TClass>(x => x, DependencyRequiredness.Required);
+			DependencyRule<TClass, TClass> rule = new(x => x, DependencyRequiredness.Required);
 			rules.Add(rule);
 			rule.When(predicate);
 			return rule;
@@ -51,7 +51,7 @@
 		/// <param name="property">The rule stipulates this Argument must not appear if <paramref name="property"/> has a certain value.</param>
 		public DependencyRule<TClass, TOtherProp> MustNotAppearIf<TOtherProp>(Func<TClass, TOtherProp> property)
 		{
-			DependencyRule<TClass, TOtherProp> rule = new DependencyRule<TClass, TOtherProp>(property, DependencyRequiredness.MustNotAppear);
+			DependencyRule<TClass, TOtherProp> rule = new(property, DependencyRequiredness.MustNotAppear);
 			rules.Add(rule);
 			return rule;
 		}
@@ -62,7 +62,7 @@
 		/// <param name="predicate">The predicate which determines whether or not this rule applies</param>
 		public DependencyRule<TClass, TClass> MustNotAppearWhen(Func<TClass, bool> predicate)
 		{
-			DependencyRule<TClass, TClass> rule = new DependencyRule<TClass, TClass>(x => x, DependencyRequiredness.MustNotAppear);
+			DependencyRule<TClass, TClass> rule = new(x => x, DependencyRequiredness.MustNotAppear);
 			rules.Add(rule);
 			rule.When(predicate);
 			return rule;
@@ -142,22 +142,6 @@
 				}
 			}
 			return default;
-		}
-		// This stuff is useless and just adds clutter, so hide it
-		[EditorBrowsable(EditorBrowsableState.Never)]
-		public override bool Equals(object obj)
-		{
-			return base.Equals(obj);
-		}
-		[EditorBrowsable(EditorBrowsableState.Never)]
-		public override int GetHashCode()
-		{
-			return base.GetHashCode();
-		}
-		[EditorBrowsable(EditorBrowsableState.Never)]
-		public override string ToString()
-		{
-			return base.ToString();
 		}
 	}
 }

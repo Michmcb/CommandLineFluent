@@ -2,7 +2,6 @@
 {
 	using System;
 	using System.Collections.Generic;
-	using System.ComponentModel;
 
 	/// <summary>
 	/// A class to configure a multi-argument which is set without a short/long name.
@@ -17,7 +16,12 @@
 		/// <summary>
 		/// Creates a new instance with nothing configured.
 		/// </summary>
-		public NamelessMultiArgConfig() { }
+		public NamelessMultiArgConfig()
+		{
+			defaultValue = default!;
+			Converter = null!;
+			Accumulator = null!;
+		}
 		/// <summary>
 		/// Creates a new instance with a few preconfigured properties.
 		/// This is useful when creating an extension method for a certain type; the converter and collection creator can be set to a default,
@@ -25,6 +29,7 @@
 		/// </summary>
 		public NamelessMultiArgConfig(bool required, Func<string, Converted<TProp, string>> converter, Func<IEnumerable<TProp>, TPropCollection> accumulator)
 		{
+			defaultValue = default!;
 			Required = required;
 			Converter = converter;
 			Accumulator = accumulator;
@@ -45,6 +50,7 @@
 		public string? HelpText { get; set; }
 		/// <summary>
 		/// A descriptive name, only used to display to the user.
+		/// If this is null, the name of the property to which this is assigned will be used.
 		/// </summary>
 		public string? DescriptiveName { get; set; }
 		/// <summary>
@@ -58,11 +64,7 @@
 		/// <summary>
 		/// Can be used to set dependencies. Each call made on this sets a new rule.
 		/// </summary>
-		public Dependencies<TClass> HasDependency
-		{
-			get => configuredDependencies ??= new Dependencies<TClass>();
-		}
-
+		public Dependencies<TClass> HasDependency => configuredDependencies ??= new Dependencies<TClass>();
 		/// <summary>
 		/// This argument is required
 		/// </summary>
@@ -91,22 +93,5 @@
 		/// Configures dependencies, with a default value when this argument is not required.
 		/// </summary>
 		public NamelessMultiArgConfig<TClass, TProp, TPropCollection> WithDependencies(TPropCollection defaultValue, Action<Dependencies<TClass>> config) { DefaultValue = defaultValue; config(HasDependency); return this; }
-		// This stuff is useless and just adds clutter, so hide it
-		[EditorBrowsable(EditorBrowsableState.Never)]
-		public override bool Equals(object obj)
-		{
-			return base.Equals(obj);
-		}
-		[EditorBrowsable(EditorBrowsableState.Never)]
-		public override int GetHashCode()
-		{
-
-			return base.GetHashCode();
-		}
-		[EditorBrowsable(EditorBrowsableState.Never)]
-		public override string ToString()
-		{
-			return base.ToString();
-		}
 	}
 }

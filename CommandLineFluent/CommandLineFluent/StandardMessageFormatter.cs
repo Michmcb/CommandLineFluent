@@ -34,18 +34,18 @@
 		{
 			ConsoleColor original = console.ForegroundColor;
 			int width = console.CurrentWidth;
-			console.WriteLine($@"Usage: {string.Join("|", verbs.Select(x => x.LongName))} options...{Environment.NewLine}{Environment.NewLine}");
+			console.WriteLine("Verbs...");
 
 			// This is the number of characters we're reserving for the key text
 			// A few more spaces just so it's easier to read
 
 			WritePaddedKeywordDescriptions(console,
 				KeywordColor,
-				verbs.Select(verb => new KeywordAndDescription(verb.ShortAndLongName(), verb.HelpText)));
+				verbs.Select(verb => new KeywordAndDescription(verb.ShortAndLongName, verb.HelpText)));
 
 			console.Write("For detailed help, use: ");
 			console.ForegroundColor = KeywordColor;
-			console.WriteLine($"verbname {config.ShortHelpSwitch}|{config.LongHelpSwitch}");
+			console.WriteLine($"verbname " + ArgUtils.ShortAndLongName(config.ShortHelpSwitch, config.LongHelpSwitch));
 			console.WriteLine();
 			console.ForegroundColor = original;
 		}
@@ -60,49 +60,107 @@
 		{
 			ConsoleColor original = console.ForegroundColor;
 			console.WriteLine(verb.HelpText);
-			console.Write(verb.ShortAndLongName() + " ");
+			console.Write(verb.FullShortAndLongName + ' ');
 
-			int i = 1;
-			foreach (IOption<TClass> opt in verb.AllOptions)
+			foreach (IOption opt in verb.AllOptions)
 			{
-				console.Write(ArgUtils.ShortAndLongName(opt.ShortName, opt.LongName, opt.DescriptiveName ?? "?", opt.ArgumentRequired != ArgumentRequired.Required));
-				console.Write(" ");
+				console.Write(ArgUtils.ShortAndLongName(opt.ShortName, opt.LongName, opt.DescriptiveName, opt.ArgumentRequired != ArgumentRequired.Required));
+				console.Write(' ');
 			}
-			foreach (ISwitch<TClass> sw in verb.AllSwitches)
+			foreach (ISwitch sw in verb.AllSwitches)
 			{
 				console.Write(ArgUtils.ShortAndLongName(sw.ShortName, sw.LongName, sw.ArgumentRequired != ArgumentRequired.Required));
-				console.Write(" ");
+				console.Write(' ');
 			}
-			foreach (IValue<TClass> val in verb.AllValues)
+			int i = 1;
+			foreach (IValue val in verb.AllValues)
 			{
-				console.Write(val.ArgumentRequired == ArgumentRequired.Required ? "\"" + (string.IsNullOrEmpty(val.DescriptiveName) ? $"value{i}" : val.DescriptiveName) + "\" " : $"[{val.DescriptiveName ?? $"value{i}"}] ");
+				console.Write(val.ArgumentRequired == ArgumentRequired.Required ? val.DescriptiveName : string.Concat('[', val.DescriptiveName, ']'));
+				console.Write(' ');
 				i++;
 			}
 			if (verb.MultiValue != null)
 			{
-				console.Write(verb.MultiValue.ArgumentRequired == ArgumentRequired.Required ? "\"" + (string.IsNullOrEmpty(verb.MultiValue.DescriptiveName) ? "Values..." : verb.MultiValue.DescriptiveName) + "\"" : $"[{verb.MultiValue.DescriptiveName ?? "Values..."}]");
+				console.Write(verb.MultiValue.ArgumentRequired == ArgumentRequired.Required
+					? verb.MultiValue.DescriptiveName
+					: string.Concat('[', verb.MultiValue.DescriptiveName, ']'));
 			}
 			console.WriteLine();
 			console.WriteLine();
 
-			List<KeywordAndDescription> stuffToWrite = new List<KeywordAndDescription>();
-			foreach (IOption<TClass> opt in verb.AllOptions)
+			List<KeywordAndDescription> stuffToWrite = new();
+			if (verb.AllVerbs.Count != 0)
 			{
-				stuffToWrite.Add(new KeywordAndDescription(opt.ShortAndLongName(), GetRequiredness(opt.ArgumentRequired) + opt.HelpText));
+				console.WriteLine("Verbs: ");
+				foreach (IVerb subVerb in verb.AllVerbs)
+				{
+					stuffToWrite.Add(new(subVerb.ShortAndLongName, subVerb.HelpText));
+				}
+				WritePaddedKeywordDescriptions(console, KeywordColor, stuffToWrite);
+				stuffToWrite.Clear();
 			}
-			foreach (ISwitch<TClass> sw in verb.AllSwitches)
+			if (verb.AllOptions.Count != 0)
 			{
-				stuffToWrite.Add(new KeywordAndDescription(sw.ShortAndLongName(), GetRequiredness(sw.ArgumentRequired) + sw.HelpText));
+				console.WriteLine("Options: ");
+				foreach (IOption opt in verb.AllOptions)
+				{
+					stuffToWrite.Add(new KeywordAndDescription(opt.ShortAndLongName(), GetRequiredness(opt.ArgumentRequired) + opt.HelpText));
+				}
+				WritePaddedKeywordDescriptions(console, KeywordColor, stuffToWrite);
+				stuffToWrite.Clear();
 			}
-			foreach (IValue<TClass> val in verb.AllValues)
+			if (verb.AllSwitches.Count != 0)
 			{
-				stuffToWrite.Add(new KeywordAndDescription(val.DescriptiveName ?? "", GetRequiredness(val.ArgumentRequired) + val.HelpText));
+				console.WriteLine("Switches: ");
+				foreach (ISwitch sw in verb.AllSwitches)
+				{
+					stuffToWrite.Add(new KeywordAndDescription(sw.ShortAndLongName(), GetRequiredness(sw.ArgumentRequired) + sw.HelpText));
+				}
+				WritePaddedKeywordDescriptions(console, KeywordColor, stuffToWrite);
+				stuffToWrite.Clear();
+			}
+			if (verb.AllValues.Count != 0)
+			{
+				console.WriteLine("Values: ");
+				foreach (IValue val in verb.AllValues)
+				{
+					stuffToWrite.Add(new KeywordAndDescription(val.DescriptiveName, GetRequiredness(val.ArgumentRequired) + val.HelpText));
+				}
+				WritePaddedKeywordDescriptions(console, KeywordColor, stuffToWrite);
+				stuffToWrite.Clear();
 			}
 			if (verb.MultiValue != null)
 			{
-				stuffToWrite.Add(new KeywordAndDescription(verb.MultiValue.DescriptiveName ?? "", GetRequiredness(verb.MultiValue.ArgumentRequired) + verb.MultiValue.HelpText));
+				console.WriteLine("Multi-Value: ");
+				stuffToWrite.Add(new KeywordAndDescription(verb.MultiValue.DescriptiveName, GetRequiredness(verb.MultiValue.ArgumentRequired) + verb.MultiValue.HelpText));
+				WritePaddedKeywordDescriptions(console, KeywordColor, stuffToWrite);
+				stuffToWrite.Clear();
 			}
-			WritePaddedKeywordDescriptions(console, KeywordColor, stuffToWrite);
+			console.ForegroundColor = original;
+		}
+		/// <summary>
+		/// Writes specific help for <paramref name="verb"/> to <paramref name="console"/>. Shows all of the possible arguments and their help text.
+		/// Any arguments that aren't required are shown in [brackets].
+		/// </summary>
+		/// <param name="console">The console help is written to.</param>
+		/// <param name="verb">The verb to write help for.</param>
+		public void WriteSpecificHelp(IConsole console, Verb verb)
+		{
+			ConsoleColor original = console.ForegroundColor;
+			console.WriteLine(verb.HelpText);
+			console.WriteLine();
+
+			List<KeywordAndDescription> stuffToWrite = new();
+			if (verb.AllVerbs.Count != 0)
+			{
+				console.WriteLine("Verbs: ");
+				foreach (IVerb subVerb in verb.AllVerbs)
+				{
+					stuffToWrite.Add(new(subVerb.ShortAndLongName, subVerb.HelpText));
+				}
+				WritePaddedKeywordDescriptions(console, KeywordColor, stuffToWrite);
+				stuffToWrite.Clear();
+			}
 			console.ForegroundColor = original;
 		}
 		/// <summary>
@@ -145,7 +203,7 @@
 			// 20 characters is way too thin to be legible, so if the keywords are too long, just don't bother padding
 			if (lengthForDescription >= 20)
 			{
-				string padding = new string(' ', longestKeyword);
+				string padding = new(' ', longestKeyword);
 				foreach (KeywordAndDescription kd in keywordsAndDescriptions)
 				{
 					console.ForegroundColor = keywordColor;
@@ -195,7 +253,7 @@
 		/// <returns></returns>
 		public static IList<(int from, int length)> GetLineBreaks(string str, int maxLineLength)
 		{
-			List<(int from, int length)> lineBreaks = new List<(int from, int length)>();
+			List<(int from, int length)> lineBreaks = new();
 			int currentIndex;
 			int prevIndex = 0;
 			while (str.Length >= prevIndex)
@@ -262,17 +320,13 @@
 		}
 		public static string GetRequiredness(ArgumentRequired r)
 		{
-			switch (r)
+			return r switch
 			{
-				case ArgumentRequired.Required:
-					return "Required. ";
-				case ArgumentRequired.Optional:
-					return "Optional. ";
-				case ArgumentRequired.HasDependencies:
-					return "Sometimes required. ";
-				default:
-					return "";
-			}
+				ArgumentRequired.Required => "Required. ",
+				ArgumentRequired.Optional => "Optional. ",
+				ArgumentRequired.HasDependencies => "Sometimes required. ",
+				_ => "",
+			};
 		}
 	}
 }

@@ -39,13 +39,17 @@
 		/// Gets or sets <see cref="Console.ForegroundColor"/>.
 		/// </summary>
 		public ConsoleColor ForegroundColor { get => Console.ForegroundColor; set => Console.ForegroundColor = value; }
-		public string ReadLine()
+		public string? ReadLine()
 		{
 			return Console.ReadLine();
 		}
 		public void WriteLine()
 		{
 			Console.WriteLine();
+		}
+		public void Write(char c)
+		{
+			Console.Write(c);
 		}
 		public void Write(string str)
 		{
@@ -55,6 +59,10 @@
 		{
 			ForegroundColor = color;
 			Console.Write(str);
+		}
+		public void WriteLine(char c)
+		{
+			Console.WriteLine(c);
 		}
 		public void WriteLine(string str)
 		{

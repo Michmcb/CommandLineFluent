@@ -109,5 +109,50 @@
 			Assert.Equal("opt2", obj.Option2);
 			Assert.Collection(obj.Values, x => Assert.Equal(1, x), x => Assert.Equal(2, x), x => Assert.Equal(3, x));
 		}
+		[Fact]
+		public void ParsingSubVerb_Ok()
+		{
+			IParseResult result = new CliParserBuilder()
+				.AddVerb("verb1", verb =>
+				{
+					verb.AddVerb<Verb2>("verb2", verb2 =>
+					{
+						verb2.AddValue(x => x.Value, x =>
+						{
+						});
+					});
+				})
+				.Build()
+				.Parse(new string[] { "verb1", "verb2", "value" });
+			Assert.True(result.Ok);
+			SuccessfulParse<Verb2> pr = Assert.IsType<SuccessfulParse<Verb2>>(result);
+			Assert.Equal("value", pr.Object.Value);
+		}
+		[Fact]
+		public void SubVerbNotUsedWhenTheresAValue_Ok()
+		{
+			IParseResult result = new CliParserBuilder()
+				.AddVerb<Verb1>("verb1", verb =>
+				{
+					verb.AddOption(x => x.Option, x => x.ShortName = "-o");
+
+					verb.AddValue(x => x.Value, x =>
+					{
+					});
+
+					verb.AddVerb<Verb2>("verb2", verb2 =>
+					{
+						verb2.AddValue(x => x.Value, x =>
+						{
+						});
+					});
+				})
+				.Build()
+				.Parse(new string[] { "verb1", "-o", "value", "verb2" });
+			Assert.True(result.Ok);
+			SuccessfulParse<Verb1> pr = Assert.IsType<SuccessfulParse<Verb1>>(result);
+			Assert.Equal("value", pr.Object.Option);
+			Assert.Equal("verb2", pr.Object.Value);
+		}
 	}
 }

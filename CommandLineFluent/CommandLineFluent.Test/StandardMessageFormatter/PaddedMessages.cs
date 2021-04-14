@@ -12,7 +12,7 @@
 		[Fact]
 		public void WrittenLines()
 		{
-			StringBuilderConsole console = new StringBuilderConsole(60);
+			StringBuilderConsole console = new(60);
 			StandardMessageFormatter.WritePaddedKeywordDescriptions(console, ConsoleColor.Gray, new List<KeywordAndDescription>()
 			{
 				new KeywordAndDescription("Lorem", "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum."),
@@ -76,7 +76,10 @@ anim id est laborum.";
 		public int CurrentWidth { get; set; }
 		public ConsoleColor BackgroundColor { get; set;}
 		public ConsoleColor ForegroundColor { get; set; }
-		public string ReadLine() => "";
+		public string ReadLine()
+		{
+			return "";
+		}
 		public StringBuilder Written { get; }
 		public void Write(string s)
 		{
@@ -89,6 +92,14 @@ anim id est laborum.";
 		public void WriteLine()
 		{
 			Written.AppendLine();
+		}
+		public void Write(char c)
+		{
+			Written.Append(c);
+		}
+		public void WriteLine(char c)
+		{
+			Written.Append(c);
 		}
 	}
 }

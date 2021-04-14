@@ -9,7 +9,7 @@
 	/// </summary>
 	public class MultiValue<TClass, TProp, TPropCollection> : IMultiValue<TClass> where TClass : class, new()
 	{
-		public string? DescriptiveName { get; }
+		public string DescriptiveName { get; }
 		public string HelpText { get; }
 		public ArgumentRequired ArgumentRequired { get; }
 		public Action<TClass, TPropCollection> PropertySetter { get; }
@@ -30,10 +30,10 @@
 		/// If you don't provide one, the specific type isn't guaranteed.
 		/// </summary>
 		public Func<IEnumerable<TProp>, TPropCollection> CreateCollection { get; }
-		public MultiValue(string? name, string helpText, ArgumentRequired argumentRequired, Action<TClass, TPropCollection> propertySetter, TPropCollection defaultValues,
+		public MultiValue(string descriptiveName, string helpText, ArgumentRequired argumentRequired, Action<TClass, TPropCollection> propertySetter, TPropCollection defaultValues,
 			Dependencies<TClass>? dependencies, Func<string, Converted<TProp, string>> converter, Func<IEnumerable<TProp>, TPropCollection> createCollection)
 		{
-			DescriptiveName = name;
+			DescriptiveName = descriptiveName;
 			HelpText = helpText;
 			ArgumentRequired = argumentRequired;
 			PropertySetter = propertySetter;
@@ -46,7 +46,7 @@
 		{
 			if (rawValue.Count > 0)
 			{
-				List<TProp> convertedValues = new List<TProp>(rawValue.Count);
+				List<TProp> convertedValues = new(rawValue.Count);
 				try
 				{
 					foreach (string rv in rawValue)
