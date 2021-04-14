@@ -1,8 +1,14 @@
 ﻿namespace CommandLineFluent
 {
 	using System;
+	/// <summary>
+	/// Configuration options for the <see cref="CliParser"/>.
+	/// </summary>
 	public sealed class CliParserConfig
 	{
+		/// <summary>
+		/// Creates a new instance with <see cref="StringComparer.OrdinalIgnoreCase"/>.
+		/// </summary>
 		public CliParserConfig()
 		{
 			StringComparer = StringComparer.OrdinalIgnoreCase;
