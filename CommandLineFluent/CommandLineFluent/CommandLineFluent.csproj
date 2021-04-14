@@ -25,7 +25,8 @@
 - Inheritance hierarchy for Options/Values/Switches/MultiValues has been changed, to allow for IOption, IValue, ISwitch, and IMultiValue
 - Write(char) and WriteLine(char) overloads for IConsole
 - StringComparer can no longer be changed after assigned to CliParserConfig; makes no sense because it gets propogated to dictionaries
-- Removed Obsolete Stuff</PackageReleaseNotes>
+- Removed Obsolete Stuff
+- Comparisons to Short/Long help switches are done using CliParserConfig.StringComparer properly now</PackageReleaseNotes>
     <PackageIcon>CommandLineFluent.png</PackageIcon>
     <AssemblyVersion>2.4.0.0</AssemblyVersion>
     <FileVersion>2.4.0.0</FileVersion>
