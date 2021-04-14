@@ -73,7 +73,7 @@
 		public string? ShortName { get; }
 		public string LongName { get; }
 		public string ShortAndLongName { get; }
-		public string FullShortAndLongName { get; set; }
+		public string FullShortAndLongName { get; }
 		public string HelpText { get; set; }
 		public void AddVerb(string longName, Action<Verb> config)
 		{

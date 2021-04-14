@@ -25,7 +25,7 @@
 		public string? ShortName { get; }
 		public string LongName { get; }
 		public string ShortAndLongName { get; }
-		public string FullShortAndLongName { get; set; }
+		public string FullShortAndLongName { get; }
 		public string HelpText { get; set; }
 		/// <summary>
 		/// The action that's invoked when parsing is successful and this verb was provided.
