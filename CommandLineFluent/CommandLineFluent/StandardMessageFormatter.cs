@@ -41,7 +41,7 @@
 
 			WritePaddedKeywordDescriptions(console,
 				KeywordColor,
-				verbs.Select(verb => new KeywordAndDescription(verb.DescriptiveName, verb.HelpText)));
+				verbs.Select(verb => new KeywordAndDescription(verb.FullShortAndLongName, verb.HelpText)));
 
 			console.Write("For detailed help, use: ");
 			console.ForegroundColor = KeywordColor;
@@ -60,7 +60,7 @@
 		{
 			ConsoleColor original = console.ForegroundColor;
 			console.WriteLine(verb.HelpText);
-			console.Write(verb.DescriptiveName + ' ');
+			console.Write(verb.FullShortAndLongName + ' ');
 
 			foreach (IOption opt in verb.AllOptions)
 			{
@@ -94,7 +94,7 @@
 				console.WriteLine("Verbs: ");
 				foreach (IVerb subVerb in verb.AllVerbs)
 				{
-					stuffToWrite.Add(new(subVerb.DescriptiveName, subVerb.HelpText));
+					stuffToWrite.Add(new(subVerb.ShortAndLongName, subVerb.HelpText));
 				}
 				WritePaddedKeywordDescriptions(console, KeywordColor, stuffToWrite);
 				stuffToWrite.Clear();
@@ -156,7 +156,7 @@
 				console.WriteLine("Verbs: ");
 				foreach (IVerb subVerb in verb.AllVerbs)
 				{
-					stuffToWrite.Add(new(subVerb.DescriptiveName, subVerb.HelpText));
+					stuffToWrite.Add(new(subVerb.ShortAndLongName, subVerb.HelpText));
 				}
 				WritePaddedKeywordDescriptions(console, KeywordColor, stuffToWrite);
 				stuffToWrite.Clear();

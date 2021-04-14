@@ -9,13 +9,14 @@
 		private readonly List<IVerb> allVerbs;
 		private readonly Dictionary<string, IVerb> verbsByName;
 		private readonly CliParserConfig config;
-		internal Verb(string? shortName, string longName, string? parentDescriptiveName, CliParserConfig config)
+		internal Verb(string? shortName, string longName, string? parentShortAndLongName, CliParserConfig config)
 		{
 			ShortName = shortName;
 			LongName = longName;
-			DescriptiveName = parentDescriptiveName == null ? ArgUtils.ShortAndLongName(shortName, longName) : string.Concat(parentDescriptiveName, ' ', ArgUtils.ShortAndLongName(shortName, longName) );
-			Invoke = () => throw new CliParserBuilderException(string.Concat("Invoke for verb ", DescriptiveName, " has not been configured"));
-			InvokeAsync = () => throw new CliParserBuilderException(string.Concat("InvokeAsync for verb ", DescriptiveName, " has not been configured"));
+			ShortAndLongName = ArgUtils.ShortAndLongName(shortName, longName);
+			FullShortAndLongName = parentShortAndLongName == null ? ArgUtils.ShortAndLongName(shortName, longName) : string.Concat(parentShortAndLongName, ' ', ArgUtils.ShortAndLongName(shortName, longName) );
+			Invoke = () => throw new CliParserBuilderException(string.Concat("Invoke for verb ", FullShortAndLongName, " has not been configured"));
+			InvokeAsync = () => throw new CliParserBuilderException(string.Concat("InvokeAsync for verb ", FullShortAndLongName, " has not been configured"));
 			this.config = config;
 			HelpText = "No help available.";
 			allVerbs = new();
@@ -23,7 +24,8 @@
 		}
 		public string? ShortName { get; }
 		public string LongName { get; }
-		public string DescriptiveName { get; set; }
+		public string ShortAndLongName { get; }
+		public string FullShortAndLongName { get; set; }
 		public string HelpText { get; set; }
 		/// <summary>
 		/// The action that's invoked when parsing is successful and this verb was provided.
@@ -40,7 +42,7 @@
 		public void AddVerb(string longName, Action<Verb> config)
 		{
 			Validate(verbsByName, longName, this.config);
-			Verb v = new(null, longName, DescriptiveName, this.config);
+			Verb v = new(null, longName, FullShortAndLongName, this.config);
 			config(v);
 			verbsByName.Add(longName, v);
 			allVerbs.Add(v);
@@ -48,7 +50,7 @@
 		public void AddVerb(string longName, string shortName, Action<Verb> config)
 		{
 			Validate(verbsByName, shortName, longName, this.config);
-			Verb v = new(shortName, longName, DescriptiveName, this.config);
+			Verb v = new(shortName, longName, FullShortAndLongName, this.config);
 			config(v);
 			verbsByName.Add(shortName, v);
 			verbsByName.Add(longName, v);
@@ -57,7 +59,7 @@
 		public void AddVerb<TVerbClass>(string longName, Action<Verb<TVerbClass>> config) where TVerbClass : class, new()
 		{
 			Validate(verbsByName, longName, this.config);
-			Verb<TVerbClass> v = new(null, longName, DescriptiveName, this.config);
+			Verb<TVerbClass> v = new(null, longName, FullShortAndLongName, this.config);
 			config(v);
 			verbsByName.Add(longName, v);
 			allVerbs.Add(v);
@@ -65,7 +67,7 @@
 		public void AddVerb<TVerbClass>(string longName, string shortName, Action<Verb<TVerbClass>> config) where TVerbClass : class, new()
 		{
 			Validate(verbsByName, shortName, longName, this.config);
-			Verb<TVerbClass> v = new(shortName, longName, DescriptiveName, this.config);
+			Verb<TVerbClass> v = new(shortName, longName, FullShortAndLongName, this.config);
 			config(v);
 			verbsByName.Add(shortName, v);
 			verbsByName.Add(longName, v);

@@ -18,9 +18,13 @@
 		/// </summary>
 		string? ShortName { get; }
 		/// <summary>
-		/// A human-readable name which describes this verb.
+		/// The short and long name joined with a |
 		/// </summary>
-		string DescriptiveName { get; set; }
+		string ShortAndLongName { get; }
+		/// <summary>
+		/// The short and long names of this verb and all of its parent verbs, each joined with a |
+		/// </summary>
+		string FullShortAndLongName { get; set; }
 		/// <summary>
 		/// Human-readable help for this verb.
 		/// </summary>
