@@ -41,11 +41,11 @@
 
 			WritePaddedKeywordDescriptions(console,
 				KeywordColor,
-				verbs.Select(verb => new KeywordAndDescription(verb.FullShortAndLongName, verb.HelpText)));
+				verbs.Select(verb => new KeywordAndDescription(verb.ShortAndLongName, verb.HelpText)));
 
 			console.Write("For detailed help, use: ");
 			console.ForegroundColor = KeywordColor;
-			console.WriteLine($"verbname {config.ShortHelpSwitch}|{config.LongHelpSwitch}");
+			console.WriteLine($"verbname " + ArgUtils.ShortAndLongName(config.ShortHelpSwitch, config.LongHelpSwitch));
 			console.WriteLine();
 			console.ForegroundColor = original;
 		}

@@ -84,7 +84,7 @@
 			if (args.MoveNext())
 			{
 				string s = args.Current;
-				return s == config.ShortHelpSwitch || s == config.LongHelpSwitch
+				return config.StringComparer.Equals(s, config.ShortHelpSwitch) || config.StringComparer.Equals(s, config.LongHelpSwitch)
 					? new FailedParseWithVerb(this, new Error[] { new Error(ErrorCode.HelpRequested, string.Empty) })
 					: verbsByName.TryGetValue(s, out IVerb? verb)
 						? verb.Parse(args)
@@ -109,7 +109,7 @@
 			{
 				throw new ArgumentNullException(nameof(longName), "Verb Long Name cannot be null or an empty string");
 			}
-			if (longName == config.ShortHelpSwitch || longName == config.LongHelpSwitch)
+			if (config.StringComparer.Equals(longName, config.ShortHelpSwitch) || config.StringComparer.Equals(longName, config.LongHelpSwitch))
 			{
 				throw new CliParserBuilderException($"Short name for {longName} is already used by a help switch ({config.ShortHelpSwitch} or {config.LongHelpSwitch})");
 			}
@@ -132,11 +132,11 @@
 			{
 				throw new ArgumentNullException(nameof(longName), "Verb Short Name cannot be null or an empty string");
 			}
-			if (longName == config.ShortHelpSwitch || longName == config.LongHelpSwitch)
+			if (config.StringComparer.Equals(longName, config.ShortHelpSwitch) || config.StringComparer.Equals(longName, config.LongHelpSwitch))
 			{
 				throw new CliParserBuilderException($"Short name for {longName} is already used by a help switch ({config.ShortHelpSwitch} or {config.LongHelpSwitch})");
 			}
-			if (shortName == config.ShortHelpSwitch || shortName == config.LongHelpSwitch)
+			if (config.StringComparer.Equals(shortName, config.ShortHelpSwitch) || config.StringComparer.Equals(shortName, config.LongHelpSwitch))
 			{
 				throw new CliParserBuilderException($"Long name for {shortName} is already used by a help switch ({config.ShortHelpSwitch} or {config.LongHelpSwitch})");
 			}

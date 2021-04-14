@@ -7,17 +7,17 @@
 	public sealed class CliParserConfig
 	{
 		/// <summary>
-		/// Creates a new instance with <see cref="StringComparer.OrdinalIgnoreCase"/>.
+		/// Creates a new instance.
 		/// </summary>
-		public CliParserConfig()
+		/// <param name="stringComparer">If not provided, <see cref="StringComparer.OrdinalIgnoreCase"/>.</param>
+		public CliParserConfig(StringComparer? stringComparer = null, string defaultShortPrefix = "-", string defaultLongPrefix = "--", string shortHelpSwitch = "-?", string longHelpSwitch = "--help")
 		{
-			StringComparer = StringComparer.OrdinalIgnoreCase;
-			IsCaseSensitive = false;
-		}
-		public CliParserConfig(StringComparer stringComparer)
-		{
-			StringComparer = stringComparer ?? throw new ArgumentNullException(nameof(stringComparer), "The value of StringComparer cannot be set to null");
-			IsCaseSensitive = stringComparer.Compare("a", "A") != 0; // If they compare as the same, that's case insensitive. If they're different, case sensitive.
+			StringComparer = stringComparer ?? StringComparer.OrdinalIgnoreCase;
+			IsCaseSensitive = StringComparer.Compare("a", "A") != 0; // If they compare as the same, that's case insensitive. If they're different, case sensitive.
+			DefaultShortPrefix = defaultShortPrefix;
+			DefaultLongPrefix = defaultLongPrefix;
+			ShortHelpSwitch = shortHelpSwitch;
+			LongHelpSwitch = longHelpSwitch;
 		}
 		/// <summary>
 		/// The default prefix to use for any short names. If short names don't start with this, it'll automatically be prepended.

@@ -298,7 +298,7 @@
 			{
 				string a = args.Current;
 				// If the user asks for help, immediately stop parsing
-				if (a == config.ShortHelpSwitch || a == config.LongHelpSwitch)
+				if (config.StringComparer.Equals(a, config.ShortHelpSwitch) || config.StringComparer.Equals(a, config.LongHelpSwitch))
 				{
 					errors.Add(new Error(ErrorCode.HelpRequested, string.Empty));
 					return new FailedParseWithVerb<TClass>(this, errors);
@@ -482,7 +482,7 @@
 				{
 					shortName = config.DefaultShortPrefix + shortName;
 				}
-				if (shortName == config.ShortHelpSwitch || shortName == config.LongHelpSwitch)
+				if (config.StringComparer.Equals(shortName, config.ShortHelpSwitch) || config.StringComparer.Equals(shortName, config.LongHelpSwitch))
 				{
 					throw new CliParserBuilderException($"Short name for {type} for verb {LongName} is already used by a help switch ({config.ShortHelpSwitch} or {config.LongHelpSwitch})");
 				}
@@ -501,7 +501,7 @@
 				{
 					longName = config.DefaultLongPrefix + longName;
 				}
-				if (longName == config.ShortHelpSwitch || longName == config.LongHelpSwitch)
+				if (config.StringComparer.Equals(longName, config.ShortHelpSwitch) || config.StringComparer.Equals(longName, config.LongHelpSwitch))
 				{
 					throw new CliParserBuilderException($"Long name for {type} for verb {LongName} is already used by a help switch ({config.ShortHelpSwitch} or {config.LongHelpSwitch})");
 				}
