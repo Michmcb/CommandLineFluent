@@ -200,7 +200,7 @@
 		/// <param name="s">The string to convert</param>
 		public static Converted<TEnum, string> ToEnum<TEnum>(string s) where TEnum : struct, Enum
 		{
-			return Enum.TryParse(s, out TEnum v) ? v : (Converted<TEnum, string>)string.Concat(s, " should be one of: ", string.Join(", ", Enum.GetNames(typeof(TEnum))));
+			return Enum.TryParse(s, out TEnum v) ? v : (Converted<TEnum, string>)string.Concat(s, " was not valid. It should be one of: ", string.Join(", ", Enum.GetNames(typeof(TEnum))));
 		}
 		/// <summary>
 		/// Converts the provided string to the Enum <typeparamref name="TEnum"/>?.
@@ -209,7 +209,7 @@
 		/// <param name="s">The string to convert</param>
 		public static Converted<TEnum?, string> ToNullableEnum<TEnum>(string s) where TEnum : struct, Enum
 		{
-			return Enum.TryParse(s, out TEnum v) ? v : (Converted<TEnum?, string>)string.Concat(s, " should be one of: ", string.Join(", ", Enum.GetNames(typeof(TEnum))));
+			return Enum.TryParse(s, out TEnum v) ? v : (Converted<TEnum?, string>)string.Concat(s, " was not valid. It should be one of: ", string.Join(", ", Enum.GetNames(typeof(TEnum))));
 		}
 		/// <summary>
 		/// Converts the provided string to the Enum <typeparamref name="TEnum"/>.
@@ -219,7 +219,7 @@
 		/// <param name="caseSensitive">If true, case must match. Otherwise, it doesn't have to match.</param>
 		public static Converted<TEnum, string> ToEnum<TEnum>(string s, bool caseSensitive) where TEnum : struct, Enum
 		{
-			return Enum.TryParse(s, !caseSensitive, out TEnum v) ? v : (Converted<TEnum, string>)string.Concat(s, " should be one of: ", string.Join(", ", Enum.GetNames(typeof(TEnum))));
+			return Enum.TryParse(s, !caseSensitive, out TEnum v) ? v : (Converted<TEnum, string>)string.Concat(s, " was not valid. It should be one of: ", string.Join(", ", Enum.GetNames(typeof(TEnum))));
 		}
 		/// <summary>
 		/// Converts the provided string to the Enum <typeparamref name="TEnum"/>?.
@@ -229,7 +229,7 @@
 		/// <param name="caseSensitive">If true, case must match. Otherwise, it doesn't have to match.</param>
 		public static Converted<TEnum?, string> ToNullableEnum<TEnum>(string s, bool caseSensitive) where TEnum : struct, Enum
 		{
-			return Enum.TryParse(s, !caseSensitive, out TEnum v) ? v : (Converted<TEnum?, string>)string.Concat(s, " should be one of: ", string.Join(", ", Enum.GetNames(typeof(TEnum))));
+			return Enum.TryParse(s, !caseSensitive, out TEnum v) ? v : (Converted<TEnum?, string>)string.Concat(s, " was not valid. It should be one of: ", string.Join(", ", Enum.GetNames(typeof(TEnum))));
 		}
 		/// <summary>
 		/// Converts the provided string to <see cref="DateTime"/>.
