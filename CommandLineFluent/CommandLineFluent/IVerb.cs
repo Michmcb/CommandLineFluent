@@ -24,7 +24,7 @@
 		/// <summary>
 		/// The short and long names of this verb and all of its parent verbs, each joined with a |
 		/// </summary>
-		string FullShortAndLongName { get; set; }
+		string FullShortAndLongName { get; }
 		/// <summary>
 		/// Human-readable help for this verb.
 		/// </summary>
