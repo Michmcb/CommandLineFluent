@@ -15,11 +15,6 @@
 		/// <summary>
 		/// Create this class using a CliParserBuilder.
 		/// </summary>
-		/// <param name="console"></param>
-		/// <param name="tokenizer"></param>
-		/// <param name="msgFormatter"></param>
-		/// <param name="verbsByName"></param>
-		/// <param name="config"></param>
 		internal CliParser(IConsole console, ITokenizer tokenizer, IMessageFormatter msgFormatter, Dictionary<string, IVerb> verbsByName, List<IVerb> verbs, CliParserConfig config)
 		{
 			Console = console;
@@ -27,7 +22,7 @@
 			MsgFormatter = msgFormatter;
 			this.verbsByName = verbsByName;
 			Verbs = verbs;
-			this.Config = config;
+			Config = config;
 		}
 		/// <summary>
 		/// Used to write to the console. Mostly just exists to simplify unit testing.
@@ -53,7 +48,7 @@
 		/// Parses the provided args, after splitting them into tokens using <see cref="Tokenizer"/>, and turns them into a class.
 		/// </summary>
 		/// <param name="args">The args to split into tokens and parse.</param>
-		/// <returns>An IParseResult. You can call <see cref="Handle(IParseResult)"/>, to handle it automatically.</returns>
+		/// <returns>An IParseResult. You can call <see cref="Handle(IParseResult, bool)"/>, to handle it automatically.</returns>
 		public IParseResult Parse(string args)
 		{
 			if (args == null)
@@ -68,7 +63,7 @@
 		/// Parses the provided args and turns them into a class.
 		/// </summary>
 		/// <param name="args">The args to parse.</param>
-		/// <returns>An IParseResult. You can call <see cref="Handle(IParseResult)"/>, to handle it automatically.</returns>
+		/// <returns>An IParseResult. You can call <see cref="Handle(IParseResult, bool)"/>, to handle it automatically.</returns>
 		public IParseResult Parse(IEnumerable<string> args)
 		{
 			if (args == null)
@@ -82,7 +77,7 @@
 		/// Parses the provided args and turns them into a class.
 		/// </summary>
 		/// <param name="argsEnum">An enumerator providing the args to parse.</param>
-		/// <returns>An IParseResult. You can call <see cref="Handle(IParseResult)"/>, to handle it automatically.</returns>
+		/// <returns>An IParseResult. You can call <see cref="Handle(IParseResult, bool)"/>, to handle it automatically.</returns>
 		public IParseResult Parse(IEnumerator<string> argsEnum)
 		{
 			if (argsEnum.MoveNext())
@@ -167,7 +162,7 @@
 			}
 		}
 		/// <summary>
-		/// Starts a loop that reads input from <see cref="Console"/>, parses (using <see cref="Parse(string)"/>), and invokes it synchronously (using <see cref="Handle(IParseResult)"/>).
+		/// Starts a loop that reads input from <see cref="Console"/>, parses (using <see cref="Parse(string)"/>), and invokes it synchronously (using <see cref="Handle(IParseResult, bool)"/>).
 		/// Writes <paramref name="prompt"/> to the console as a prompt when it is ready for input, and will stop looping once <see cref="ILoopCondition.ShouldGo(string)"/> returns false.
 		/// Any null strings received from inputs are not parsed, but still checked using <paramref name="condition"/>.
 		/// </summary>
@@ -192,7 +187,7 @@
 			}
 		}
 		/// <summary>
-		/// Starts a loop that reads input from <see cref="Console"/>, parses (using <see cref="Parse(string)"/>), and invokes it asynchronously (using <see cref="HandleAsync(IParseResult)"/>).
+		/// Starts a loop that reads input from <see cref="Console"/>, parses (using <see cref="Parse(string)"/>), and invokes it asynchronously (using <see cref="HandleAsync(IParseResult, bool)"/>).
 		/// Writes <paramref name="prompt"/> to the console as a prompt when it is ready for input, and will stop looping once <see cref="ILoopCondition.ShouldGo(string)"/> returns false.
 		/// Any null strings received from inputs are not parsed, but still checked using <paramref name="condition"/>.
 		/// </summary>
@@ -216,9 +211,8 @@
 				}
 			}
 		}
-		[Obsolete("Prefer using InputLoop instead")]
 		/// <summary>
-		/// Starts a loop that reads input from <see cref="Console"/>, splits it into tokens using <see cref="Tokenizer"/>, and then parses and invokes it synchronously (using <see cref="Handle(IParseResult)"/>).
+		/// Starts a loop that reads input from <see cref="Console"/>, splits it into tokens using <see cref="Tokenizer"/>, and then parses and invokes it synchronously (using <see cref="Handle(IParseResult, bool)"/>).
 		/// Writes <paramref name="prompt"/> to the console as a prompt when it is ready for input, and will stop looping once it encounters the string <paramref name="exitKeyword"/>, or <see cref="Console.ReadLine"/> returns null.
 		/// Compares with <paramref name="exitKeyword"/> using <see cref="CliParserConfig.StringComparer"/>.
 		/// </summary>
@@ -226,6 +220,7 @@
 		/// <param name="exitKeyword">The keyword to use to stop the loop. Cannot be the same as a Verb name.</param>
 		/// <param name="promptColor">The foreground color of <paramref name="prompt"/>.</param>
 		/// <param name="commandColor">The foreground color of the text that the user enters after <paramref name="prompt"/> is written.</param>
+		[Obsolete("Prefer using InputLoop instead")]
 		public void Shell(string prompt, string exitKeyword = "exit", ConsoleColor promptColor = ConsoleColor.White, ConsoleColor commandColor = ConsoleColor.Gray)
 		{
 			if (verbsByName.ContainsKey(exitKeyword))
@@ -248,9 +243,8 @@
 				}
 			}
 		}
-		[Obsolete("Prefer using InputLoopAsync instead")]
 		/// <summary>
-		/// Starts a loop that reads input from <see cref="Console"/>, splits it into tokens using <see cref="Tokenizer"/>, and then parses and invokes it asynchronously (using <see cref="HandleAsync(IParseResult)"/>).
+		/// Starts a loop that reads input from <see cref="Console"/>, splits it into tokens using <see cref="Tokenizer"/>, and then parses and invokes it asynchronously (using <see cref="HandleAsync(IParseResult, bool)"/>).
 		/// Writes <paramref name="prompt"/> to the console as a prompt when it is ready for input, and will stop looping once it encounters the string <paramref name="exitKeyword"/>, or <see cref="Console.ReadLine"/> returns null.
 		/// Compares with <paramref name="exitKeyword"/> using <see cref="CliParserConfig.StringComparer"/>.
 		/// </summary>
@@ -258,6 +252,7 @@
 		/// <param name="exitKeyword">The keyword to use to stop the loop. Cannot be the same as a Verb name.</param>
 		/// <param name="promptColor">The foreground color of <paramref name="prompt"/>.</param>
 		/// <param name="commandColor">The foreground color of the text that the user enters after <paramref name="prompt"/> is written.</param>
+		[Obsolete("Prefer using InputLoopAsync instead")]
 		public async Task ShellAsync(string prompt, string exitKeyword = "exit", ConsoleColor promptColor = ConsoleColor.White, ConsoleColor commandColor = ConsoleColor.Gray)
 		{
 			if (verbsByName.ContainsKey(exitKeyword))

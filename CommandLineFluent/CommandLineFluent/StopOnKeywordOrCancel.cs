@@ -1,10 +1,12 @@
 ﻿namespace CommandLineFluent
 {
 	using System;
-
 	/// <summary>
 	/// A basic implementation of <see cref="ILoopCondition"/>.
+	/// Its <see cref="ShouldGo(string?)"/> returns false if the input is equal to a keyword, or after Ctrl+C is pressed, or if <see cref="CancelRequested"/> is set to true.
+	/// Note however that if you call <see cref="RegisterKeyCancel"/>, then Ctrl+C will not do anything during verb processing. It's recommended not to use this for long-running work.
 	/// </summary>
+	[Obsolete("Using this prevents Ctrl+C working during verb execution. This may not be the best thing to use if verbs trigger long-running work.")]
 	public sealed class StopOnKeywordOrCancel : ILoopCondition
 	{
 		/// <summary>

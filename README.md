@@ -62,9 +62,10 @@ CliParser parser = new CliParserBuilder()
 	parser.Handle(result); // calls what we set the Invoke property to
 	parser.HandleAsync(result); // calls what we set the InvokeAsync property to
 
-	// And if we want to provide a shell-like interface, all you need to do is call this.
+	// And if we want to provide a shell-like interface, all you need to do is call this method.
 	// You can set the colour of the prompt and the colour of the commands (i.e. what the user enters) like this too. It will loop until the user enters "exit".
-	parser.Shell(prompt: "FileProcessor> ", exitKeyword: "exit", promptColor: ConsoleColor.White, commandColor: ConsoleColor.Gray);
+	ILoopCondition loopCndition = new StopOnKeyword("exit", StringComparer.OrdinalIgnoreCare);
+	parser.InputLoop(prompt: "FileProcessor> ", loopCndition, alwaysWriteHelpOnError: true, promptColor: ConsoleColor.White, commandColor: ConsoleColor.Gray);
 ```
 
 ### Configuring the Parser
