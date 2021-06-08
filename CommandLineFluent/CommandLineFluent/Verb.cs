@@ -79,6 +79,17 @@
 		/// Otherwise, returns a <see cref="FailedParseWithVerb"/>.
 		/// </summary>
 		/// <param name="args">The arguments.</param>
+		public IParseResult Parse(IEnumerable<string> args)
+		{
+			using IEnumerator<string> e = args.GetEnumerator();
+			return Parse(e);
+		}
+		/// <summary>
+		/// If <paramref name="args"/> is empty, returns a <see cref="SuccessfulParse"/>.
+		/// If <paramref name="args"/> contains a single string that's a verb, calls that verb's <see cref="Parse(IEnumerator{string})"/> method.
+		/// Otherwise, returns a <see cref="FailedParseWithVerb"/>.
+		/// </summary>
+		/// <param name="args">The arguments.</param>
 		public IParseResult Parse(IEnumerator<string> args)
 		{
 			if (args.MoveNext())
@@ -98,6 +109,12 @@
 		public void WriteSpecificHelp(IConsole console, IMessageFormatter msgFormatter)
 		{
 			msgFormatter.WriteSpecificHelp(console, this);
+		}
+		public static Verb<TClass> Standalone<TClass>(CliParserConfig config, Action<Verb<TClass>> verbConfig) where TClass: class, new()
+		{
+			Verb<TClass> v = new(null, string.Empty, null, config);
+			verbConfig(v);
+			return v;
 		}
 		internal static void Validate(Dictionary<string, IVerb> verbsByName, string longName, CliParserConfig config)
 		{

@@ -34,37 +34,43 @@
 		/// </summary>
 		IReadOnlyList<IVerb> AllVerbs { get; }
 		/// <summary>
-		/// Adds a verb for this parser. To invoke it, the user has to enter <paramref name="longName"/> on the command line.
-		/// e.g. "foo.exe add" invokes the verb with the name "add".
+		/// Adds a sub-verb for this verb. To invoke it, the user has to enter <paramref name="longName"/> on the command line.
+		/// e.g. "foo.exe add file" invokes the sub-verb of verb "add" with the name "file".
 		/// </summary>
 		/// <param name="longName">The long name of the verb</param>
 		/// <param name="config">The action to configure the verb</param>
 		public void AddVerb(string longName, Action<Verb> config);
 		/// <summary>
-		/// Adds a verb for this parser. To invoke it, the user has to enter <paramref name="longName"/> or <paramref name="shortName"/> on the command line.
-		/// e.g. "foo.exe add" invokes the verb with the name "add".
+		/// Adds a sub-verb for this verb. To invoke it, the user has to enter <paramref name="longName"/> or <paramref name="shortName"/> on the command line.
+		/// e.g. "foo.exe add file" invokes the sub-verb of verb "add" with the name "file".
 		/// </summary>
 		/// <param name="longName">The long name of the verb</param>
 		/// <param name="shortName">The short name of the verb</param>
 		/// <param name="config">The action to configure the verb</param>
 		public void AddVerb(string longName, string shortName, Action<Verb> config);
 		/// <summary>
-		/// Adds a verb for this parser. To invoke it, the user has to enter <paramref name="longName"/> on the command line.
-		/// e.g. "foo.exe add" invokes the verb with the name "add".
+		/// Adds a sub-verb for this pverbarser. To invoke it, the user has to enter <paramref name="longName"/> on the command line.
+		/// e.g. "foo.exe add file" invokes the sub-verb of verb "add" with the name "file".
 		/// </summary>
 		/// <typeparam name="TClass">The type of the class which will be created when arguments for that verb are parsed successfully</typeparam>
 		/// <param name="longName">The long name of the verb</param>
 		/// <param name="config">The action to configure the verb</param>
 		public void AddVerb<TClass>(string longName, Action<Verb<TClass>> config) where TClass : class, new();
 		/// <summary>
-		/// Adds a verb for this parser. To invoke it, the user has to enter <paramref name="longName"/> or <paramref name="shortName"/> on the command line.
-		/// e.g. "foo.exe add" invokes the verb with the name "add".
+		/// Adds a sub-verb for this verb. To invoke it, the user has to enter <paramref name="longName"/> or <paramref name="shortName"/> on the command line.
+		/// e.g. "foo.exe add file" invokes the sub-verb of verb "add" with the name "file".
 		/// </summary>
 		/// <typeparam name="TClass">The type of the class which will be created when arguments for that verb are parsed successfully</typeparam>
 		/// <param name="longName">The long name of the verb</param>
 		/// <param name="shortName">The short name of the verb</param>
 		/// <param name="config">The action to configure the verb</param>
 		public void AddVerb<TClass>(string longName, string shortName, Action<Verb<TClass>> config) where TClass : class, new();
+		/// <summary>
+		/// Parses the provided arguments using this verb's rules. You shouldn't need to use this directly. But if you do,
+		/// the first argument should not be this verb's name; if it is, make sure to skip the first argument.
+		/// </summary>
+		/// <param name="args">The arguments to parse</param>
+		IParseResult Parse(IEnumerable<string> args);
 		/// <summary>
 		/// Parses the provided arguments using this verb's rules. You shouldn't need to use this directly. But if you do,
 		/// the first argument should not be this verb's name; if it is, make sure to skip the first argument.

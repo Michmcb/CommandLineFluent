@@ -284,6 +284,11 @@
 			MultiValue = arg;
 			return arg;
 		}
+		public IParseResult Parse(IEnumerable<string> args)
+		{
+			using IEnumerator<string> e = args.GetEnumerator();
+			return Parse(e);
+		}
 		public IParseResult Parse(IEnumerator<string> args)
 		{
 			bool first = true;
