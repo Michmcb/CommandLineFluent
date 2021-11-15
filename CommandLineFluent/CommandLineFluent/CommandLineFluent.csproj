@@ -1,13 +1,13 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>net5.0;netstandard2.1;netstandard2.0</TargetFrameworks>
+    <TargetFrameworks>net6.0;net5.0;netstandard2.1;netstandard2.0</TargetFrameworks>
     <Nullable>enable</Nullable>
     <LangVersion>latest</LangVersion>
     <Authors>Michael McBride</Authors>
     <Product />
     <Company />
-    <Version>2.5</Version>
+    <Version>2.6</Version>
     <PackageLicenseFile>LICENSE</PackageLicenseFile>
     <Description>A .NET Command Line Parsing library which is set up and parsed using fluent syntax. It parses command line arguments into strongly-typed classes which you define. Supports conditional dependencies between arguments, conversion, default values, a basic shell, and automatic help/usage text. It also supports invoking awaitable or asynchronous actions with the classes you define.</Description>
     <PackageTags>commandline, parsing, parser, option, command, line, argument, library, fluent, async</PackageTags>
@@ -17,10 +17,10 @@
     <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
     <RepositoryUrl>https://github.com/Michmcb/CommandLineFluent</RepositoryUrl>
     <RepositoryType>Github</RepositoryType>
-    <PackageReleaseNotes>- Added Verb.Standalone, which can be used if you don't want to have multiple verbs. You can use it to directly parse an IEnumerable&lt;string&gt;.</PackageReleaseNotes>
+    <PackageReleaseNotes>- net6.0 added as a target framework</PackageReleaseNotes>
     <PackageIcon>CommandLineFluent.png</PackageIcon>
-    <AssemblyVersion>2.5.0.0</AssemblyVersion>
-    <FileVersion>2.5.0.0</FileVersion>
+    <AssemblyVersion>2.6.0.0</AssemblyVersion>
+    <FileVersion>2.6.0.0</FileVersion>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
